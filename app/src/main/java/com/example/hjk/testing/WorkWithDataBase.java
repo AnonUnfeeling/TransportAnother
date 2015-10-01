@@ -1,7 +1,6 @@
 package com.example.hjk.testing;
 
 import android.app.Activity;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,26 +30,50 @@ public class WorkWithDataBase extends Activity{
         return connection;
     }
 
-    public void setNumberPhone(Long numberPhone){
+    public int setNumberPhone(Long numberPhone) throws SQLException {
         connection = setInstance();
+        CallableStatement statement = null;
         try {
-            CallableStatement statement = connection.prepareCall("{CALL login_ (?,?,?)}");
-            statement.setLong(1,numberPhone);
+            statement = connection.prepareCall("{call login_ (?,?,?,?,?,?,?)}");
+            statement.setLong(1, numberPhone);
             statement.registerOutParameter(2, Types.INTEGER);
             statement.registerOutParameter(3, Types.TINYINT);
+            statement.registerOutParameter(4, Types.SMALLINT);
+            statement.registerOutParameter(5, Types.SMALLINT);
+            statement.registerOutParameter(6, Types.INTEGER);
             statement.executeQuery();
-            System.out.println(statement.getInt(2)+" "+statement.getInt(3));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return statement.getInt(2);
+    }
+
+    public void onlineStart(int id){
+        try {
+            connection = setInstance();
+            Statement statement = connection.createStatement();
+            statement.execute("call online_start (" + id + ")");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void setCoordinates(Double x, Double y){
+    public void onlineEnd(int id){
         try {
             connection = setInstance();
             Statement statement = connection.createStatement();
-            statement.execute("call set_xy ( 67,1,"+x+","+y+");");
+            statement.execute("call online_end (" + id + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void setCoordinates(int id,Double x, Double y){
+        try {
+            connection = setInstance();
+            Statement statement = connection.createStatement();
+            statement.execute("call ping_set ("+id+",1," + x + "," + y + ")");
         } catch (SQLException e) {
             e.printStackTrace();
         }

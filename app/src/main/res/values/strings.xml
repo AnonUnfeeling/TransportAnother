@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Transport Another</string>
 
-    <string name="accessErorr">"Перевірте з'єднання з інтернет/gps мережею"</string>
+    <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею</string>
 </resources>

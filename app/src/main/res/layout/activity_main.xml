@@ -1,39 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
-    <TabHost
-        android:id="@android:id/tabhost"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_width="match_parent"
+    android:background="#646a7a">
+
+    <ImageButton
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/menu"
+        android:background="#424756"
+        android:id="@+id/menu"
+        android:layout_alignBottom="@+id/pedestrian" />
+
+    <ImageButton
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/pedestrian_activ"
+        android:background="#00000000"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/menu"
+        android:layout_toEndOf="@+id/menu"
+        android:id="@+id/pedestrian"
+        android:layout_marginLeft="0.5dp" />
+
+    <ImageButton
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/driver_passiv"
+        android:background="#00000000"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pedestrian"
+        android:layout_toEndOf="@+id/pedestrian"
+        android:id="@+id/driver"
+        android:layout_marginLeft="0.5dp" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/menu"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#646a7a">
+
+        <RadioGroup
+            android:layout_width="237dp"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </TabWidget>
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <TextView
-                    android:id="@+id/tvTab1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tab1">
-                </TextView>
-                <TextView
-                    android:id="@+id/tvTab2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tab2">
-                </TextView>
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
-</LinearLayout>
+            android:background="#646a7a"
+            android:id="@+id/radioGroup"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView">
+
+            <CheckBox
+                android:layout_width="260dp"
+                android:layout_height="61dp"
+                android:id="@+id/centr"
+                android:button="@drawable/centr_passiv"
+                android:layout_marginTop="0.5dp" />
+
+
+
+            <CheckBox
+                android:layout_width="260dp"
+                android:layout_height="61dp"
+                android:id="@+id/auto"
+                android:button="@drawable/auto_passiv"
+                android:layout_marginTop="0.5dp" />
+
+            <CheckBox
+                android:layout_width="260dp"
+                android:layout_height="61dp"
+                android:id="@+id/north"
+                android:button="@drawable/north_passiv"
+                android:layout_marginTop="0.5dp" />
+
+            <CheckBox
+                android:layout_width="260dp"
+                android:layout_height="61dp"
+                android:id="@+id/anniversary"
+                android:button="@drawable/anniversary_passiv"
+                android:layout_marginTop="0.5dp" />
+
+            <CheckBox
+                android:layout_width="260dp"
+                android:layout_height="62dp"
+                android:id="@+id/angleBass"
+                android:button="@drawable/angle_bass_passive"
+                android:layout_marginTop="0.5dp" />
+
+        </RadioGroup>
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:id="@+id/imageView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/white" />
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:id="@+id/imageView2"
+            android:layout_below="@+id/imageView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/blue" />
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:id="@+id/imageView3"
+            android:src="@drawable/yelow"
+            android:background="#00000000"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/imageView2" />
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:id="@+id/imageView4"
+            android:layout_below="@+id/imageView3"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/green" />
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="63dp"
+            android:id="@+id/imageView5"
+            android:layout_below="@+id/imageView4"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/red" />
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="63dp"
+            android:id="@+id/imageView6"
+            android:layout_below="@+id/imageView5"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="#010101" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

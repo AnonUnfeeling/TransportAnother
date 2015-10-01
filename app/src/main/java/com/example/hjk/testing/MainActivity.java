@@ -2,74 +2,101 @@ package com.example.hjk.testing;
 
 import android.app.Activity;
 import android.content.Context;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
-import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
-import android.widget.TabHost;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MainActivity extends Activity implements LocationListener{
+public class MainActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-    TextView textView;
-    private static final int NETWORK_KEY=0;
-    private static final int GPS_KEY=1;
-    private Location location=null;
-    private LocationManager locationManager=null;
     WorkWithDataBase workWithDataBase = new WorkWithDataBase();
+    ImageButton menu, pedestrian, driver;
+    CheckBox auto, north, anniversary, centr, angleBass;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        workWithDataBase.setNumberPhone(getNumberPhone());
-        locationManager= (LocationManager) getSystemService(LOCATION_SERVICE);
-        int check = checkAccess();
-        if(check==NETWORK_KEY){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
-        }else if(check==GPS_KEY){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
-        }else {
-            accessError();
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(MainActivity.this, TransportAnother.class));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if(checkAccess()) {
+                        saveID(workWithDataBase.setNumberPhone(getNumberPhone()));
 
-        initTabs();
+                        startService(new Intent(MainActivity.this, TransportAnother.class).putExtra("id", loadID()));
+                    }else {
+                        Looper.prepare();
+                        accessError();
+                        Looper.loop();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        auto = (CheckBox) findViewById(R.id.auto);
+        auto.setOnCheckedChangeListener(this);
+
+        north = (CheckBox) findViewById(R.id.north);
+        north.setOnCheckedChangeListener(this);
+
+        anniversary = (CheckBox) findViewById(R.id.anniversary);
+        anniversary.setOnCheckedChangeListener(this);
+
+        centr = (CheckBox) findViewById(R.id.centr);
+        centr.setOnCheckedChangeListener(this);
+
+        angleBass = (CheckBox) findViewById(R.id.angleBass);
+        angleBass.setOnCheckedChangeListener(this);
+
+        menu = (ImageButton) findViewById(R.id.menu);
+        menu.setOnClickListener(this);
+
+        pedestrian = (ImageButton) findViewById(R.id.pedestrian);
+        pedestrian.setOnClickListener(this);
+
+        driver = (ImageButton) findViewById(R.id.driver);
+        driver.setOnClickListener(this);
     }
 
-    public void initTabs(){
-        TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
-        tabHost.setup();
+    public void saveID(int id){
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("id",id);
+        editor.commit();
+    }
 
-        TabHost.TabSpec tabSpec;
-        tabSpec = tabHost.newTabSpec("tag1");
-        tabSpec.setIndicator("Вкладка 1");
-        tabSpec.setContent(R.id.tvTab1);
-        tabHost.addTab(tabSpec);
+    public int loadID(){
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        return sharedPreferences.getInt("id",-1);
+    }
 
-        tabSpec = tabHost.newTabSpec("tag2");
-        tabSpec.setIndicator("Вкладка 2");
-        tabSpec.setContent(R.id.tvTab2);
-        tabHost.addTab(tabSpec);
+    public Long getNumberPhone(){
+        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        return Long.valueOf(telephonyManager.getDeviceId());
     }
 
     public void accessError(){
-        Toast.makeText(this,getResources().getString(R.string.accessErorr),Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(),getResources().getString(R.string.accessErorr),Toast.LENGTH_LONG).show();
     }
 
     public boolean isConnectingToInternet(){
@@ -88,44 +115,79 @@ public class MainActivity extends Activity implements LocationListener{
         return false;
     }
 
-    public int checkAccess(){
-
+    public boolean checkAccess(){
         String provider = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if(isConnectingToInternet()){
-            return NETWORK_KEY;
+        if(isConnectingToInternet()&&provider.contains("gps")== true){
+            return true;
         }
-        else if(provider.contains("gps")== true){
-            return GPS_KEY;
+        return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.driver:
+                pedestrian.setImageResource(R.drawable.pedestrian_passiv);
+                driver.setImageResource(R.drawable.driver_activ);
+                menu.setImageResource(R.drawable.menu);
+                break;
+            case R.id.pedestrian:
+                pedestrian.setImageResource(R.drawable.pedestrian_activ);
+                driver.setImageResource(R.drawable.driver_passiv);
+                menu.setImageResource(R.drawable.menu);
+                break;
+            case R.id.menu:
+                pedestrian.setImageResource(R.drawable.pedestrian_passiv);
+                driver.setImageResource(R.drawable.driver_passiv);
+                menu.setImageResource(R.drawable.menu_back);
+                break;
         }
-        else {
-            return 2;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        switch (buttonView.getId()){
+            case R.id.centr:
+                if(!isChecked) {
+                    centr.setButtonDrawable(R.drawable.centr_activ);
+                }else {
+                    centr.setButtonDrawable(R.drawable.centr_passiv);
+                }
+
+                break;
+            case R.id.auto:
+                if(!isChecked) {
+                    auto.setButtonDrawable(R.drawable.auto_active);
+                }else {
+                    auto.setButtonDrawable(R.drawable.auto_passiv);
+                }
+
+                break;
+            case R.id.north:
+                if(!isChecked) {
+                    north.setButtonDrawable(R.drawable.north_active);
+                }else {
+                    north.setButtonDrawable(R.drawable.north_passiv);
+                }
+                break;
+            case R.id.anniversary:
+                if(!isChecked) {
+                    anniversary.setButtonDrawable(R.drawable.anniversary_active);
+                }else {
+                    anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                }
+
+                break;
+            case R.id.angleBass:
+                if(!isChecked) {
+                    angleBass.setButtonDrawable(R.drawable.angle_bass_active);
+                }else {
+                    angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                }
+
+                break;
         }
-    }
-
-    public Long getNumberPhone(){
-        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        return Long.valueOf(telephonyManager.getLine1Number().replace("+",""));
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        this.location=location;
-        workWithDataBase.setCoordinates(this.location.getLatitude(),this.location.getLongitude());
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 }
