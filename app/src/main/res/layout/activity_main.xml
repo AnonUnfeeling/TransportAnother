@@ -2,8 +2,20 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
+    android:id="@+id/flipper_layout"
     android:layout_height="fill_parent"
     android:background="#646a7a">
+
+    <ViewFlipper
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/flipper">
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#646a7a">
 
     <ImageButton
         android:layout_width="62dp"
@@ -153,5 +165,6 @@
             android:background="#010101" />
 
     </RelativeLayout>
-
+        </RelativeLayout>
+    </ViewFlipper>
 </RelativeLayout>

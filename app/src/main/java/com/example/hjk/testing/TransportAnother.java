@@ -28,14 +28,14 @@ public class TransportAnother extends Service implements LocationListener{
         }
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
-        }catch (Exception e) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
+        }catch (Exception e){
             e.printStackTrace();
         }
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, this);
-        }catch (Exception e){
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
+        }catch (Exception e) {
             e.printStackTrace();
         }
 

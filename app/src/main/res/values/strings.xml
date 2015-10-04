@@ -2,4 +2,6 @@
     <string name="app_name">Transport Another</string>
 
     <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею</string>
+    <string name="driver_on_line">К-сть водіїв в напрямку</string>
+    <string name="driver_another">К-сть водіїв в інших напрямках</string>
 </resources>
