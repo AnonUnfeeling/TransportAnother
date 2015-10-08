@@ -15,7 +15,8 @@ public class WorkWithDataBase{
         if(connection==null) {
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
-                 return DriverManager.getConnection("jdbc:mysql://77.222.139.193:3306/carstop", "root", "");
+//                77.222.139.193
+                 return DriverManager.getConnection("jdbc:mysql://192.168.0.29:3306/carstop", "root", "");
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -29,27 +30,56 @@ public class WorkWithDataBase{
         return connection;
     }
 
-    public int setNumberPhone(Long numberPhone) throws SQLException {
+    public String[] getStatus(int id){
+        String[] status = new String[5];
+
         connection = setInstance();
         CallableStatement statement = null;
+
         try {
-            statement = connection.prepareCall("{call login_ (?,?,?,?,?,?,?)}");
-            statement.setLong(1, numberPhone);
-            statement.registerOutParameter(2, Types.INTEGER);
-            statement.registerOutParameter(3, Types.TINYINT);
+            statement = connection.prepareCall("{call stat_user (?,?,?,?,?,?)}");
+            statement.setInt(1, id);
+            statement.registerOutParameter(2, Types.SMALLINT);
+            statement.registerOutParameter(3, Types.SMALLINT);
             statement.registerOutParameter(4, Types.SMALLINT);
             statement.registerOutParameter(5, Types.SMALLINT);
-            statement.registerOutParameter(6, Types.INTEGER);
+            statement.registerOutParameter(6, Types.VARCHAR);
             statement.executeQuery();
+
+            status[0]= String.valueOf(statement.getInt(2));
+            status[1]= String.valueOf(statement.getInt(3));
+            status[2]= String.valueOf(statement.getInt(4));
+            status[3]= String.valueOf(statement.getInt(5));
+            status[4]= statement.getString(6);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return statement.getInt(2);
+
+        return status;
     }
 
-    public Double[] search(int id, double x, double y, int driver, int target, String exception){
-        Double[] coordinate = new Double[2];
+    public int[] setNumberPhone(Long numberPhone) throws SQLException {
+        int[] data = new int[2];
+        connection = setInstance();
+        CallableStatement statement = null;
+        try {
+            statement = connection.prepareCall("{call login_ (?,?,?)}");
+            statement.setLong(1, numberPhone);
+            statement.registerOutParameter(2, Types.INTEGER);
+            statement.registerOutParameter(3,Types.INTEGER);
+            statement.executeQuery();
+
+            data[0]=statement.getInt(2);
+            data[1]=statement.getInt(3);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public double[] search(int id, double x, double y, int driver, int target, String exception){
+        double[] coordinate = new double[2];
         connection = setInstance();
         CallableStatement statement=null;
         try {
@@ -61,7 +91,7 @@ public class WorkWithDataBase{
             statement.setDouble(4, x);
             statement.setDouble(5, y);
             statement.registerOutParameter(4, Types.DOUBLE);
-            statement.registerOutParameter(5,Types.DOUBLE);
+            statement.registerOutParameter(5, Types.DOUBLE);
             statement.setString(6, exception);
             statement.executeQuery();
 
@@ -73,11 +103,56 @@ public class WorkWithDataBase{
         return coordinate;
     }
 
-    public void onlineStart(int id){
+    public void sos(int idUser, int idContact, double x, double y){
         try {
             connection = setInstance();
             Statement statement = connection.createStatement();
-            statement.execute("call online_start (" + id + ")");
+            statement.execute("call sos_ (" + idUser + ","+idContact+","+x+","+y+")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public double[] onlineStart(int id, int driver, int target, double x, double y){
+        double[] data = new double[8];
+        try {
+            connection = setInstance();
+            CallableStatement statement = connection.prepareCall("call online_start(?,?,?,?,?,?,?,?,?,?)");
+            statement.setInt(1, id);
+            statement.registerOutParameter(1, Types.INTEGER);
+            statement.setInt(2, driver);
+            statement.setInt(3, target);
+            statement.setDouble(4, x);
+            statement.registerOutParameter(4, Types.DOUBLE);
+            statement.setDouble(5, y);
+            statement.registerOutParameter(5, Types.DOUBLE);
+            statement.registerOutParameter(6, Types.SMALLINT);
+            statement.registerOutParameter(7, Types.SMALLINT);
+            statement.registerOutParameter(8,Types.SMALLINT);
+            statement.registerOutParameter(9,Types.SMALLINT);
+            statement.registerOutParameter(10,Types.SMALLINT);
+            statement.executeQuery();
+
+            data[0] = statement.getInt(1);
+            data[1] = statement.getDouble(4);
+            data[2] = statement.getDouble(5);
+            data[3] = statement.getInt(6);
+            data[4] = statement.getInt(7);
+            data[5] = statement.getInt(8);
+            data[6] = statement.getInt(9);
+            data[7] = statement.getInt(10);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+    public void contact (int idUser, int idDriver, double x, double y, int driver){
+        try {
+            connection = setInstance();
+            Statement statement = connection.createStatement();
+            statement.execute("call contact_ (" + idUser + ","+idDriver+","+x+","+y+","+driver+")");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -93,22 +168,52 @@ public class WorkWithDataBase{
         }
     }
 
-    public Double[] getCoordinate(int id, int driver) {
-        Double[] coordinate = new Double[2];
+    public double[] contactSet(int idUser, double x, double y){
+        double[] xy = new double[2];
 
         connection = setInstance();
         CallableStatement statement;
         try {
-            statement = connection.prepareCall("{call ping_get (?,?,?,?)}");
-            statement.setInt(1, id);
-            statement.setInt(2, driver);
-            statement.registerOutParameter(3, Types.DOUBLE);
+            statement = connection.prepareCall("{call ping_ (?,?,?)}");
+            statement.setInt(1, idUser);
+            statement.setDouble(2, x);
+            statement.setDouble(3, y);
+            statement.registerOutParameter(2, Types.INTEGER);
+            statement.registerOutParameter(3, Types.INTEGER);
+            statement.executeUpdate();
+
+            xy[0] = statement.getDouble(2);
+            xy[1] = statement.getDouble(3);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return xy;
+    }
+
+    public double[] getCoordinate(int idUser, int idPing, int driver,double x, double y) {
+        double[] coordinate = new double[2];
+
+        connection = setInstance();
+        CallableStatement statement;
+        try {
+            statement = connection.prepareCall("{call ping_ (?,?,?,?,?)}");
+            statement.setInt(1, idUser);
+            statement.setInt(2, idPing);
+            statement.setInt(3, driver);
+            statement.setDouble(4, x);
             statement.registerOutParameter(4, Types.DOUBLE);
-            statement.executeQuery();
+            statement.setDouble(5, y);
+            statement.registerOutParameter(5, Types.DOUBLE);
+            statement.executeUpdate();
 
-            coordinate[0] = statement.getDouble(3);
-            coordinate[1] = statement.getDouble(4);
-
+            if(statement.getDouble(4)!=x&&statement.getDouble(5)!=y) {
+                coordinate[0] = statement.getDouble(4);
+                coordinate[1] = statement.getDouble(5);
+            }else {
+                coordinate[0]=0.0;
+                coordinate[1]=0.0;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -120,7 +225,7 @@ public class WorkWithDataBase{
         try {
             connection = setInstance();
             Statement statement = connection.createStatement();
-            statement.execute("call ping_set ("+id+",1," + x + "," + y + ")");
+            statement.execute("call ping_set ("+id+",0," + x + "," + y + ")");
         } catch (SQLException e) {
             e.printStackTrace();
         }

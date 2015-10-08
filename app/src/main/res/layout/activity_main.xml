@@ -2,20 +2,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:id="@+id/flipper_layout"
     android:layout_height="fill_parent"
     android:background="#646a7a">
-
-    <ViewFlipper
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/flipper">
-
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="#646a7a">
 
     <ImageButton
         android:layout_width="62dp"
@@ -28,7 +16,7 @@
     <ImageButton
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:src="@drawable/pedestrian_activ"
+        android:src="@drawable/pedestrian_passiv"
         android:background="#00000000"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentTop="true"
@@ -44,7 +32,6 @@
         android:background="#00000000"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/pedestrian"
-        android:layout_toEndOf="@+id/pedestrian"
         android:id="@+id/driver"
         android:layout_marginLeft="0.5dp" />
 
@@ -77,8 +64,6 @@
                 android:id="@+id/centr"
                 android:button="@drawable/centr_passiv"
                 android:layout_marginTop="0.5dp" />
-
-
 
             <CheckBox
                 android:layout_width="260dp"
@@ -165,6 +150,5 @@
             android:background="#010101" />
 
     </RelativeLayout>
-        </RelativeLayout>
-    </ViewFlipper>
+
 </RelativeLayout>

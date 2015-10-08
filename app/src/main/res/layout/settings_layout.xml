@@ -8,12 +8,12 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:id="@+id/sound"
-        android:src="@drawable/sound_passive"
         android:background="#00000000"
         android:layout_below="@+id/close"
         android:layout_alignRight="@+id/imageView7"
         android:layout_alignEnd="@+id/imageView7"
-        android:layout_marginTop="0.5dp" />
+        android:layout_marginTop="0.5dp"
+        android:src="@drawable/sound_passive" />
 
     <ImageButton
         android:layout_width="67dp"
@@ -58,5 +58,126 @@
         android:src="@drawable/rfn_passive"
         android:background="#00000000"
         android:layout_marginTop="0.5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_status"
+        android:id="@+id/st"
+        android:textColor="#979ba6"
+        android:textSize="17sp"
+        android:layout_marginTop="29dp"
+        android:layout_below="@+id/bad_see"
+        android:layout_alignLeft="@+id/rfp"
+        android:layout_alignStart="@+id/rfp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reting_pasage"
+        android:id="@+id/rfp"
+        android:layout_alignParentStart="true"
+        android:textColor="#979ba6"
+        android:textSize="17sp"
+        android:layout_below="@+id/st"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/count_pasage"
+        android:id="@+id/cp"
+        android:layout_alignParentStart="true"
+        android:textColor="#979ba6"
+        android:textSize="17sp"
+        android:layout_below="@+id/ratingForPasag"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reting_driver"
+        android:id="@+id/rfd"
+        android:layout_alignParentStart="true"
+        android:textColor="#979ba6"
+        android:textSize="17sp"
+        android:layout_below="@+id/cp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/count_driver"
+        android:id="@+id/cd"
+        android:layout_alignParentStart="true"
+        android:textColor="#979ba6"
+        android:textIsSelectable="false"
+        android:textSize="17sp"
+        android:layout_below="@+id/rfd"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/youStatus"
+        android:textSize="17sp"
+        android:layout_alignTop="@+id/st"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:textColor="#fffefd"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ratingForPasag"
+        android:layout_alignTop="@+id/rfp"
+        android:layout_alignRight="@+id/youStatus"
+        android:layout_alignEnd="@+id/youStatus"
+        android:textSize="17sp"
+        android:textColor="#fffefd"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/countPasage"
+        android:layout_alignTop="@+id/cp"
+        android:layout_alignRight="@+id/ratingForPasag"
+        android:layout_alignEnd="@+id/ratingForPasag"
+        android:textSize="17sp"
+        android:textColor="#fffefd"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ratingForDriver"
+        android:layout_alignTop="@+id/rfd"
+        android:layout_alignRight="@+id/countPasage"
+        android:layout_alignEnd="@+id/countPasage"
+        android:textSize="17sp"
+        android:textColor="#fffefd"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/countDriver"
+        android:layout_alignTop="@+id/cd"
+        android:layout_alignRight="@+id/ratingForDriver"
+        android:layout_alignEnd="@+id/ratingForDriver"
+        android:textSize="17sp"
+        android:textColor="#fffefd"
+        android:textStyle="bold" />
 
 </RelativeLayout>

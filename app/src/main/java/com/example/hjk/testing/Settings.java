@@ -6,14 +6,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class Settings extends Activity implements View.OnClickListener{
     ImageButton back,sound,vibration,bad_see;
     boolean[] isCheck = new boolean[3];
+    WorkWithDataBase workWithDataBase = new WorkWithDataBase();
+    String[] status;
+    TextView youStatus, ratingForPasage,countPasage,ratingForDriver,countDriver;
 
     @Override
     protected void onResume() {
         super.onResume();
+
         isCheck = loadSettings();
         if(isCheck[0]){
             sound.setImageResource(R.drawable.sound_activ);
@@ -31,6 +36,23 @@ public class Settings extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_layout);
 
+        status = workWithDataBase.getStatus(getIntent().getIntExtra("id",-1));
+
+        youStatus = (TextView) findViewById(R.id.youStatus);
+        youStatus.append("\t"+status[4]);
+
+        ratingForPasage = (TextView) findViewById(R.id.ratingForPasag);
+        ratingForPasage.append("\t"+status[0]);
+
+        countPasage = (TextView) findViewById(R.id.countPasage);
+        countPasage.append("\t"+status[1]);
+
+        ratingForDriver = (TextView) findViewById(R.id.ratingForDriver);
+        ratingForDriver.append("\t"+status[2]);
+
+        countDriver = (TextView) findViewById(R.id.countDriver);
+        countDriver.append("\t"+status[3]);
+
         back = (ImageButton) findViewById(R.id.close);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,8 +65,10 @@ public class Settings extends Activity implements View.OnClickListener{
 
         sound = (ImageButton) findViewById(R.id.sound);
         sound.setOnClickListener(this);
+
         vibration = (ImageButton) findViewById(R.id.vibration);
         vibration.setOnClickListener(this);
+
         bad_see = (ImageButton) findViewById(R.id.bad_see);
         bad_see.setOnClickListener(this);
     }

@@ -2,6 +2,12 @@
     <string name="app_name">Transport Another</string>
 
     <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею</string>
-    <string name="driver_on_line">К-сть водіїв в напрямку</string>
-    <string name="driver_another">К-сть водіїв в інших напрямках</string>
+    <string name="driver_on_line">К-сть водіїв</string>
+    <string name="distation">Відстань до контакту:</string>
+    <string name="you_status">Ваш статус</string>
+    <string name="reting_pasage">Рейтинг від пасажирів</string>
+    <string name="count_pasage">К-сть пасажирів</string>
+    <string name="reting_driver">Рейтинг від водіїв</string>
+    <string name="count_driver">К-сть водіїв</string>
+
 </resources>

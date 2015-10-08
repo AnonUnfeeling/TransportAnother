@@ -1,80 +1,92 @@
 package com.example.hjk.testing;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class MainActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
 
     WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     ImageButton menu, pedestrian, driver;
     CheckBox auto, north, anniversary, centr, angleBass;
+    String target="0";
+    int id,driv;
+    int[] data;
+    boolean flagForLoginProcedure = false;
+    ProgressDialog progressDialog;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (checkAccess()) {
+            if(!flagForLoginProcedure) {
+
+                        try {
+                            data = workWithDataBase.setNumberPhone(getNumberPhone());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        id = data[0];
+                        driv = data[1];
+
+                flagForLoginProcedure = true;
+            }
+
+            if(driv==0){
+                pedestrian.setImageResource(R.drawable.pedestrian_activ);
+                driver.setImageResource(R.drawable.driver_passiv);
+            }else if(driv==1){
+                driver.setImageResource(R.drawable.driver_activ);
+                pedestrian.setImageResource(R.drawable.pedestrian_passiv);
+            }
+
+
+        }else {
+            accessError();
+        }
+
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+        if(!provider.contains("gps")){
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            sendBroadcast(poke);
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(MainActivity.this, TransportAnother.class));
+        if(id != -1) {
+            workWithDataBase.onlineEnd(id);
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if(checkAccess()) {
-                        saveID(workWithDataBase.setNumberPhone(getNumberPhone()));
-                        workWithDataBase.onlineStart(loadID());
-                        startService(new Intent(MainActivity.this, TransportAnother.class).putExtra("id", loadID()));
-                    }else {
-                        Looper.prepare();
-                        accessError();
-                        Looper.loop();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 10; i++) {
-                    if(i==9){
-                        startActivity(new Intent(MainActivity.this,Info.class).putExtra("id",loadID()));
-                    }
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
 
         auto = (CheckBox) findViewById(R.id.auto);
         auto.setOnCheckedChangeListener(this);
@@ -99,50 +111,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
 
         driver = (ImageButton) findViewById(R.id.driver);
         driver.setOnClickListener(this);
-
-        flipper();
-    }
-
-    public void flipper(){
-        RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.flipper_layout);
-        final ViewFlipper flipper = (ViewFlipper) findViewById(R.id.flipper);
-        mainLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                float fromPosition = 0;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_UP:
-                        float toPosition = event.getX();
-                        if (fromPosition > toPosition) {
-                            flipper.setInAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.prev));
-                            flipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.prev_out));
-                            flipper.showPrevious();
-                        } else if (fromPosition < toPosition) {
-                            flipper.setInAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.next));
-                            flipper.setOutAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.next_out));
-                            flipper.showNext();
-                        }
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
-
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        flipper.addView(inflater.inflate(R.layout.info_layout, null));
-    }
-
-    public void saveID(int id){
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("id",id);
-        editor.commit();
-    }
-
-    public int loadID(){
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        return sharedPreferences.getInt("id",-1);
     }
 
     public Long getNumberPhone(){
@@ -156,17 +124,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
 
     public boolean isConnectingToInternet(){
         ConnectivityManager connectivity = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null)
-        {
+        if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null)
                 for (int i = 0; i < info.length; i++)
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED)
-                    {
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
                         return true;
                     }
-
         }
+
         return false;
     }
 
@@ -180,64 +146,139 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
     }
 
     @Override
+    public void onBackPressed() {
+        MainActivity.this.finish();
+        super.onBackPressed();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.driver:
                 pedestrian.setImageResource(R.drawable.pedestrian_passiv);
                 driver.setImageResource(R.drawable.driver_activ);
                 menu.setImageResource(R.drawable.menu);
+                driv=1;
                 break;
             case R.id.pedestrian:
                 pedestrian.setImageResource(R.drawable.pedestrian_activ);
                 driver.setImageResource(R.drawable.driver_passiv);
                 menu.setImageResource(R.drawable.menu);
+                driv=0;
                 break;
             case R.id.menu:
                 pedestrian.setImageResource(R.drawable.pedestrian_passiv);
-                startActivity(new Intent(this,com.example.hjk.testing.Settings.class));
+                startActivity(new Intent(this,com.example.hjk.testing.Settings.class).putExtra("id",id));
                 break;
         }
     }
 
+    public void startService(final int target){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (checkAccess()) {
+                    System.out.println(driv);
+                    startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
+                            .putExtra("driver", driv).putExtra("target", target));
+
+                } else {
+                    Looper.prepare();
+                    accessError();
+                    Looper.loop();
+                }
+            }
+        }).start();
+    }
+
+    public void counting(final int target) {
+        Looper.prepare();
+        progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startService(target);
+            }
+        }).start();
+        Looper.loop();
+    }
+
+    @Override
+    protected void onPause() {
+        if(progressDialog!=null) {
+            progressDialog.dismiss();
+        }
+        super.onPause();
+    }
+
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-        switch (buttonView.getId()){
+        buttonView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < 5; i++) {
+                                    if(i==4){
+                                        counting(Integer.parseInt(target));
+                                    }
+                                    try {
+                                        TimeUnit.SECONDS.sleep(1);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }).start();
+                        break;
+                }
+                return false;
+            }
+        });
+        switch (buttonView.getId()) {
             case R.id.centr:
-                if(!isChecked) {
+                if (!isChecked) {
                     centr.setButtonDrawable(R.drawable.centr_activ);
-                }else {
+                    target += 1;
+                } else {
                     centr.setButtonDrawable(R.drawable.centr_passiv);
                 }
 
                 break;
             case R.id.auto:
-                if(!isChecked) {
+                if (!isChecked) {
                     auto.setButtonDrawable(R.drawable.auto_active);
-                }else {
+                    target += 2;
+                } else {
                     auto.setButtonDrawable(R.drawable.auto_passiv);
                 }
 
                 break;
             case R.id.north:
-                if(!isChecked) {
+                if (!isChecked) {
                     north.setButtonDrawable(R.drawable.north_active);
-                }else {
+                    target += 3;
+                } else {
                     north.setButtonDrawable(R.drawable.north_passiv);
                 }
                 break;
             case R.id.anniversary:
-                if(!isChecked) {
+                if (!isChecked) {
                     anniversary.setButtonDrawable(R.drawable.anniversary_active);
-                }else {
+                    target += 4;
+                } else {
                     anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
                 }
 
                 break;
             case R.id.angleBass:
-                if(!isChecked) {
+                if (!isChecked) {
                     angleBass.setButtonDrawable(R.drawable.angle_bass_active);
-                }else {
+                    target += 5;
+                } else {
                     angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
                 }
 
