@@ -15,14 +15,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Info extends Activity implements View.OnClickListener{
 
-    TextView distation,centr_cout,auto_count,ubil_cout,bass_count,north_cout;
+    TextView distation,centr_cout,auto_count,ubil_cout,bass_count,north_cout,statistics;
     ImageButton back,sos;
     WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     int id,driver;
     BroadcastReceiver service;
     ProgressDialog progressDialog;
     boolean isCheckSos=false;
-    boolean isContact=false;
     final double[] coo = new double[2];
     final double[] coordinate = new double[2];
 
@@ -39,9 +38,15 @@ public class Info extends Activity implements View.OnClickListener{
         id = getIntent().getIntExtra("id", -1);
         driver = getIntent().getIntExtra("driver", -1);
 
+        statistics = (TextView) findViewById(R.id.statistics);
+
         if(driver==1) {
+            statistics.setText(getResources().getString(R.string.count_people));
+
             progressDialog = ProgressDialog.show(this, "", "Пошук попутника");
         }else if(driver==0){
+            statistics.setText(getResources().getString(R.string.count_drivers));
+
             progressDialog = ProgressDialog.show(this, "", "Пошук водія");
         }
 
@@ -68,15 +73,44 @@ public class Info extends Activity implements View.OnClickListener{
 
     public double[] workWithService() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction("Info");
+        filter.addAction("Info_start_online");
+        filter.addAction("Info_ping");
 
         service = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals("Info")) {
+                if (intent.getAction().equals("Info_start_online")) {
 
-                    final int ping = (int) intent.getDoubleExtra("ping", 0);
-                    System.out.println(ping);
+                    int ping = (int) intent.getDoubleExtra("ping", 0);
+
+                    if (ping != 0) {
+
+                        coo[0] = intent.getDoubleExtra("mycoo1", 0.0);
+                        coo[1] = intent.getDoubleExtra("mycoo2", 0.0);
+
+                        coordinate[0] = intent.getDoubleExtra("coo1", 0.0);
+                        coordinate[1] = intent.getDoubleExtra("coo2", 0.0);
+
+                        progressDialog.dismiss();
+
+                        final int distantn = gps2m(coordinate[0], coordinate[1], coo[0], coo[1]);
+
+                        distation.setTextSize(50);
+                        distation.setText(distantn + "м");
+
+                    } else {
+                        progressDialog.dismiss();
+                        distation.setTextSize(15);
+                        distation.setText(getResources().getString(R.string.retry_search));
+                    }
+
+                    centr_cout.setText(String.valueOf(intent.getIntExtra("centr", 0)));
+                    auto_count.setText(String.valueOf(intent.getIntExtra("auto", 0)));
+                    north_cout.setText(String.valueOf(intent.getIntExtra("north", 0)));
+                    ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
+                    bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
+
+                }else if(intent.getAction().equals("Info_ping")){
 
                     coo[0] = intent.getDoubleExtra("mycoo1", 0.0);
                     coo[1] = intent.getDoubleExtra("mycoo2", 0.0);
@@ -84,53 +118,11 @@ public class Info extends Activity implements View.OnClickListener{
                     coordinate[0] = intent.getDoubleExtra("coo1", 0.0);
                     coordinate[1] = intent.getDoubleExtra("coo2", 0.0);
 
-                    centr_cout.setText(String.valueOf(intent.getDoubleExtra("centr", 0)));
-                    ubil_cout.setText(String.valueOf(intent.getDoubleExtra("auto", 0)));
-                    auto_count.setText(String.valueOf(intent.getDoubleExtra("north", 0)));
-                    north_cout.setText(String.valueOf(intent.getDoubleExtra("ubil", 0)));
-                    bass_count.setText(String.valueOf(intent.getDoubleExtra("bass", 0)));
+                    final int distantn = gps2m(coo[0], coo[1],coordinate[0], coordinate[1] );
+                    
+                    distation.setTextSize(50);
+                    distation.setText(distantn + "м");
 
-                    distation.setText("");
-
-                    progressDialog.dismiss();
-
-                    final int distantn = gps2m(coordinate[0], coordinate[1], coo[0], coo[1]);
-
-                    distation.append(distantn + "м");
-
-                    if (distantn <= 50) {
-                        System.out.println("contact is good");
-                        if (!isContact)
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    int dist = 0;
-                                    for (int i = 0; i < 1; i++) {
-                                        double[] pingXY = workWithDataBase.getCoordinate(id, ping, driver, coo[0], coo[1]);
-                                        dist = gps2m(pingXY[0], pingXY[1], coo[0], coo[1]);
-                                        try {
-                                            TimeUnit.MINUTES.sleep(1);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    if (distantn- dist>=50||distantn-dist<=50) {
-                                        workWithDataBase.contact(id, ping, coo[0], coo[1], driver);
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                              double[] xy =  workWithDataBase.contactSet(id,coo[0],coo[1]);
-
-                                                if(gps2m(xy[0],xy[1],coo[0],coo[1])>50){
-                                                    //contactEnd pyki
-                                                }
-                                            }
-                                        }).start();
-                                    }
-                                }
-                            }).start();
-                        isContact = true;
-                    }
                 }
             }
         };
@@ -151,7 +143,7 @@ public class Info extends Activity implements View.OnClickListener{
         stopService(new Intent(this, TransportAnother.class));
     }
 
-    private int gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
+    public static int gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
         double pk = (180/3.14169);
 
         double a1 = lat_a / pk;

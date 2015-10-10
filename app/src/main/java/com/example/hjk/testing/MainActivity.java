@@ -178,7 +178,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
             @Override
             public void run() {
                 if (checkAccess()) {
-                    System.out.println(driv);
                     startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
                             .putExtra("driver", driv).putExtra("target", target));
 
@@ -216,28 +215,33 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
         buttonView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()){
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                for (int i = 0; i < 5; i++) {
-                                    if(i==4){
-                                        counting(Integer.parseInt(target));
-                                    }
-                                    try {
-                                        TimeUnit.SECONDS.sleep(1);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                        if (isConnectingToInternet()) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (int i = 0; i < 5; i++) {
+                                        if (i == 4) {
+                                            counting(Integer.parseInt(target));
+                                        }
+                                        try {
+                                            TimeUnit.SECONDS.sleep(1);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
-                            }
-                        }).start();
+                            }).start();
+                        } else {
+                            accessError();
+                        }
                         break;
                 }
                 return false;
             }
         });
+
         switch (buttonView.getId()) {
             case R.id.centr:
                 if (!isChecked) {

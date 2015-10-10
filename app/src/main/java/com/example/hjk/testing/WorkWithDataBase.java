@@ -15,8 +15,8 @@ public class WorkWithDataBase{
         if(connection==null) {
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
-//                77.222.139.193
-                 return DriverManager.getConnection("jdbc:mysql://192.168.0.29:3306/carstop", "root", "");
+                 return DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
+                         "oberigrv_carstop", "potq32ha");
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -27,6 +27,7 @@ public class WorkWithDataBase{
                 e.printStackTrace();
             }
         }
+
         return connection;
     }
 
@@ -78,12 +79,12 @@ public class WorkWithDataBase{
         return data;
     }
 
-    public double[] search(int id, double x, double y, int driver, int target, String exception){
-        double[] coordinate = new double[2];
+    public double[] search(int id, int driver, int target, double x, double y, String exception){
+        double[] data = new double[10];
         connection = setInstance();
         CallableStatement statement=null;
         try {
-            statement = connection.prepareCall("{call search_(?,?,?,?,?,?)}");
+            statement = connection.prepareCall("{call search_(?,?,?,?,?,?,?,?,?,?,?)}");
             statement.setInt(1,id);
             statement.registerOutParameter(1, Types.INTEGER);
             statement.setInt(2, driver);
@@ -93,14 +94,26 @@ public class WorkWithDataBase{
             statement.registerOutParameter(4, Types.DOUBLE);
             statement.registerOutParameter(5, Types.DOUBLE);
             statement.setString(6, exception);
+            statement.registerOutParameter(7, Types.SMALLINT);
+            statement.registerOutParameter(8, Types.SMALLINT);
+            statement.registerOutParameter(9,Types.SMALLINT);
+            statement.registerOutParameter(10,Types.SMALLINT);
+            statement.registerOutParameter(11, Types.SMALLINT);
             statement.executeQuery();
 
-            coordinate[0] = statement.getDouble(4);
-            coordinate[1] = statement.getDouble(5);
+            data[0] = statement.getInt(1);
+            data[1] = statement.getDouble(4);
+            data[2] = statement.getDouble(5);
+            data[3] = statement.getInt(7);
+            data[4] = statement.getInt(8);
+            data[5] = statement.getInt(9);
+            data[6] = statement.getInt(10);
+            data[7] = statement.getInt(11);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return coordinate;
+        return data;
     }
 
     public void sos(int idUser, int idContact, double x, double y){
@@ -168,64 +181,37 @@ public class WorkWithDataBase{
         }
     }
 
-    public double[] contactSet(int idUser, double x, double y){
+    public double[] ping(int idUser, int idPing,int driver, double x, double y){
         double[] xy = new double[2];
-
-        connection = setInstance();
-        CallableStatement statement;
-        try {
-            statement = connection.prepareCall("{call ping_ (?,?,?)}");
-            statement.setInt(1, idUser);
-            statement.setDouble(2, x);
-            statement.setDouble(3, y);
-            statement.registerOutParameter(2, Types.INTEGER);
-            statement.registerOutParameter(3, Types.INTEGER);
-            statement.executeUpdate();
-
-            xy[0] = statement.getDouble(2);
-            xy[1] = statement.getDouble(3);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return xy;
-    }
-
-    public double[] getCoordinate(int idUser, int idPing, int driver,double x, double y) {
-        double[] coordinate = new double[2];
 
         connection = setInstance();
         CallableStatement statement;
         try {
             statement = connection.prepareCall("{call ping_ (?,?,?,?,?)}");
             statement.setInt(1, idUser);
-            statement.setInt(2, idPing);
+            statement.setInt(2,idPing);
             statement.setInt(3, driver);
             statement.setDouble(4, x);
-            statement.registerOutParameter(4, Types.DOUBLE);
             statement.setDouble(5, y);
+            statement.registerOutParameter(4, Types.DOUBLE);
             statement.registerOutParameter(5, Types.DOUBLE);
             statement.executeUpdate();
 
-            if(statement.getDouble(4)!=x&&statement.getDouble(5)!=y) {
-                coordinate[0] = statement.getDouble(4);
-                coordinate[1] = statement.getDouble(5);
-            }else {
-                coordinate[0]=0.0;
-                coordinate[1]=0.0;
-            }
+            xy[0] = statement.getDouble(4);
+            xy[1] = statement.getDouble(5);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return coordinate;
+        return xy;
     }
 
-    public void setCoordinates(int id,Double x, Double y){
+    public void pingSet(int id, int driver,Double x, Double y){
         try {
             connection = setInstance();
             Statement statement = connection.createStatement();
-            statement.execute("call ping_set ("+id+",0," + x + "," + y + ")");
+            statement.execute("call ping_set ("+id+","+driver+"," + x + "," + y + ")");
         } catch (SQLException e) {
             e.printStackTrace();
         }
