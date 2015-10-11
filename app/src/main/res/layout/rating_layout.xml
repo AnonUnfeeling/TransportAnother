@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#646a7a">
+
+    <ImageButton
+        android:layout_width="67dp"
+        android:layout_height="120dp"
+        android:id="@+id/back"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/arrow"
+        android:background="#424756" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:id="@+id/sos"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/back"
+        android:layout_toEndOf="@+id/back"
+        android:src="@drawable/sos_passiv"
+        android:background="#00000000"
+        android:layout_marginLeft="0.5dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="#424756"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/relativeLayout">
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/testDis"
+        android:textColor="#fffefd"
+        android:textSize="50sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:layout_below="@+id/back" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/testDis"
+        android:layout_above="@+id/relativeLayout"
+        android:layout_toLeftOf="@+id/testDis"
+        android:layout_below="@+id/back" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton2"
+        android:layout_below="@+id/sos"
+        android:layout_toRightOf="@+id/imageButton"
+        android:layout_above="@+id/relativeLayout"
+        android:layout_alignRight="@+id/sos"
+        android:layout_alignEnd="@+id/sos" />
+
+</RelativeLayout>
