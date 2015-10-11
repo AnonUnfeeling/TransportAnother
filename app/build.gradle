@@ -27,4 +27,5 @@ dependencies {
     compile files('jboss-common-jdbc-wrapper.jar')
     compile files('jboss-common-jdbc-wrapper-src.jar')
     compile files('c3p0-0.9.1-pre6.jar')
+    compile files('ninepatch.jar')
 }

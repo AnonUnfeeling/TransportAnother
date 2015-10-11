@@ -93,6 +93,7 @@
     <orderEntry type="library" exported="" name="jboss-common-jdbc-wrapper-src" level="project" />
     <orderEntry type="library" exported="" name="c3p0-0.9.1-pre6" level="project" />
     <orderEntry type="library" exported="" name="mysql-connector-java-5.1.36-bin" level="project" />
+    <orderEntry type="library" exported="" name="ninepatch" level="project" />
     <orderEntry type="library" exported="" name="jboss-common-jdbc-wrapper" level="project" />
     <orderEntry type="library" exported="" name="slf4j-api-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.0.1" level="project" />

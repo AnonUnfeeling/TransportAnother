@@ -168,7 +168,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
                 break;
             case R.id.menu:
                 pedestrian.setImageResource(R.drawable.pedestrian_passiv);
-                startActivity(new Intent(this,com.example.hjk.testing.Settings.class).putExtra("id",id));
+               // startActivity(new Intent(this,com.example.hjk.testing.Settings.class).putExtra("id",id));
                 break;
         }
     }
@@ -254,7 +254,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
                 break;
             case R.id.auto:
                 if (!isChecked) {
-                    auto.setButtonDrawable(R.drawable.auto_active);
+                    auto.setButtonDrawable(R.drawable.auto_activ);
                     target += 2;
                 } else {
                     auto.setButtonDrawable(R.drawable.auto_passiv);
@@ -263,7 +263,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
                 break;
             case R.id.north:
                 if (!isChecked) {
-                    north.setButtonDrawable(R.drawable.north_active);
+                    north.setButtonDrawable(R.drawable.north_activ);
                     target += 3;
                 } else {
                     north.setButtonDrawable(R.drawable.north_passiv);
@@ -271,7 +271,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
                 break;
             case R.id.anniversary:
                 if (!isChecked) {
-                    anniversary.setButtonDrawable(R.drawable.anniversary_active);
+                    anniversary.setButtonDrawable(R.drawable.anniversary_activ);
                     target += 4;
                 } else {
                     anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
