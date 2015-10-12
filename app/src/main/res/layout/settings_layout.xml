@@ -4,180 +4,225 @@
     android:layout_height="match_parent"
     android:background="#646a7a">
 
-    <!--<ImageButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:id="@+id/sound"-->
-        <!--android:background="#00000000"-->
-        <!--android:layout_below="@+id/close"-->
-        <!--android:layout_alignRight="@+id/imageView7"-->
-        <!--android:layout_alignEnd="@+id/imageView7"-->
-        <!--android:layout_marginTop="0.5dp"-->
-        <!--android:src="@drawable/sound_passive" />-->
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/close"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/menu_end"
+        android:background="#424756"
+        android:adjustViewBounds="true" />
 
-    <!--<ImageButton-->
-        <!--android:layout_width="67dp"-->
-        <!--android:layout_height="138dp"-->
-        <!--android:id="@+id/close"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:src="@drawable/menu_back"-->
-        <!--android:background="#00000000" />-->
-
-    <!--<ImageView-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/imageView7"-->
-        <!--android:src="@drawable/title_settings"-->
-        <!--android:background="#8f424756"-->
-        <!--android:layout_alignBottom="@+id/close"-->
-        <!--android:layout_toRightOf="@+id/close"-->
-        <!--android:layout_toEndOf="@+id/close"-->
-        <!--android:layout_marginLeft="0.5dp" />-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView7"
+        android:src="@drawable/title_settings"
+        android:background="#8f424756"
+        android:layout_alignBottom="@+id/close"
+        android:layout_toRightOf="@+id/close"
+        android:layout_toEndOf="@+id/close"
+        android:layout_marginLeft="0.5dp" />
 
 
-    <!--<ImageButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:id="@+id/vibration"-->
-        <!--android:src="@drawable/vibr_passive"-->
-        <!--android:background="#00000000"-->
-        <!--android:layout_below="@+id/sound"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:layout_marginTop="0.5dp" />-->
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView2"
+        android:layout_below="@+id/imageView7">
 
-    <!--<ImageButton-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:id="@+id/bad_see"-->
-        <!--android:layout_below="@+id/vibration"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:src="@drawable/rfn_passive"-->
-        <!--android:background="#00000000"-->
-        <!--android:layout_marginTop="0.5dp" />-->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/imageView7">
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/you_status"-->
-        <!--android:id="@+id/st"-->
-        <!--android:textColor="#979ba6"-->
-        <!--android:textSize="17sp"-->
-        <!--android:layout_marginTop="29dp"-->
-        <!--android:layout_below="@+id/bad_see"-->
-        <!--android:layout_alignLeft="@+id/rfp"-->
-        <!--android:layout_alignStart="@+id/rfp" />-->
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/reting_pasage"-->
-        <!--android:id="@+id/rfp"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:textColor="#979ba6"-->
-        <!--android:textSize="17sp"-->
-        <!--android:layout_below="@+id/st"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginTop="10dp" />-->
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:id="@+id/status"
+                android:background="#8f424756"
+                android:layout_marginTop="0.5dp"
+                android:layout_below="@+id/imageView7">
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/count_pasage"-->
-        <!--android:id="@+id/cp"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:textColor="#979ba6"-->
-        <!--android:textSize="17sp"-->
-        <!--android:layout_below="@+id/ratingForPasag"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginTop="10dp" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/you_status"
+                    android:id="@+id/st"
+                    android:textColor="#979ba6"
+                    android:textSize="17sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp" />
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/reting_driver"-->
-        <!--android:id="@+id/rfd"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:textColor="#979ba6"-->
-        <!--android:textSize="17sp"-->
-        <!--android:layout_below="@+id/cp"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginTop="10dp" />-->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/statist"
+                    android:layout_gravity="right"
+                    android:layout_weight="3.13"
+                    android:textSize="50dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="false"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="center"
+                    android:background="#424756"
+                    android:textColor="@android:color/white"
+                    android:layout_marginLeft="152dp"
+                    android:layout_toRightOf="@+id/st" />
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/count_driver"-->
-        <!--android:id="@+id/cd"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:textColor="#979ba6"-->
-        <!--android:textIsSelectable="false"-->
-        <!--android:textSize="17sp"-->
-        <!--android:layout_below="@+id/rfd"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginTop="10dp" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/youStatus"
+                    android:textSize="17sp"
+                    android:textColor="#fffefd"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/st"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp" />
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/youStatus"-->
-        <!--android:textSize="17sp"-->
-        <!--android:layout_alignTop="@+id/st"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_marginRight="10dp"-->
-        <!--android:textColor="#fffefd"-->
-        <!--android:textStyle="bold" />-->
+            </RelativeLayout>
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/ratingForPasag"-->
-        <!--android:layout_alignTop="@+id/rfp"-->
-        <!--android:layout_alignRight="@+id/youStatus"-->
-        <!--android:layout_alignEnd="@+id/youStatus"-->
-        <!--android:textSize="17sp"-->
-        <!--android:textColor="#fffefd"-->
-        <!--android:textStyle="bold" />-->
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:background="#8f424756"
+                android:id="@+id/passage"
+                android:layout_below="@+id/status"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="0.5dp">
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/countPasage"-->
-        <!--android:layout_alignTop="@+id/cp"-->
-        <!--android:layout_alignRight="@+id/ratingForPasag"-->
-        <!--android:layout_alignEnd="@+id/ratingForPasag"-->
-        <!--android:textSize="17sp"-->
-        <!--android:textColor="#fffefd"-->
-        <!--android:textStyle="bold" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reting_pasage"
+                    android:id="@+id/rfp"
+                    android:textColor="#979ba6"
+                    android:textSize="17sp"
+                    android:layout_marginLeft="10dp" />
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/ratingForDriver"-->
-        <!--android:layout_alignTop="@+id/rfd"-->
-        <!--android:layout_alignRight="@+id/countPasage"-->
-        <!--android:layout_alignEnd="@+id/countPasage"-->
-        <!--android:textSize="17sp"-->
-        <!--android:textColor="#fffefd"-->
-        <!--android:textStyle="bold" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/count_pasage"
+                    android:id="@+id/cp"
+                    android:layout_alignParentStart="false"
+                    android:textColor="#979ba6"
+                    android:textSize="17sp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="40dp" />
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/countDriver"-->
-        <!--android:layout_alignTop="@+id/cd"-->
-        <!--android:layout_alignRight="@+id/ratingForDriver"-->
-        <!--android:layout_alignEnd="@+id/ratingForDriver"-->
-        <!--android:textSize="17sp"-->
-        <!--android:textColor="#fffefd"-->
-        <!--android:textStyle="bold" />-->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/ratingForPasag"
+                    android:layout_alignParentTop="true"
+                    android:background="#424756"
+                    android:textColor="#979ba6"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/rfp"
+                    android:gravity="center"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginLeft="112dp"
+                    android:layout_toRightOf="@+id/cp"
+                    android:layout_alignParentBottom="true" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:background="#8f424756"
+                android:layout_marginTop="0.5dp"
+                android:id="@+id/relativeLayout2"
+                android:layout_below="@+id/passage"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reting_driver"
+                    android:id="@+id/rfd"
+                    android:layout_alignParentStart="true"
+                    android:textColor="#979ba6"
+                    android:textSize="17sp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/count_driver"
+                    android:id="@+id/cd"
+                    android:layout_alignParentStart="true"
+                    android:textColor="#979ba6"
+                    android:textIsSelectable="false"
+                    android:textSize="17sp"
+                    android:layout_below="@+id/rfd"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ratingForDriver"
+                    android:textSize="17sp"
+                    android:textColor="#979ba6"
+                    android:textStyle="bold"
+                    android:layout_alignParentEnd="true"
+                    android:background="#424756"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="false"
+                    android:layout_toRightOf="@+id/rfd"
+                    android:layout_marginLeft="98dp"
+                    android:layout_alignParentBottom="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/relativeLayout2">
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sound"
+                    android:background="@drawable/sound_passive"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/relativeLayout2"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0.5dp" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/vibration"
+                    android:background="@drawable/vibr_passive"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0.5dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

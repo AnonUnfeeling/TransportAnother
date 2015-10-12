@@ -75,6 +75,7 @@ public class Info extends Activity implements View.OnClickListener{
         IntentFilter filter = new IntentFilter();
         filter.addAction("Info_start_online");
         filter.addAction("Info_ping");
+        filter.addAction("Contact_start");
 
         service = new BroadcastReceiver() {
             @Override
@@ -85,15 +86,9 @@ public class Info extends Activity implements View.OnClickListener{
 
                     if (ping != 0) {
 
-                        coo[0] = intent.getDoubleExtra("mycoo1", 0.0);
-                        coo[1] = intent.getDoubleExtra("mycoo2", 0.0);
-
-                        coordinate[0] = intent.getDoubleExtra("coo1", 0.0);
-                        coordinate[1] = intent.getDoubleExtra("coo2", 0.0);
-
                         progressDialog.dismiss();
 
-                        final int distantn = gps2m(coordinate[0], coordinate[1], coo[0], coo[1]);
+                        final int distantn = intent.getIntExtra("dist",0);
 
                         distation.setTextSize(50);
                         distation.setText(distantn + "м");
@@ -110,19 +105,18 @@ public class Info extends Activity implements View.OnClickListener{
                     ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
                     bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
 
-                }else if(intent.getAction().equals("Info_ping")){
+                }else if(intent.getAction().equals("Info_ping")) {
 
-                    coo[0] = intent.getDoubleExtra("mycoo1", 0.0);
-                    coo[1] = intent.getDoubleExtra("mycoo2", 0.0);
+                    final int distantn = intent.getIntExtra("dist", -1);
 
-                    coordinate[0] = intent.getDoubleExtra("coo1", 0.0);
-                    coordinate[1] = intent.getDoubleExtra("coo2", 0.0);
-
-                    final int distantn = gps2m(coo[0], coo[1],coordinate[0], coordinate[1] );
-                    
                     distation.setTextSize(50);
                     distation.setText(distantn + "м");
 
+                }else if(intent.getAction().equals("Contact_start")){
+                    final int distantn = intent.getIntExtra("dist", -1);
+
+                    distation.setTextSize(50);
+                    distation.setText(distantn + "м" + "  Contact");
                 }
             }
         };
@@ -139,8 +133,9 @@ public class Info extends Activity implements View.OnClickListener{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(service!= null){unregisterReceiver(service);}
-        stopService(new Intent(this, TransportAnother.class));
+        if(service!= null){
+            unregisterReceiver(service);
+        }
     }
 
     public static int gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
@@ -163,8 +158,9 @@ public class Info extends Activity implements View.OnClickListener{
         Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
         intent.putExtra("enabled", false);
         sendBroadcast(intent);
-
-        stopService(new Intent(this, TransportAnother.class));
+        if(service!= null){
+            unregisterReceiver(service);
+        }
 
         if (id != -1) {
             workWithDataBase.onlineEnd(id);

@@ -17,6 +17,7 @@ public class TransportAnother extends Service implements LocationListener {
     boolean flag = false;
     int id, driver, target, idPing = 0;
     double[] data;
+    int countDistantion=0;
     int countPingSet = 5;
     int distation = 0;
 
@@ -70,11 +71,7 @@ public class TransportAnother extends Service implements LocationListener {
             }
 
             Intent in = new Intent("Info_start_online")
-                    .putExtra("ping", data[0])
-                    .putExtra("mycoo1", this.location.getLatitude())
-                    .putExtra("mycoo2", this.location.getLongitude())
-                    .putExtra("coo1", data[1])
-                    .putExtra("coo2", data[2])
+                    .putExtra("dist",distation)
                     .putExtra("centr", (int) data[3])
                     .putExtra("auto", (int) data[4])
                     .putExtra("north", (int) data[5])
@@ -89,29 +86,45 @@ public class TransportAnother extends Service implements LocationListener {
             startPing:
 
             if (idPing != 0) {
-                data = workWithDataBase.ping(id, idPing, driver, this.location.getLatitude(), this.location.getLongitude());
+                if(countDistantion<=2) {
+                    data = workWithDataBase.ping(id, idPing, driver, this.location.getLatitude(), this.location.getLongitude());
 
-                if (distation != 0 && (distation - Info.gps2m(data[0], data[1], this.location.getLatitude()
-                        , this.location.getLongitude())) > -50) {
+                    if (distation != 0 && (distation - Info.gps2m(data[0], data[1], this.location.getLatitude()
+                            , this.location.getLongitude())) > -50) {
 
-                    data = workWithDataBase.search(id, driver, target, this.location.getLatitude(),
-                            this.location.getLongitude(), "" + idPing);
+                        distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
+                                , this.location.getLongitude());
 
-                    if (data[0] != 0) {
-                        idPing = (int) data[0];
+                        if (distation < 200) {
+                            countDistantion++;
+                            System.out.println(countDistantion);
+                        }
 
-                        Intent in = new Intent("Info_ping")
-                                .putExtra("mycoo1", this.location.getLatitude())
-                                .putExtra("mycoo2", this.location.getLongitude())
-                                .putExtra("coo1", data[1])
-                                .putExtra("coo2", data[2]);
-                        sendBroadcast(in);
+                        if (data[0] != 0) {
+                            idPing = (int) data[0];
 
-                        break startPing;
+                            Intent in = new Intent("Info_ping")
+                                    .putExtra("dist", distation);
+                            sendBroadcast(in);
+
+                            break startPing;
+                        }
+
+                    } else {
+                        distation = 0;
+                        idPing = 0;
                     }
-                }else {
-                    idPing=0;
+                }else if(countDistantion>2) {
+                    countDistantion++;
+
+                    System.out.println("yes");
+                    workWithDataBase.contact(id, idPing, location.getLatitude(), this.location.getLongitude(), driver);
+                    Intent in = new Intent("Contact_start")
+                            .putExtra("dist", distation)
+                            .putExtra("contact", true);
+                    sendBroadcast(in);
                 }
+
             } else {
                 if (countPingSet > 1) {
                     workWithDataBase.pingSet(id, driver, this.location.getLatitude(), this.location.getLongitude());
@@ -119,6 +132,8 @@ public class TransportAnother extends Service implements LocationListener {
                     countPingSet--;
                 } else {
                     data = workWithDataBase.search(id, driver, target, this.location.getLatitude(), this.location.getLongitude(), "");
+
+                    countPingSet=5;
 
                     if (data[0] != 0) {
                         idPing = (int) data[0];

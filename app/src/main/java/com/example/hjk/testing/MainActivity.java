@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                     @Override
                     public void run() {
                         try {
-                            data = workWithDataBase.setNumberPhone((long) 4);
+                            data = workWithDataBase.setNumberPhone(getNumberPhone());
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -69,9 +69,13 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
                 startThread.start();
 
-                if(!startThread.isAlive()) {
-                    id = data[0];
-                    driv = data[1];
+                try {
+                    startThread.join() ;
+                        id = data[0];
+                        driv = data[1];
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
                 flagForLoginProcedure = true;
@@ -106,6 +110,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if(checkAccess()) {
             stopService(new Intent(MainActivity.this, TransportAnother.class));
             if (id != -1) {
@@ -182,19 +187,20 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     public void onBackPressed() {
-        finish();
+        super.onBackPressed();
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.driver:
                 driver.setBackgroundColor(Color.parseColor("#2E313E"));
                 pedestrian.setBackgroundColor(Color.parseColor("#424756"));
                 pedestrian.setImageResource(R.drawable.pedestrian_passiv);
                 driver.setImageResource(R.drawable.driver_activ);
                 menu.setImageResource(R.drawable.menu);
-                driv=1;
+                driv = 1;
+
                 break;
             case R.id.pedestrian:
                 pedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
@@ -202,11 +208,12 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 driver.setImageResource(R.drawable.driver_passiv);
                 driver.setBackgroundColor(Color.parseColor("#424756"));
                 menu.setImageResource(R.drawable.menu);
-                driv=0;
+                driv = 0;
+
                 break;
             case R.id.menu:
-                pedestrian.setImageResource(R.drawable.pedestrian_passiv);
-               // startActivity(new Intent(this,com.example.hjk.testing.Settings.class).putExtra("id",id));
+                startActivity(new Intent(this, com.example.hjk.testing.Settings.class).putExtra("id", id));
+
                 break;
         }
     }
@@ -268,7 +275,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 threadPause();
                             }
                         } else {
-                            target = removeTarget(target.toCharArray());
+                            if (target.toCharArray().length > 0) {
+                                target = removeTarget(target.toCharArray());
+                            }
                             centr.setButtonDrawable(R.drawable.centr_passiv);
                         }
 
@@ -289,7 +298,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 threadPause();
                             }
                         } else {
-                            target = removeTarget(target.toCharArray());
+                            if (target.toCharArray().length > 0) {
+                                target = removeTarget(target.toCharArray());
+                            }
                             auto.setButtonDrawable(R.drawable.auto_passiv);
                         }
 
@@ -310,7 +321,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 threadPause();
                             }
                         } else {
-                            target = removeTarget(target.toCharArray());
+                            if (target.toCharArray().length > 0) {
+                                target = removeTarget(target.toCharArray());
+                            }
                             north.setButtonDrawable(R.drawable.north_passiv);
                         }
                         break;
@@ -330,7 +343,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 threadPause();
                             }
                         } else {
-                            target = removeTarget(target.toCharArray());
+                            if (target.toCharArray().length > 0) {
+                                target = removeTarget(target.toCharArray());
+                            }
                             anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
                         }
 
@@ -351,7 +366,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 threadPause();
                             }
                         } else {
-                            target = removeTarget(target.toCharArray());
+                            if (target.toCharArray().length > 0) {
+                                target = removeTarget(target.toCharArray());
+                            }
                             angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
                         }
 
