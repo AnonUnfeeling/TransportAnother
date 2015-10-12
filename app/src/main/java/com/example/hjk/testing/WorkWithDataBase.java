@@ -34,10 +34,10 @@ public class WorkWithDataBase{
     public String[] getStatus(int id){
         String[] status = new String[5];
 
-        connection = setInstance();
         CallableStatement statement = null;
 
         try {
+            connection = setInstance();
             statement = connection.prepareCall("{call stat_user (?,?,?,?,?,?)}");
             statement.setInt(1, id);
             statement.registerOutParameter(2, Types.SMALLINT);
@@ -62,9 +62,10 @@ public class WorkWithDataBase{
 
     public int[] setNumberPhone(Long numberPhone) throws SQLException {
         int[] data = new int[2];
-        connection = setInstance();
+
         CallableStatement statement = null;
         try {
+            connection = setInstance();
             statement = connection.prepareCall("{call login_ (?,?,?)}");
             statement.setLong(1, numberPhone);
             statement.registerOutParameter(2, Types.INTEGER);
@@ -81,9 +82,10 @@ public class WorkWithDataBase{
 
     public double[] search(int id, int driver, int target, double x, double y, String exception){
         double[] data = new double[10];
-        connection = setInstance();
+
         CallableStatement statement=null;
         try {
+            connection = setInstance();
             statement = connection.prepareCall("{call search_(?,?,?,?,?,?,?,?,?,?,?)}");
             statement.setInt(1,id);
             statement.registerOutParameter(1, Types.INTEGER);
@@ -184,9 +186,9 @@ public class WorkWithDataBase{
     public double[] ping(int idUser, int idPing,int driver, double x, double y){
         double[] xy = new double[2];
 
-        connection = setInstance();
         CallableStatement statement;
         try {
+            connection = setInstance();
             statement = connection.prepareCall("{call ping_ (?,?,?,?,?)}");
             statement.setInt(1, idUser);
             statement.setInt(2,idPing);

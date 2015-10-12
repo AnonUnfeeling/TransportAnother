@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -14,23 +15,39 @@ import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
+public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
     WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     ImageButton menu, pedestrian, driver;
     CheckBox auto, north, anniversary, centr, angleBass;
     String target="0";
-    int id,driv;
+    int id=-1,driv;
     int[] data;
     boolean flagForLoginProcedure = false;
     ProgressDialog progressDialog;
+    Thread thread =  new Thread(new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < 5; i++) {
+                if (i == 4) {
+                    if(target.toCharArray().length>0) {
+                        counting(Integer.parseInt(target));
+                    }
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    });
 
     @Override
     protected void onStart() {
@@ -39,21 +56,33 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
         if (checkAccess()) {
             if(!flagForLoginProcedure) {
 
+               Thread startThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
                         try {
-                            data = workWithDataBase.setNumberPhone(getNumberPhone());
+                            data = workWithDataBase.setNumberPhone((long) 4);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-                        id = data[0];
-                        driv = data[1];
+                    }
+                });
+
+                startThread.start();
+
+                if(!startThread.isAlive()) {
+                    id = data[0];
+                    driv = data[1];
+                }
 
                 flagForLoginProcedure = true;
             }
 
             if(driv==0){
+                pedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
                 pedestrian.setImageResource(R.drawable.pedestrian_activ);
                 driver.setImageResource(R.drawable.driver_passiv);
             }else if(driv==1){
+                driver.setBackgroundColor(Color.parseColor("#2E313E"));
                 driver.setImageResource(R.drawable.driver_activ);
                 pedestrian.setImageResource(R.drawable.pedestrian_passiv);
             }
@@ -77,9 +106,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(MainActivity.this, TransportAnother.class));
-        if(id != -1) {
-            workWithDataBase.onlineEnd(id);
+        if(checkAccess()) {
+            stopService(new Intent(MainActivity.this, TransportAnother.class));
+            if (id != -1) {
+                workWithDataBase.onlineEnd(id);
+            }
+
+            if(thread.isAlive()){
+                thread.interrupt();
+            }
         }
     }
 
@@ -89,19 +124,19 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
         setContentView(R.layout.activity_main);
 
         auto = (CheckBox) findViewById(R.id.auto);
-        auto.setOnCheckedChangeListener(this);
+        auto.setOnTouchListener(this);
 
         north = (CheckBox) findViewById(R.id.north);
-        north.setOnCheckedChangeListener(this);
+        north.setOnTouchListener(this);
 
         anniversary = (CheckBox) findViewById(R.id.anniversary);
-        anniversary.setOnCheckedChangeListener(this);
+        anniversary.setOnTouchListener(this);
 
         centr = (CheckBox) findViewById(R.id.centr);
-        centr.setOnCheckedChangeListener(this);
+        centr.setOnTouchListener(this);
 
         angleBass = (CheckBox) findViewById(R.id.angleBass);
-        angleBass.setOnCheckedChangeListener(this);
+        angleBass.setOnTouchListener(this);
 
         menu = (ImageButton) findViewById(R.id.menu);
         menu.setOnClickListener(this);
@@ -147,22 +182,25 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
 
     @Override
     public void onBackPressed() {
-        MainActivity.this.finish();
-        super.onBackPressed();
+        finish();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.driver:
+                driver.setBackgroundColor(Color.parseColor("#2E313E"));
+                pedestrian.setBackgroundColor(Color.parseColor("#424756"));
                 pedestrian.setImageResource(R.drawable.pedestrian_passiv);
                 driver.setImageResource(R.drawable.driver_activ);
                 menu.setImageResource(R.drawable.menu);
                 driv=1;
                 break;
             case R.id.pedestrian:
+                pedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
                 pedestrian.setImageResource(R.drawable.pedestrian_activ);
                 driver.setImageResource(R.drawable.driver_passiv);
+                driver.setBackgroundColor(Color.parseColor("#424756"));
                 menu.setImageResource(R.drawable.menu);
                 driv=0;
                 break;
@@ -211,82 +249,182 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        buttonView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (isConnectingToInternet()) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int i = 0; i < 5; i++) {
-                                        if (i == 4) {
-                                            counting(Integer.parseInt(target));
-                                        }
-                                        try {
-                                            TimeUnit.SECONDS.sleep(1);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            }).start();
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                switch (v.getId()) {
+                    case R.id.centr:
+                        if (!centr.isChecked()) {
+                            centr.setButtonDrawable(R.drawable.centr_activ);
+
+                            target += 1;
+                            if (target.toCharArray().length > 2) {
+                                target = removeTarget(target.toCharArray());
+                            }
+
+                            if (!thread.isAlive()) {
+                                thread.start();
+                            } else {
+                                threadPause();
+                            }
                         } else {
-                            accessError();
+                            target = removeTarget(target.toCharArray());
+                            centr.setButtonDrawable(R.drawable.centr_passiv);
+                        }
+
+                        break;
+                    case R.id.auto:
+                        if (!auto.isChecked()) {
+                            auto.setButtonDrawable(R.drawable.auto_activ);
+
+                            target += 2;
+
+                            if (target.toCharArray().length > 2) {
+                                target = removeTarget(target.toCharArray());
+                            }
+
+                            if (!thread.isAlive()) {
+                                thread.start();
+                            } else {
+                                threadPause();
+                            }
+                        } else {
+                            target = removeTarget(target.toCharArray());
+                            auto.setButtonDrawable(R.drawable.auto_passiv);
+                        }
+
+                        break;
+                    case R.id.north:
+                        if (!north.isChecked()) {
+                            north.setButtonDrawable(R.drawable.north_activ);
+
+                            target += 3;
+
+                            if (target.toCharArray().length > 2) {
+                                target = removeTarget(target.toCharArray());
+                            }
+
+                            if (!thread.isAlive()) {
+                                thread.start();
+                            } else {
+                                threadPause();
+                            }
+                        } else {
+                            target = removeTarget(target.toCharArray());
+                            north.setButtonDrawable(R.drawable.north_passiv);
                         }
                         break;
+                    case R.id.anniversary:
+                        if (!anniversary.isChecked()) {
+                            anniversary.setButtonDrawable(R.drawable.anniversary_activ);
+
+                            target += 4;
+
+                            if (target.toCharArray().length > 2) {
+                                target = removeTarget(target.toCharArray());
+                            }
+
+                            if (!thread.isAlive()) {
+                                thread.start();
+                            } else {
+                                threadPause();
+                            }
+                        } else {
+                            target = removeTarget(target.toCharArray());
+                            anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                        }
+
+                        break;
+                    case R.id.angleBass:
+                        if (!angleBass.isChecked()) {
+                            angleBass.setButtonDrawable(R.drawable.angle_bass_active);
+
+                            target += 5;
+
+                            if (target.toCharArray().length > 2) {
+                                target = removeTarget(target.toCharArray());
+                            }
+
+                            if (!thread.isAlive()) {
+                                thread.start();
+                            } else {
+                                threadPause();
+                            }
+                        } else {
+                            target = removeTarget(target.toCharArray());
+                            angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                        }
+
+                        break;
                 }
-                return false;
+                break;
+        }
+        return false;
+    }
+
+    public void threadPause(){
+        Thread thread1= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    thread.join(6000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
-        switch (buttonView.getId()) {
-            case R.id.centr:
-                if (!isChecked) {
-                    centr.setButtonDrawable(R.drawable.centr_activ);
-                    target += 1;
-                } else {
-                    centr.setButtonDrawable(R.drawable.centr_passiv);
-                }
-
-                break;
-            case R.id.auto:
-                if (!isChecked) {
-                    auto.setButtonDrawable(R.drawable.auto_activ);
-                    target += 2;
-                } else {
-                    auto.setButtonDrawable(R.drawable.auto_passiv);
-                }
-
-                break;
-            case R.id.north:
-                if (!isChecked) {
-                    north.setButtonDrawable(R.drawable.north_activ);
-                    target += 3;
-                } else {
-                    north.setButtonDrawable(R.drawable.north_passiv);
-                }
-                break;
-            case R.id.anniversary:
-                if (!isChecked) {
-                    anniversary.setButtonDrawable(R.drawable.anniversary_activ);
-                    target += 4;
-                } else {
-                    anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
-                }
-
-                break;
-            case R.id.angleBass:
-                if (!isChecked) {
-                    angleBass.setButtonDrawable(R.drawable.angle_bass_active);
-                    target += 5;
-                } else {
-                    angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
-                }
-
-                break;
+        if(!thread1.isAlive()){
+            thread1.start();
+        }else {
+            try {
+                thread1.join(6000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    public String removeTarget(char[] target){
+        String str="";
+
+        if(target.length>0) {
+            if (target[0] != '1') {
+                if (target[0] == '1') {
+                    centr.setButtonDrawable(R.drawable.centr_passiv);
+                } else if (target[0] == '2') {
+                    auto.setButtonDrawable(R.drawable.auto_passiv);
+                } else if (target[0] == '3') {
+                    north.setButtonDrawable(R.drawable.north_passiv);
+                } else if (target[0] == '4') {
+                    anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                } else if (target[0] == '5') {
+                    angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                }
+            } else {
+                if (target[1] == '1') {
+                    centr.setButtonDrawable(R.drawable.centr_passiv);
+                } else if (target[1] == '2') {
+                    auto.setButtonDrawable(R.drawable.auto_passiv);
+                } else if (target[1] == '3') {
+                    north.setButtonDrawable(R.drawable.north_passiv);
+                } else if (target[1] == '4') {
+                    anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                } else if (target[1] == '5') {
+                    angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                }
+            }
+        }
+
+        if(target.length>0) {
+            for (int i = 1; i < target.length; i++) {
+                str += target[i];
+            }
+        }
+
+        return str;
+    }
+
+
 }

@@ -12,7 +12,7 @@
 
     <ImageButton
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:src="@drawable/menu"
         android:background="#424756"
         android:id="@+id/menu"
@@ -22,7 +22,7 @@
 
     <ImageButton
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:background="#424756"
         android:layout_gravity="center"
         android:id="@+id/pedestrian"
@@ -35,7 +35,7 @@
 
     <ImageButton
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:src="@drawable/driver_passiv"
         android:background="#424756"
         android:id="@+id/driver"
@@ -76,7 +76,8 @@
                 android:id="@+id/centr"
                 android:button="@drawable/centr_passiv"
                 android:layout_marginTop="0.5dp"
-                android:background="#d0505563" />
+                android:background="#d0505563"
+                android:allowUndo="false" />
 
             <CheckBox
                 android:layout_width="match_parent"
