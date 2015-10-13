@@ -18,20 +18,26 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
+class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
-    WorkWithDataBase workWithDataBase = new WorkWithDataBase();
-    ImageButton menu, pedestrian, driver;
-    CheckBox auto, north, anniversary, centr, angleBass;
-    String target="0";
-    int id=-1,driv;
-    int[] data;
-    boolean flagForLoginProcedure = false;
-    ProgressDialog progressDialog;
-    Thread thread =  new Thread(new Runnable() {
+    private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
+    private ImageButton menu;
+    private ImageButton pedestrian;
+    private ImageButton driver;
+    private CheckBox auto;
+    private CheckBox north;
+    private CheckBox anniversary;
+    private CheckBox centr;
+    private CheckBox angleBass;
+    private String target="0";
+    private int id=-1;
+    private int driv;
+    private int[] data;
+    private boolean flagForLoginProcedure = false;
+    private ProgressDialog progressDialog;
+    private final Thread thread =  new Thread(new Runnable() {
         @Override
         public void run() {
             for (int i = 0; i < 5; i++) {
@@ -59,11 +65,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                Thread startThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            data = workWithDataBase.setNumberPhone(getNumberPhone());
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
+                        data = workWithDataBase.setNumberPhone(getNumberPhone());
                     }
                 });
 
@@ -96,7 +98,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             accessError();
         }
 
-        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        @SuppressWarnings("deprecation") String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
         if(!provider.contains("gps")){
             final Intent poke = new Intent();
@@ -153,22 +155,22 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         driver.setOnClickListener(this);
     }
 
-    public Long getNumberPhone(){
+    private Long getNumberPhone(){
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         return Long.valueOf(telephonyManager.getDeviceId());
     }
 
-    public void accessError(){
+    private void accessError(){
         Toast.makeText(getApplicationContext(),getResources().getString(R.string.accessErorr),Toast.LENGTH_LONG).show();
     }
 
-    public boolean isConnectingToInternet(){
+    private boolean isConnectingToInternet(){
         ConnectivityManager connectivity = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
-            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            @SuppressWarnings("deprecation") NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null)
-                for (int i = 0; i < info.length; i++)
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                for (NetworkInfo anInfo : info)
+                    if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
                         return true;
                     }
         }
@@ -176,18 +178,15 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         return false;
     }
 
-    public boolean checkAccess(){
-        String provider = Settings.Secure.getString(getContentResolver(),
+    private boolean checkAccess(){
+        @SuppressWarnings("deprecation") String provider = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if(isConnectingToInternet()&&provider.contains("gps")== true){
-            return true;
-        }
-        return false;
+        return isConnectingToInternet() && provider.contains("gps");
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -218,7 +217,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }
     }
 
-    public void startService(final int target){
+    private void startService(final int target){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -235,7 +234,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }).start();
     }
 
-    public void counting(final int target) {
+    private void counting(final int target) {
         Looper.prepare();
         progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
         new Thread(new Runnable() {
@@ -379,7 +378,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         return false;
     }
 
-    public void threadPause(){
+    private void threadPause(){
         Thread thread1= new Thread(new Runnable() {
             @Override
             public void run() {
@@ -403,14 +402,12 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }
     }
 
-    public String removeTarget(char[] target){
+    private String removeTarget(char[] target){
         String str="";
 
         if(target.length>0) {
             if (target[0] != '1') {
-                if (target[0] == '1') {
-                    centr.setButtonDrawable(R.drawable.centr_passiv);
-                } else if (target[0] == '2') {
+                if (target[0] == '2') {
                     auto.setButtonDrawable(R.drawable.auto_passiv);
                 } else if (target[0] == '3') {
                     north.setButtonDrawable(R.drawable.north_passiv);

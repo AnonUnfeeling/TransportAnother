@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#646a7a">
+    android:background="#646a7a"
+    tools:ignore="Overdraw">
 
     <ImageButton
         android:layout_width="67dp"
@@ -12,7 +14,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/arrow"
-        android:background="#424756" />
+        android:background="#424756"
+        tools:ignore="ContentDescription" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -23,7 +26,8 @@
         android:layout_toEndOf="@+id/back"
         android:src="@drawable/sos_passiv"
         android:background="#00000000"
-        android:layout_marginLeft="0.5dp" />
+        android:layout_marginLeft="0.5dp"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -56,7 +60,8 @@
         android:layout_toStartOf="@+id/testDis"
         android:layout_above="@+id/relativeLayout"
         android:layout_toLeftOf="@+id/testDis"
-        android:layout_below="@+id/back" />
+        android:layout_below="@+id/back"
+        tools:ignore="ContentDescription" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -66,6 +71,7 @@
         android:layout_toRightOf="@+id/imageButton"
         android:layout_above="@+id/relativeLayout"
         android:layout_alignRight="@+id/sos"
-        android:layout_alignEnd="@+id/sos" />
+        android:layout_alignEnd="@+id/sos"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
 </RelativeLayout>

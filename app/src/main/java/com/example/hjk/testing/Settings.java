@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class Settings extends Activity implements View.OnClickListener{
-    ImageButton back,sound,vibration;
-    boolean[] isCheck = new boolean[3];
-    WorkWithDataBase workWithDataBase = new WorkWithDataBase();
-    String[] status;
-    TextView youStatus, ratingForPasage,ratingForDriver,statist;
+class Settings extends Activity implements View.OnClickListener{
+    private ImageButton sound;
+    private ImageButton vibration;
+    private boolean[] isCheck = new boolean[3];
+    private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
+    private String[] status;
 
     @Override
     protected void onResume() {
@@ -47,10 +47,10 @@ public class Settings extends Activity implements View.OnClickListener{
             e.printStackTrace();
         }
 
-        youStatus = (TextView) findViewById(R.id.youStatus);
-        statist = (TextView) findViewById(R.id.statist);
-        ratingForPasage = (TextView) findViewById(R.id.ratingForPasag);
-        ratingForDriver = (TextView) findViewById(R.id.ratingForDriver);
+        TextView youStatus = (TextView) findViewById(R.id.youStatus);
+        TextView statist = (TextView) findViewById(R.id.statist);
+        TextView ratingForPasage = (TextView) findViewById(R.id.ratingForPasag);
+        TextView ratingForDriver = (TextView) findViewById(R.id.ratingForDriver);
 
         youStatus.append("\t" + status[4]);
 
@@ -61,7 +61,7 @@ public class Settings extends Activity implements View.OnClickListener{
         ratingForDriver.append("\t" + status[2] + "\n" + status[3]);
 
 
-        back = (ImageButton) findViewById(R.id.close);
+        ImageButton back = (ImageButton) findViewById(R.id.close);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,7 +88,7 @@ public class Settings extends Activity implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sound:
-                if (isCheck[0] == false) {
+                if (!isCheck[0]) {
                     sound.setImageResource(R.drawable.sound_activ);
                     isCheck[0] = true;
                 } else {
@@ -97,7 +97,7 @@ public class Settings extends Activity implements View.OnClickListener{
                 }
                 break;
             case R.id.vibration:
-                if (isCheck[1] == false) {
+                if (!isCheck[1]) {
                     vibration.setImageResource(R.drawable.vibr_active);
                     isCheck[1] = true;
                 } else {
@@ -108,15 +108,15 @@ public class Settings extends Activity implements View.OnClickListener{
         }
     }
 
-    public void saveSettings(boolean[] isCheck){
+    private void saveSettings(boolean[] isCheck){
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("sound", isCheck[0]);
         editor.putBoolean("vibration", isCheck[1]);
-        editor.commit();
+        editor.apply();
     }
 
-    public boolean[] loadSettings(){
+    private boolean[] loadSettings(){
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         boolean[] isCheck = new boolean[30];
         isCheck[0] = sharedPreferences.getBoolean("sound",false);

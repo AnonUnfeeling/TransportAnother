@@ -7,23 +7,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-public class WorkWithDataBase{
+class WorkWithDataBase{
 
     private static Connection connection=null;
 
-    public static synchronized Connection setInstance(){
+    private static synchronized Connection setInstance(){
         if(connection==null) {
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
                  return DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
                          "oberigrv_carstop", "potq32ha");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             }
         }
@@ -34,7 +28,7 @@ public class WorkWithDataBase{
     public String[] getStatus(int id){
         String[] status = new String[5];
 
-        CallableStatement statement = null;
+        CallableStatement statement;
 
         try {
             connection = setInstance();
@@ -60,10 +54,10 @@ public class WorkWithDataBase{
         return status;
     }
 
-    public int[] setNumberPhone(Long numberPhone) throws SQLException {
+    public int[] setNumberPhone(Long numberPhone) {
         int[] data = new int[2];
 
-        CallableStatement statement = null;
+        CallableStatement statement;
         try {
             connection = setInstance();
             statement = connection.prepareCall("{call login_ (?,?,?)}");
@@ -80,10 +74,10 @@ public class WorkWithDataBase{
         return data;
     }
 
-    public double[] search(int id, int driver, int target, double x, double y, String exception){
+    public double[] search(int id, int driver, int target, double x, double y){
         double[] data = new double[10];
 
-        CallableStatement statement=null;
+        CallableStatement statement;
         try {
             connection = setInstance();
             statement = connection.prepareCall("{call search_(?,?,?,?,?,?,?,?,?,?,?)}");
@@ -95,7 +89,7 @@ public class WorkWithDataBase{
             statement.setDouble(5, y);
             statement.registerOutParameter(4, Types.DOUBLE);
             statement.registerOutParameter(5, Types.DOUBLE);
-            statement.setString(6, exception);
+            statement.setString(6, "");
             statement.registerOutParameter(7, Types.SMALLINT);
             statement.registerOutParameter(8, Types.SMALLINT);
             statement.registerOutParameter(9,Types.SMALLINT);
@@ -122,7 +116,7 @@ public class WorkWithDataBase{
         try {
             connection = setInstance();
             Statement statement = connection.createStatement();
-            statement.execute("call sos_ (" + idUser + ","+idContact+","+x+","+y+")");
+            statement.execute("call sos_ (" + idUser + ","+idContact+","+ 0 +","+x+","+y+")");
         } catch (SQLException e) {
             e.printStackTrace();
         }

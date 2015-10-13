@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#646a7a">
@@ -13,7 +14,8 @@
         android:layout_alignParentStart="true"
         android:src="@drawable/menu_end"
         android:background="#424756"
-        android:adjustViewBounds="true" />
+        android:adjustViewBounds="true"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:layout_width="match_parent"
@@ -24,7 +26,8 @@
         android:layout_alignBottom="@+id/close"
         android:layout_toRightOf="@+id/close"
         android:layout_toEndOf="@+id/close"
-        android:layout_marginLeft="0.5dp" />
+        android:layout_marginLeft="0.5dp"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
 
     <ScrollView
@@ -36,8 +39,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/imageView7">
+            android:layout_height="wrap_content">
 
 
             <RelativeLayout
@@ -46,8 +48,7 @@
                 android:layout_height="75dp"
                 android:id="@+id/status"
                 android:background="#8f424756"
-                android:layout_marginTop="0.5dp"
-                android:layout_below="@+id/imageView7">
+                android:layout_marginTop="0.5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -57,15 +58,15 @@
                     android:textColor="#979ba6"
                     android:textSize="17sp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp" />
+                    android:layout_marginTop="10dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/statist"
                     android:layout_gravity="right"
-                    android:layout_weight="3.13"
-                    android:textSize="50dp"
+                    android:textSize="50sp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="false"
                     android:layout_alignParentEnd="true"
@@ -74,7 +75,8 @@
                     android:background="#424756"
                     android:textColor="@android:color/white"
                     android:layout_marginLeft="152dp"
-                    android:layout_toRightOf="@+id/st" />
+                    android:layout_toRightOf="@+id/st"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -85,7 +87,8 @@
                     android:textStyle="bold"
                     android:layout_below="@+id/st"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp" />
+                    android:layout_marginTop="10dp"
+                    tools:ignore="RtlHardcoded" />
 
             </RelativeLayout>
 
@@ -95,9 +98,6 @@
                 android:layout_height="78dp"
                 android:background="#8f424756"
                 android:id="@+id/passage"
-                android:layout_below="@+id/status"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_marginTop="0.5dp">
 
                 <TextView
@@ -107,7 +107,8 @@
                     android:id="@+id/rfp"
                     android:textColor="#979ba6"
                     android:textSize="17sp"
-                    android:layout_marginLeft="10dp" />
+                    android:layout_marginLeft="10dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -119,7 +120,8 @@
                     android:textSize="17sp"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="40dp" />
+                    android:layout_marginTop="40dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -136,7 +138,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginLeft="112dp"
                     android:layout_toRightOf="@+id/cp"
-                    android:layout_alignParentBottom="true" />
+                    android:layout_alignParentBottom="true"
+                    tools:ignore="RtlHardcoded" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -144,10 +147,7 @@
                 android:layout_height="78dp"
                 android:background="#8f424756"
                 android:layout_marginTop="0.5dp"
-                android:id="@+id/relativeLayout2"
-                android:layout_below="@+id/passage"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true">
+                android:id="@+id/relativeLayout2">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -158,7 +158,8 @@
                     android:textColor="#979ba6"
                     android:textSize="17sp"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="10dp" />
+                    android:layout_marginLeft="10dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -172,7 +173,8 @@
                     android:layout_below="@+id/rfd"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="20dp" />
+                    android:layout_marginTop="20dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -188,37 +190,33 @@
                     android:layout_alignParentStart="false"
                     android:layout_toRightOf="@+id/rfd"
                     android:layout_marginLeft="98dp"
-                    android:layout_alignParentBottom="true" />
+                    android:layout_alignParentBottom="true"
+                    tools:ignore="RtlHardcoded" />
 
             </RelativeLayout>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/relativeLayout2">
+                android:layout_height="match_parent">
 
                 <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/sound"
                     android:background="@drawable/sound_passive"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/relativeLayout2"
                     android:layout_weight="1"
-                    android:layout_marginTop="0.5dp" />
+                    android:layout_marginTop="0.5dp"
+                    tools:ignore="ContentDescription" />
 
                 <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/vibration"
                     android:background="@drawable/vibr_passive"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
                     android:layout_weight="1"
-                    android:layout_marginTop="0.5dp" />
+                    android:layout_marginTop="0.5dp"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 

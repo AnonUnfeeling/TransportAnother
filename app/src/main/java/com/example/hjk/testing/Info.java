@@ -13,19 +13,25 @@ import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
-public class Info extends Activity implements View.OnClickListener{
+@SuppressWarnings("MismatchedReadAndWriteOfArray")
+class Info extends Activity implements View.OnClickListener{
 
-    TextView distation,centr_cout,auto_count,ubil_cout,bass_count,north_cout,statistics;
-    ImageButton back,sos;
-    WorkWithDataBase workWithDataBase = new WorkWithDataBase();
-    int id,driver;
-    BroadcastReceiver service;
-    ProgressDialog progressDialog;
-    boolean isCheckSos=false;
-    final double[] coo = new double[2];
-    final double[] coordinate = new double[2];
+    private TextView distation;
+    private TextView centr_cout;
+    private TextView auto_count;
+    private TextView ubil_cout;
+    private TextView bass_count;
+    private TextView north_cout;
+    private ImageButton sos;
+    private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
+    private int id;
+    private BroadcastReceiver service;
+    private ProgressDialog progressDialog;
+    private boolean isCheckSos=false;
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
+    private final double[] coo = new double[2];
 
-    double[] cooSos = new double[2];
+    private final double[] cooSos = new double[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +42,15 @@ public class Info extends Activity implements View.OnClickListener{
         cooSos[1] = 0;
 
         id = getIntent().getIntExtra("id", -1);
-        driver = getIntent().getIntExtra("driver", -1);
+        int driver = getIntent().getIntExtra("driver", -1);
 
-        statistics = (TextView) findViewById(R.id.statistics);
+        TextView statistics = (TextView) findViewById(R.id.statistics);
 
-        if(driver==1) {
+        if(driver ==1) {
             statistics.setText(getResources().getString(R.string.count_people));
 
             progressDialog = ProgressDialog.show(this, "", "Пошук попутника");
-        }else if(driver==0){
+        }else if(driver ==0){
             statistics.setText(getResources().getString(R.string.count_drivers));
 
             progressDialog = ProgressDialog.show(this, "", "Пошук водія");
@@ -64,14 +70,14 @@ public class Info extends Activity implements View.OnClickListener{
 
         workWithService();
 
-        back = (ImageButton) findViewById(R.id.back);
+        ImageButton back = (ImageButton) findViewById(R.id.back);
         back.setOnClickListener(this);
 
         sos = (ImageButton) findViewById(R.id.sos);
         sos.setOnClickListener(this);
     }
 
-    public double[] workWithService() {
+    private void workWithService() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("Info_start_online");
         filter.addAction("Info_ping");
@@ -88,7 +94,7 @@ public class Info extends Activity implements View.OnClickListener{
 
                         progressDialog.dismiss();
 
-                        final int distantn = intent.getIntExtra("dist",0);
+                        final int distantn = intent.getIntExtra("dist", 0);
 
                         distation.setTextSize(50);
                         distation.setText(distantn + "м");
@@ -105,14 +111,14 @@ public class Info extends Activity implements View.OnClickListener{
                     ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
                     bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
 
-                }else if(intent.getAction().equals("Info_ping")) {
+                } else if (intent.getAction().equals("Info_ping")) {
 
                     final int distantn = intent.getIntExtra("dist", -1);
 
                     distation.setTextSize(50);
                     distation.setText(distantn + "м");
 
-                }else if(intent.getAction().equals("Contact_start")){
+                } else if (intent.getAction().equals("Contact_start")) {
                     final int distantn = intent.getIntExtra("dist", -1);
 
                     distation.setTextSize(50);
@@ -126,8 +132,6 @@ public class Info extends Activity implements View.OnClickListener{
                 .putExtra("id", getIntent().getIntExtra("id", -1))
                 .putExtra("driver", getIntent().getIntExtra("driver", -1))
                 .putExtra("target", getIntent().getIntExtra("target", -1)));
-
-        return coo;
     }
 
     @Override
@@ -154,7 +158,7 @@ public class Info extends Activity implements View.OnClickListener{
         return (int) (6366000 * tt);
     }
 
-    public void close(){
+    private void close(){
         Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
         intent.putExtra("enabled", false);
         sendBroadcast(intent);
@@ -173,8 +177,7 @@ public class Info extends Activity implements View.OnClickListener{
     @Override
     public void onBackPressed() {
         close();
-
-        super.onBackPressed();
+        finish();
     }
 
     @Override

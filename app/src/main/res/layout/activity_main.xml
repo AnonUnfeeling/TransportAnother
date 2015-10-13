@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#646a7a">
+    android:background="#646a7a"
+    tools:ignore="Overdraw">
 
     <LinearLayout
         android:id="@+id/layout"
@@ -16,9 +18,7 @@
         android:src="@drawable/menu"
         android:background="#424756"
         android:id="@+id/menu"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        tools:ignore="ContentDescription" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -26,12 +26,11 @@
         android:background="#424756"
         android:layout_gravity="center"
         android:id="@+id/pedestrian"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/menu"
         android:layout_weight="1"
         android:adjustViewBounds="false"
         android:src="@drawable/pedestrian_passiv"
-        android:layout_marginLeft="0.5dp" />
+        android:layout_marginLeft="0.5dp"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -39,14 +38,10 @@
         android:src="@drawable/driver_passiv"
         android:background="#424756"
         android:id="@+id/driver"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/pedestrian"
-        android:layout_toEndOf="@+id/pedestrian"
         android:layout_weight="1"
         android:adjustViewBounds="false"
-        android:layout_marginLeft="0.5dp" />
+        android:layout_marginLeft="0.5dp"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
     </LinearLayout>
 
@@ -66,9 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#646a7a"
-            android:id="@+id/radioGroup"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true">
+            android:id="@+id/radioGroup">
 
             <CheckBox
                 android:layout_width="match_parent"
@@ -76,8 +69,7 @@
                 android:id="@+id/centr"
                 android:button="@drawable/centr_passiv"
                 android:layout_marginTop="0.5dp"
-                android:background="#d0505563"
-                android:allowUndo="false" />
+                android:background="#d0505563" />
 
             <CheckBox
                 android:layout_width="match_parent"
