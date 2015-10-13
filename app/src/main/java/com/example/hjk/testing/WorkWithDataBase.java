@@ -163,14 +163,52 @@ public class WorkWithDataBase{
         return data;
     }
 
-    public void contact (int idUser, int idDriver, double x, double y, int driver){
+    public double[] contactSet(int id, double x, double y){
+        double[] xy = new double[2];
+
         try {
             connection = setInstance();
-            Statement statement = connection.createStatement();
-            statement.execute("call contact_ (" + idUser + ","+idDriver+","+x+","+y+","+driver+")");
+
+            CallableStatement statement = connection.prepareCall("call contact_ (?,?,?)");
+
+            statement.setInt(1,id);
+            statement.setDouble(2, x);
+            statement.setDouble(3, y);
+
+            statement.registerOutParameter(2, Types.DOUBLE);
+            statement.registerOutParameter(3,Types.DOUBLE);
+            statement.executeQuery();
+
+            xy[0] = statement.getDouble(2);
+            xy[1] = statement.getDouble(3);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return xy;
+    }
+
+    public int contact (int idUser, int idDriver, double x, double y, int driver){
+        int idContact = 0;
+        try {
+            connection = setInstance();
+
+            CallableStatement statement = connection.prepareCall("call contact_ (?,?,?,?,?)");
+
+            statement.setInt(1,idUser);
+            statement.setInt(2,idDriver);
+            statement.setDouble(3, x);
+            statement.setDouble(4, y);
+            statement.setDouble(5, driver);
+            statement.registerOutParameter(1, Types.INTEGER);
+            statement.executeQuery();
+
+            idContact = statement.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return idContact;
     }
 
     public void onlineEnd(int id){

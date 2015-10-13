@@ -20,6 +20,7 @@ public class TransportAnother extends Service implements LocationListener {
     int countDistantion=0;
     int countPingSet = 5;
     int distation = 0;
+    int idContact = 0;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -115,14 +116,29 @@ public class TransportAnother extends Service implements LocationListener {
                         idPing = 0;
                     }
                 }else if(countDistantion>2) {
-                    countDistantion++;
+                    if(countDistantion<4) {
+                        countDistantion++;
 
-                    System.out.println("yes");
-                    workWithDataBase.contact(id, idPing, location.getLatitude(), this.location.getLongitude(), driver);
-                    Intent in = new Intent("Contact_start")
-                            .putExtra("dist", distation)
-                            .putExtra("contact", true);
-                    sendBroadcast(in);
+                        System.out.println("yes contact");
+                        idContact = workWithDataBase.contact(id, idPing, location.getLatitude(), this.location.getLongitude(), driver);
+                        Intent in = new Intent("Contact_start")
+                                .putExtra("dist", distation)
+                                .putExtra("contact", true);
+                        sendBroadcast(in);
+                    }else {
+                        countDistantion++;
+
+                        System.out.println("yes contact_set");
+                        data = workWithDataBase.contactSet(idContact, location.getLatitude(), this.location.getLongitude());
+
+                        distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
+                                , this.location.getLongitude());
+
+                        Intent in = new Intent("Contact_start")
+                                .putExtra("dist", distation)
+                                .putExtra("contact", true);
+                        sendBroadcast(in);
+                    }
                 }
 
             } else {
