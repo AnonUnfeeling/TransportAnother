@@ -1,110 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#646a7a"
-    tools:ignore="Overdraw">
+    android:id="@+id/scrollView"
+    android:background="@android:color/black"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        tools:ignore="Overdraw">
 
     <LinearLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    <ImageButton
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/menu"
-        android:background="#424756"
-        android:id="@+id/menu"
-        tools:ignore="ContentDescription" />
+        android:background="#424756">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#424756"
-        android:layout_gravity="center"
-        android:id="@+id/pedestrian"
-        android:layout_weight="1"
-        android:adjustViewBounds="false"
-        android:src="@drawable/pedestrian_passiv"
-        android:layout_marginLeft="0.5dp"
-        tools:ignore="ContentDescription,RtlHardcoded" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/driver_passiv"
-        android:background="#424756"
-        android:id="@+id/driver"
-        android:layout_weight="1"
-        android:adjustViewBounds="false"
-        android:layout_marginLeft="0.5dp"
-        tools:ignore="ContentDescription,RtlHardcoded" />
+            <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/menu"
+            android:background="#424756"
+            android:id="@+id/menu"
+            tools:ignore="ContentDescription" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutForPedestrian"
+            android:layout_weight="1">
+
+            <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+                android:id="@+id/pedestrian"
+            android:layout_weight="1"
+                tools:ignore="ContentDescription"
+                android:background="@drawable/pedestrian_passiv"
+                android:adjustViewBounds="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutForDriver"
+            android:layout_weight="1">
+
+            <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/driver_passiv"
+            android:id="@+id/driver"
+            android:layout_weight="1"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollView"
-        android:layout_below="@+id/layout"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
 
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#646a7a"
-            android:id="@+id/radioGroup">
+            android:id="@+id/radioGroup"
+            android:layout_below="@+id/layout">
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/centr"
-                android:button="@drawable/centr_passiv"
-                android:layout_marginTop="0.5dp"
-                android:background="#d0505563" />
+                android:background="@drawable/centr_passiv"
+                android:button="@android:color/transparent" />
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/auto"
-                android:button="@drawable/auto_passiv"
-                android:layout_marginTop="0.5dp"
-                android:background="#d0505563" />
+                android:background="@drawable/auto_passiv"
+                android:button="@android:color/transparent" />
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/north"
-                android:button="@drawable/north_passiv"
-                android:layout_marginTop="0.5dp"
-                android:background="#d0505563" />
+                android:background="@drawable/north_passiv"
+                android:button="@android:color/transparent" />
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/anniversary"
-                android:button="@drawable/anniversary_passiv"
-                android:layout_marginTop="1dp"
-                android:background="#d0505563" />
+                android:background="@drawable/anniversary_passiv"
+                android:allowUndo="false"
+                android:clickable="false"
+                android:contextClickable="false"
+                android:button="@android:color/transparent" />
 
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/angleBass"
-                android:button="@drawable/angle_bass_passive"
-                android:layout_marginTop="0.5dp"
-                android:background="#d0505563" />
+                android:background="@drawable/angle_bass_passive"
+                android:button="@android:color/transparent" />
 
         </RadioGroup>
 
-    </ScrollView>
+    </RelativeLayout>
 
-</RelativeLayout>
+</ScrollView>

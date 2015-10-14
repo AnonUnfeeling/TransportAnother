@@ -4,27 +4,36 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-class Settings extends Activity implements View.OnClickListener{
+public class Settings extends Activity implements View.OnClickListener{
     private ImageButton sound;
     private ImageButton vibration;
     private boolean[] isCheck = new boolean[3];
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     private String[] status;
+    private int width=0,height=0;
+    private ImageButton back;
+    private ImageView title;
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        mastabation();
+
         isCheck = loadSettings();
         if(isCheck[0]){
-            sound.setImageResource(R.drawable.sound_activ);
+            sound.setBackgroundResource(R.drawable.sound_activ);
         }
         if(isCheck[1]){
-            vibration.setImageResource(R.drawable.vibr_active);
+            vibration.setBackgroundResource(R.drawable.vibr_activ);
         }
     }
 
@@ -51,17 +60,20 @@ class Settings extends Activity implements View.OnClickListener{
         TextView statist = (TextView) findViewById(R.id.statist);
         TextView ratingForPasage = (TextView) findViewById(R.id.ratingForPasag);
         TextView ratingForDriver = (TextView) findViewById(R.id.ratingForDriver);
+        TextView countPasag = (TextView) findViewById(R.id.coutPasag);
+        TextView countDriver = (TextView) findViewById(R.id.countDriver);
 
-        youStatus.append("\t" + status[4]);
+        youStatus.append(status[4]);
 
         statist.append(String.valueOf(Integer.parseInt(status[0] + status[1] + status[2] + status[3]) / 4));
 
-        ratingForPasage.append("\t" + status[0] + "\n" + status[1]);
+        ratingForPasage.append(status[0]);
+        countPasag.append(status[1]);
 
-        ratingForDriver.append("\t" + status[2] + "\n" + status[3]);
+        ratingForDriver.append(status[2]);
+        countDriver.append(status[3]);
 
-
-        ImageButton back = (ImageButton) findViewById(R.id.close);
+        back = (ImageButton) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +82,8 @@ class Settings extends Activity implements View.OnClickListener{
                 saveSettings(isCheck);
             }
         });
+
+        title = (ImageView) findViewById(R.id.title);
 
         sound = (ImageButton) findViewById(R.id.sound);
         sound.setOnClickListener(this);
@@ -89,19 +103,19 @@ class Settings extends Activity implements View.OnClickListener{
         switch (v.getId()) {
             case R.id.sound:
                 if (!isCheck[0]) {
-                    sound.setImageResource(R.drawable.sound_activ);
+                    sound.setBackgroundResource(R.drawable.sound_activ);
                     isCheck[0] = true;
                 } else {
-                    sound.setImageResource(R.drawable.sound_passive);
+                    sound.setBackgroundResource(R.drawable.sound_passive);
                     isCheck[0] = false;
                 }
                 break;
             case R.id.vibration:
                 if (!isCheck[1]) {
-                    vibration.setImageResource(R.drawable.vibr_active);
+                    vibration.setBackgroundResource(R.drawable.vibr_activ);
                     isCheck[1] = true;
                 } else {
-                    vibration.setImageResource(R.drawable.vibr_passive);
+                    vibration.setBackgroundResource(R.drawable.vibr_passive);
                     isCheck[1] = false;
                 }
                 break;
@@ -122,5 +136,37 @@ class Settings extends Activity implements View.OnClickListener{
         isCheck[0] = sharedPreferences.getBoolean("sound",false);
         isCheck[1] = sharedPreferences.getBoolean("vibration",false);
         return isCheck;
+    }
+
+    public void mastabation(){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        width = displayMetrics.widthPixels;
+        height = displayMetrics.heightPixels;
+
+        if(width>=320&&height>=480) {
+            LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    (int) (height * 0.3f + 0.5f));
+            back.setLayoutParams(params1);
+            title.setLayoutParams(params1);
+
+            RelativeLayout statusLayout = (RelativeLayout) findViewById(R.id.status);
+            RelativeLayout pasageLayout = (RelativeLayout) findViewById(R.id.passage);
+            RelativeLayout driverLayout = (RelativeLayout) findViewById(R.id.driver);
+
+            LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (int) (height * 0.13f + 0.5f));
+            statusLayout.setLayoutParams(params2);
+            pasageLayout.setLayoutParams(params2);
+            driverLayout.setLayoutParams(params2);
+
+            LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (int) (height * 0.13f + 0.5f));
+            sound.setLayoutParams(params3);
+            vibration.setLayoutParams(params3);
+        }
     }
 }

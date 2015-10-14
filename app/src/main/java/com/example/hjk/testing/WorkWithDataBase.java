@@ -163,7 +163,7 @@ class WorkWithDataBase{
         try {
             connection = setInstance();
 
-            CallableStatement statement = connection.prepareCall("call contact_ (?,?,?)");
+            CallableStatement statement = connection.prepareCall("call contact_set (?,?,?)");
 
             statement.setInt(1,id);
             statement.setDouble(2, x);
@@ -180,6 +180,16 @@ class WorkWithDataBase{
         }
 
         return xy;
+    }
+
+    public void contactEnd(int id, int rating){
+        try {
+            connection = setInstance();
+            Statement statement = connection.createStatement();
+            statement.execute("call contact_end (" + id + ","+rating+")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public int contact (int idUser, int idDriver, double x, double y, int driver){

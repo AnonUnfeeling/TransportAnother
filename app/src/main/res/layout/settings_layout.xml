@@ -1,45 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView2"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#646a7a">
+    android:background="#646a7a" >
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/close"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/menu_end"
-        android:background="#424756"
-        android:adjustViewBounds="true"
-        tools:ignore="ContentDescription" />
-
-    <ImageView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView7"
-        android:src="@drawable/title_settings"
-        android:background="#8f424756"
-        android:layout_alignBottom="@+id/close"
-        android:layout_toRightOf="@+id/close"
-        android:layout_toEndOf="@+id/close"
-        android:layout_marginLeft="0.5dp"
-        tools:ignore="ContentDescription,RtlHardcoded" />
+        android:id="@+id/layout"
+        android:background="#2E313E">
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/back"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/menu_end"
+            android:adjustViewBounds="false"
+            tools:ignore="ContentDescription" />
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView2"
-        android:layout_below="@+id/imageView7">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/title"
+            android:background="@drawable/title_settings"
+            android:layout_toEndOf="@+id/back"
+            tools:ignore="ContentDescription,RtlHardcoded"
+            android:layout_toRightOf="@+id/back"
+            android:adjustViewBounds="false"
+            android:layout_weight="1" />
+    </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout">
 
 
             <RelativeLayout
@@ -47,48 +54,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="75dp"
                 android:id="@+id/status"
-                android:background="#8f424756"
+                android:background="@drawable/setting_stat"
                 android:layout_marginTop="0.5dp">
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/you_status"
-                    android:id="@+id/st"
-                    android:textColor="#979ba6"
-                    android:textSize="17sp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
-                    tools:ignore="RtlHardcoded" />
+                    android:layout_centerVertical="true">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/statist"
-                    android:layout_gravity="right"
-                    android:textSize="50sp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="false"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:gravity="center"
-                    android:background="#424756"
-                    android:textColor="@android:color/white"
-                    android:layout_marginLeft="152dp"
-                    android:layout_toRightOf="@+id/st"
-                    tools:ignore="RtlHardcoded" />
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/youStatus"
-                    android:textSize="17sp"
-                    android:textColor="#fffefd"
-                    android:textStyle="bold"
-                    android:layout_below="@+id/st"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
-                    tools:ignore="RtlHardcoded" />
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:id="@+id/statist"
+                            android:layout_gravity="right"
+                            android:textSize="25dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="false"
+                            android:layout_alignParentBottom="true"
+                            android:gravity="center"
+                            android:textColor="@android:color/white"
+                            tools:ignore="RtlHardcoded" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/you_status"
+                            android:id="@+id/st"
+                            android:textColor="#979ba6"
+                            android:textSize="15sp"
+                            tools:ignore="RtlHardcoded"
+                            android:layout_alignParentTop="false"
+                            android:layout_alignParentBottom="false"
+                            android:layout_alignWithParentIfMissing="false"
+                            android:gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:layout_alignParentStart="false"
+                            android:layout_alignParentEnd="false"
+                            android:layout_weight="1"
+                            android:layout_marginTop="10dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/youStatus"
+                            android:textSize="17sp"
+                            android:textColor="#fffefd"
+                            android:layout_marginLeft="15dp"
+                            tools:ignore="RtlHardcoded"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_marginTop="5dp"
+                            android:layout_gravity="top"
+                            android:paddingLeft="10dp" />
+                    </LinearLayout>
+
+                </RelativeLayout>
 
             </RelativeLayout>
 
@@ -96,102 +129,165 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
-                android:background="#8f424756"
+                android:background="@drawable/setting_stat"
                 android:id="@+id/passage"
                 android:layout_marginTop="0.5dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/reting_pasage"
-                    android:id="@+id/rfp"
-                    android:textColor="#979ba6"
-                    android:textSize="17sp"
-                    android:layout_marginLeft="10dp"
-                    tools:ignore="RtlHardcoded" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/count_pasage"
-                    android:id="@+id/cp"
-                    android:layout_alignParentStart="false"
-                    android:textColor="#979ba6"
-                    android:textSize="17sp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="40dp"
-                    tools:ignore="RtlHardcoded" />
-
-                <TextView
-                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/ratingForPasag"
-                    android:layout_alignParentTop="true"
-                    android:background="#424756"
-                    android:textColor="#979ba6"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_below="@+id/rfp"
-                    android:gravity="center"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginLeft="112dp"
-                    android:layout_toRightOf="@+id/cp"
-                    android:layout_alignParentBottom="true"
-                    tools:ignore="RtlHardcoded" />
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reting_pasage"
+                        android:id="@+id/rfp"
+                        android:textColor="#979ba6"
+                        android:textSize="15sp"
+                        android:layout_marginLeft="10dp"
+                        tools:ignore="RtlHardcoded"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/count_pasage"
+                        android:id="@+id/cp"
+                        android:layout_alignParentStart="false"
+                        android:textColor="#979ba6"
+                        android:textSize="15sp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="10dp"
+                        tools:ignore="RtlHardcoded"
+                        android:layout_below="@+id/rfp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ratingForPasag"
+                        android:layout_alignParentTop="true"
+                        android:textColor="#979ba6"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:layout_alignParentEnd="false"
+                        android:layout_alignParentBottom="false"
+                        tools:ignore="RtlHardcoded"
+                        android:gravity="center"
+                        android:layout_alignParentRight="true"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/coutPasag"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center"
+                        android:textColor="#979ba6"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="78dp"
-                android:background="#8f424756"
+                android:background="@drawable/setting_stat"
                 android:layout_marginTop="0.5dp"
-                android:id="@+id/relativeLayout2">
+                android:id="@+id/driver">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/reting_driver"
-                    android:id="@+id/rfd"
-                    android:layout_alignParentStart="true"
-                    android:textColor="#979ba6"
-                    android:textSize="17sp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="10dp"
-                    tools:ignore="RtlHardcoded" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_centerVertical="true">
 
-                <TextView
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reting_driver"
+                        android:id="@+id/rfd"
+                        android:layout_alignParentStart="true"
+                        android:textColor="#979ba6"
+                        android:textSize="15sp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="10dp"
+                        tools:ignore="RtlHardcoded"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/count_driver"
+                        android:id="@+id/cd"
+                        android:layout_alignParentStart="true"
+                        android:textColor="#979ba6"
+                        android:textIsSelectable="false"
+                        android:textSize="15sp"
+                        android:layout_below="@+id/rfd"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        tools:ignore="RtlHardcoded"
+                        android:layout_weight="1"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/count_driver"
-                    android:id="@+id/cd"
-                    android:layout_alignParentStart="true"
-                    android:textColor="#979ba6"
-                    android:textIsSelectable="false"
-                    android:textSize="17sp"
-                    android:layout_below="@+id/rfd"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="20dp"
-                    tools:ignore="RtlHardcoded" />
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ratingForDriver"
-                    android:textSize="17sp"
-                    android:textColor="#979ba6"
-                    android:textStyle="bold"
-                    android:layout_alignParentEnd="true"
-                    android:background="#424756"
-                    android:gravity="center"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="false"
-                    android:layout_toRightOf="@+id/rfd"
-                    android:layout_marginLeft="98dp"
-                    android:layout_alignParentBottom="true"
-                    tools:ignore="RtlHardcoded" />
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ratingForDriver"
+                        android:textSize="17sp"
+                        android:textColor="#979ba6"
+                        android:textStyle="bold"
+                        android:layout_alignParentEnd="false"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentStart="false"
+                        android:layout_alignParentBottom="false"
+                        tools:ignore="RtlHardcoded"
+                        android:layout_alignParentRight="true"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/countDriver"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center"
+                        android:textColor="#979ba6"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+                </LinearLayout>
 
             </RelativeLayout>
 
@@ -202,7 +298,7 @@
 
                 <ImageButton
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:id="@+id/sound"
                     android:background="@drawable/sound_passive"
                     android:layout_weight="1"
@@ -211,7 +307,7 @@
 
                 <ImageButton
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:id="@+id/vibration"
                     android:background="@drawable/vibr_passive"
                     android:layout_weight="1"
@@ -221,6 +317,8 @@
             </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</ScrollView>
+

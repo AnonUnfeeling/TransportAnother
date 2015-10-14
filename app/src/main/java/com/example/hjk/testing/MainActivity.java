@@ -12,15 +12,17 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
-class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
+public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     private ImageButton menu;
@@ -34,6 +36,8 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
     private String target="0";
     private int id=-1;
     private int driv;
+    int width=0,height=0;
+    private LinearLayout layoutForPedestrian,layoutForDriver;
     private int[] data;
     private boolean flagForLoginProcedure = false;
     private ProgressDialog progressDialog;
@@ -58,6 +62,8 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
     @Override
     protected void onStart() {
         super.onStart();
+
+        mastabation();
 
         if (checkAccess()) {
             if(!flagForLoginProcedure) {
@@ -84,13 +90,19 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
             }
 
             if(driv==0){
-                pedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
-                pedestrian.setImageResource(R.drawable.pedestrian_activ);
-                driver.setImageResource(R.drawable.driver_passiv);
+                layoutForPedestrian = (LinearLayout) findViewById(R.id.layoutForPedestrian);
+                layoutForPedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
+
+                pedestrian.setBackgroundResource(R.drawable.pedestrian_activ);
+
+                driver.setBackgroundResource(R.drawable.driver_passiv);
             }else if(driv==1){
-                driver.setBackgroundColor(Color.parseColor("#2E313E"));
-                driver.setImageResource(R.drawable.driver_activ);
-                pedestrian.setImageResource(R.drawable.pedestrian_passiv);
+                layoutForDriver = (LinearLayout) findViewById(R.id.layoutForDriver);
+                layoutForDriver.setBackgroundColor(Color.parseColor("#2E313E"));
+
+                driver.setBackgroundResource(R.drawable.driver_activ);
+
+                pedestrian.setBackgroundResource(R.drawable.pedestrian_passiv);
             }
 
 
@@ -114,7 +126,7 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
         super.onDestroy();
 
         if(checkAccess()) {
-            stopService(new Intent(MainActivity.this, TransportAnother.class));
+//            stopService(new Intent(MainActivity.this, TransportAnother.class));
             if (id != -1) {
                 workWithDataBase.onlineEnd(id);
             }
@@ -193,20 +205,31 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.driver:
-                driver.setBackgroundColor(Color.parseColor("#2E313E"));
-                pedestrian.setBackgroundColor(Color.parseColor("#424756"));
-                pedestrian.setImageResource(R.drawable.pedestrian_passiv);
-                driver.setImageResource(R.drawable.driver_activ);
-                menu.setImageResource(R.drawable.menu);
+                layoutForPedestrian = (LinearLayout) findViewById(R.id.layoutForPedestrian);
+                layoutForPedestrian.setBackgroundColor(Color.parseColor("#424756"));
+
+                pedestrian.setBackgroundResource(R.drawable.pedestrian_passiv);
+
+                layoutForDriver = (LinearLayout) findViewById(R.id.layoutForDriver);
+                layoutForDriver.setBackgroundColor(Color.parseColor("#2E313E"));
+
+                driver.setBackgroundResource(R.drawable.driver_activ);
+
                 driv = 1;
 
                 break;
             case R.id.pedestrian:
-                pedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
-                pedestrian.setImageResource(R.drawable.pedestrian_activ);
-                driver.setImageResource(R.drawable.driver_passiv);
-                driver.setBackgroundColor(Color.parseColor("#424756"));
-                menu.setImageResource(R.drawable.menu);
+                layoutForDriver = (LinearLayout) findViewById(R.id.layoutForDriver);
+                layoutForDriver.setBackgroundColor(Color.parseColor("#424756"));
+
+                layoutForPedestrian = (LinearLayout) findViewById(R.id.layoutForPedestrian);
+                layoutForPedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
+
+                pedestrian.setBackgroundResource(R.drawable.pedestrian_activ);
+
+                driver.setBackgroundResource(0);
+                driver.setBackgroundResource(R.drawable.driver_passiv);
+
                 driv = 0;
 
                 break;
@@ -261,7 +284,7 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
                 switch (v.getId()) {
                     case R.id.centr:
                         if (!centr.isChecked()) {
-                            centr.setButtonDrawable(R.drawable.centr_activ);
+                            centr.setBackgroundResource(R.drawable.centr_activ);
 
                             target += 1;
                             if (target.toCharArray().length > 2) {
@@ -277,13 +300,13 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
                             if (target.toCharArray().length > 0) {
                                 target = removeTarget(target.toCharArray());
                             }
-                            centr.setButtonDrawable(R.drawable.centr_passiv);
+                            centr.setBackgroundResource(R.drawable.centr_passiv);
                         }
 
                         break;
                     case R.id.auto:
                         if (!auto.isChecked()) {
-                            auto.setButtonDrawable(R.drawable.auto_activ);
+                            auto.setBackgroundResource(R.drawable.auto_activ);
 
                             target += 2;
 
@@ -300,13 +323,13 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
                             if (target.toCharArray().length > 0) {
                                 target = removeTarget(target.toCharArray());
                             }
-                            auto.setButtonDrawable(R.drawable.auto_passiv);
+                            auto.setBackgroundResource(R.drawable.auto_passiv);
                         }
 
                         break;
                     case R.id.north:
                         if (!north.isChecked()) {
-                            north.setButtonDrawable(R.drawable.north_activ);
+                            north.setBackgroundResource(R.drawable.north_activ);
 
                             target += 3;
 
@@ -323,12 +346,12 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
                             if (target.toCharArray().length > 0) {
                                 target = removeTarget(target.toCharArray());
                             }
-                            north.setButtonDrawable(R.drawable.north_passiv);
+                            north.setBackgroundResource(R.drawable.north_passiv);
                         }
                         break;
                     case R.id.anniversary:
                         if (!anniversary.isChecked()) {
-                            anniversary.setButtonDrawable(R.drawable.anniversary_activ);
+                            anniversary.setBackgroundResource(R.drawable.anniversary_activ);
 
                             target += 4;
 
@@ -345,13 +368,13 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
                             if (target.toCharArray().length > 0) {
                                 target = removeTarget(target.toCharArray());
                             }
-                            anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                            anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
                         }
 
                         break;
                     case R.id.angleBass:
                         if (!angleBass.isChecked()) {
-                            angleBass.setButtonDrawable(R.drawable.angle_bass_active);
+                            angleBass.setBackgroundResource(R.drawable.angle_bass_active);
 
                             target += 5;
 
@@ -368,7 +391,7 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
                             if (target.toCharArray().length > 0) {
                                 target = removeTarget(target.toCharArray());
                             }
-                            angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                            angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
                         }
 
                         break;
@@ -408,25 +431,25 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
         if(target.length>0) {
             if (target[0] != '1') {
                 if (target[0] == '2') {
-                    auto.setButtonDrawable(R.drawable.auto_passiv);
+                    auto.setBackgroundResource(R.drawable.auto_passiv);
                 } else if (target[0] == '3') {
-                    north.setButtonDrawable(R.drawable.north_passiv);
+                    north.setBackgroundResource(R.drawable.north_passiv);
                 } else if (target[0] == '4') {
-                    anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                    anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
                 } else if (target[0] == '5') {
-                    angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                    angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
                 }
             } else {
                 if (target[1] == '1') {
-                    centr.setButtonDrawable(R.drawable.centr_passiv);
+                    centr.setBackgroundResource(R.drawable.centr_passiv);
                 } else if (target[1] == '2') {
-                    auto.setButtonDrawable(R.drawable.auto_passiv);
+                    auto.setBackgroundResource(R.drawable.auto_passiv);
                 } else if (target[1] == '3') {
-                    north.setButtonDrawable(R.drawable.north_passiv);
+                    north.setBackgroundResource(R.drawable.north_passiv);
                 } else if (target[1] == '4') {
-                    anniversary.setButtonDrawable(R.drawable.anniversary_passiv);
+                    anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
                 } else if (target[1] == '5') {
-                    angleBass.setButtonDrawable(R.drawable.angle_bass_passive);
+                    angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
                 }
             }
         }
@@ -440,5 +463,28 @@ class MainActivity extends Activity implements View.OnClickListener, View.OnTouc
         return str;
     }
 
+    public void mastabation(){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        width = displayMetrics.widthPixels;
+        height = displayMetrics.heightPixels;
 
+        if(width>=320&&height>=480) {
+            LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (int) (height * 0.3f + 0.5f));
+            menu.setLayoutParams(params1);
+            pedestrian.setLayoutParams(params1);
+            driver.setLayoutParams(params1);
+
+            LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (int) (height * 0.13f + 0.5f));
+            centr.setLayoutParams(params2);
+            auto.setLayoutParams(params2);
+            north.setLayoutParams(params2);
+            anniversary.setLayoutParams(params2);
+            angleBass.setLayoutParams(params2);
+        }
+    }
 }

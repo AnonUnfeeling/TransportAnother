@@ -3,10 +3,10 @@
 
     <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею</string>
 
-    <string name="count_drivers">К-сть водіїв</string>
-    <string name="count_people">К-сть попутників</string>
+    <string name="count_drivers">К-сть водіїв в напрямку</string>
+    <string name="count_people">К-сть попутників в напрямку</string>
 
-    <string name="distation">Відстань до контакту:</string>
+    <string name="distation">Відстань до контакту</string>
 
     <string name="you_status">Ваш статус</string>
     <string name="reting_pasage">Рейтинг від пасажирів</string>
@@ -14,6 +14,18 @@
     <string name="reting_driver">Рейтинг від водіїв</string>
     <string name="count_driver">К-сть водіїв</string>
 
-    <string name="retry_search">Цілі незнайдено, виконуэться повторний пошук у фоновому режимі..</string>
+    <string name="contact">Відбувся контакт</string>
+
+    <string name="retry_search">Триває пошук...</string>
+
+    <string name="centr_info">Центр</string>
+    <string name="auto_info">Автовокзал</string>
+    <string name="north_info">Північний</string>
+    <string name="ubil_info">Ювілейний</string>
+    <string name="bass_info">Басів Кут</string>
+
+    <string name="contact_end">Контакт завершився</string>
+    <string name="you_emotion">Ваші враження</string>
+    <string name="warrning">Увага! Поставтеся до вибору відповідально. Ваш вибір впливає на рейтинг людини з якою Ви контактували</string>
 
 </resources>
