@@ -3,6 +3,8 @@
 
     <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею</string>
 
+    <string name="loadSettings">Завантажуються ваші персональні дані</string>
+
     <string name="count_drivers">К-сть водіїв в напрямку</string>
     <string name="count_people">К-сть попутників в напрямку</string>
 
@@ -16,7 +18,7 @@
 
     <string name="contact">Відбувся контакт</string>
 
-    <string name="retry_search">Триває пошук...</string>
+    <string name="retry_search">Триває пошук…</string>
 
     <string name="centr_info">Центр</string>
     <string name="auto_info">Автовокзал</string>

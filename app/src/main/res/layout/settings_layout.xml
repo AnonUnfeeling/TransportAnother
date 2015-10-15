@@ -9,7 +9,7 @@
 
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#646a7a" >
 
     <LinearLayout
@@ -23,21 +23,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/back"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:background="@drawable/menu_end"
             android:adjustViewBounds="false"
             tools:ignore="ContentDescription" />
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/title"
             android:background="@drawable/title_settings"
-            android:layout_toEndOf="@+id/back"
             tools:ignore="ContentDescription,RtlHardcoded"
-            android:layout_toRightOf="@+id/back"
             android:adjustViewBounds="false"
             android:layout_weight="1" />
     </LinearLayout>
@@ -60,7 +55,8 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true">
+                    android:layout_centerVertical="true"
+                    tools:ignore="UselessParent">
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -72,11 +68,7 @@
                             android:layout_height="match_parent"
                             android:id="@+id/statist"
                             android:layout_gravity="right"
-                            android:textSize="25dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentEnd="false"
-                            android:layout_alignParentBottom="true"
+                            android:textSize="25sp"
                             android:gravity="center"
                             android:textColor="@android:color/white"
                             tools:ignore="RtlHardcoded" />
@@ -95,13 +87,8 @@
                             android:textColor="#979ba6"
                             android:textSize="15sp"
                             tools:ignore="RtlHardcoded"
-                            android:layout_alignParentTop="false"
-                            android:layout_alignParentBottom="false"
-                            android:layout_alignWithParentIfMissing="false"
                             android:gravity="center"
                             android:layout_marginLeft="10dp"
-                            android:layout_alignParentStart="false"
-                            android:layout_alignParentEnd="false"
                             android:layout_weight="1"
                             android:layout_marginTop="10dp" />
 
@@ -112,8 +99,7 @@
                             android:textSize="17sp"
                             android:textColor="#fffefd"
                             android:layout_marginLeft="15dp"
-                            tools:ignore="RtlHardcoded"
-                            android:layout_centerVertical="true"
+                            tools:ignore="RtlHardcoded,RtlSymmetry"
                             android:gravity="center"
                             android:layout_weight="1"
                             android:layout_marginTop="5dp"
@@ -137,7 +123,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    tools:ignore="RelativeOverlap">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -157,13 +144,10 @@
                         android:layout_height="wrap_content"
                         android:text="@string/count_pasage"
                         android:id="@+id/cp"
-                        android:layout_alignParentStart="false"
                         android:textColor="#979ba6"
                         android:textSize="15sp"
-                        android:layout_alignParentLeft="true"
                         android:layout_marginLeft="10dp"
                         tools:ignore="RtlHardcoded"
-                        android:layout_below="@+id/rfp"
                         android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:layout_weight="1" />
@@ -174,30 +158,24 @@
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true">
+                    android:layout_alignParentRight="true"
+                    tools:ignore="RtlHardcoded">
 
                     <TextView
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/ratingForPasag"
-                        android:layout_alignParentTop="true"
                         android:textColor="#979ba6"
                         android:textSize="17sp"
                         android:textStyle="bold"
-                        android:layout_alignParentEnd="false"
-                        android:layout_alignParentBottom="false"
                         tools:ignore="RtlHardcoded"
                         android:gravity="center"
-                        android:layout_alignParentRight="true"
                         android:layout_weight="1" />
 
                     <TextView
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/coutPasag"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentRight="true"
                         android:gravity="center"
                         android:textColor="#979ba6"
                         android:textSize="17sp"
@@ -218,17 +196,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:layout_centerVertical="true">
+                    android:layout_centerVertical="true"
+                    tools:ignore="RelativeOverlap">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/reting_driver"
                         android:id="@+id/rfd"
-                        android:layout_alignParentStart="true"
                         android:textColor="#979ba6"
                         android:textSize="15sp"
-                        android:layout_alignParentLeft="true"
                         android:layout_marginLeft="10dp"
                         tools:ignore="RtlHardcoded"
                         android:layout_marginTop="10dp"
@@ -240,12 +217,9 @@
                         android:layout_height="wrap_content"
                         android:text="@string/count_driver"
                         android:id="@+id/cd"
-                        android:layout_alignParentStart="true"
                         android:textColor="#979ba6"
                         android:textIsSelectable="false"
                         android:textSize="15sp"
-                        android:layout_below="@+id/rfd"
-                        android:layout_alignParentLeft="true"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="5dp"
                         tools:ignore="RtlHardcoded"
@@ -257,7 +231,8 @@
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true">
+                    android:layout_alignParentRight="true"
+                    tools:ignore="RtlHardcoded">
 
                     <TextView
                         android:layout_width="80dp"
@@ -266,27 +241,20 @@
                         android:textSize="17sp"
                         android:textColor="#979ba6"
                         android:textStyle="bold"
-                        android:layout_alignParentEnd="false"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentStart="false"
-                        android:layout_alignParentBottom="false"
                         tools:ignore="RtlHardcoded"
-                        android:layout_alignParentRight="true"
                         android:layout_weight="1" />
 
                     <TextView
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/countDriver"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentRight="true"
                         android:gravity="center"
                         android:textColor="#979ba6"
                         android:textSize="17sp"
                         android:textStyle="bold"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        tools:ignore="RtlHardcoded" />
                 </LinearLayout>
 
             </RelativeLayout>

@@ -18,23 +18,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/back"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/arrow" />
+            android:background="@drawable/arrow"
+            tools:ignore="ContentDescription" />
 
         <ImageButton
-            tools:ignore="RtlHardcoded"
-            android:layout_width="match_parent"
+            tools:ignore="ContentDescription,RtlHardcoded"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/sos"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/back"
-            android:layout_toEndOf="@+id/back"
             android:background="@drawable/sos_passiv"
-            android:adjustViewBounds="false"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -54,7 +46,8 @@
             android:textSize="15sp"
             android:layout_gravity="center_vertical"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            tools:ignore="RtlHardcoded" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -64,7 +57,7 @@
             android:textColor="#fffdfc"
             android:textSize="20sp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp" />
+            tools:ignore="RtlHardcoded" />
     </LinearLayout>
 
     <LinearLayout
@@ -92,7 +85,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/info"
         android:id="@+id/golos"
-        android:background="#424756">
+        android:background="#424756"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:orientation="vertical"
@@ -104,10 +98,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/positiv"
-                android:layout_below="@+id/info"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:background="@drawable/hand_up" />
+                android:background="@drawable/hand_up"
+                tools:ignore="ContentDescription" />
         </LinearLayout>
 
         <LinearLayout
@@ -120,10 +112,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/negativ"
-                android:layout_below="@+id/info"
-                android:layout_toRightOf="@+id/positiv"
-                android:layout_toEndOf="@+id/positiv"
-                android:background="@drawable/hand_down" />
+                android:background="@drawable/hand_down"
+                tools:ignore="ContentDescription" />
         </LinearLayout>
 
     </LinearLayout>

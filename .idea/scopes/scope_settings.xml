@@ -1,0 +1,9 @@
+<component name="DependencyValidationManager">
+  <state>
+    <unnamed_scope value="lib:*..*" />
+    <unnamed_scope value="src:*..*" />
+    <deny_rule from_scope="lib:*..*" to_scope="src:*..*" is_deny="true" />
+    <deny_rule from_scope="lib:*..*" to_scope="src:*..*" is_deny="true" />
+    <deny_rule from_scope="lib:*..*" to_scope="src:*..*" is_deny="true" />
+  </state>
+</component>

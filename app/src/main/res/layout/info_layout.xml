@@ -19,23 +19,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/back"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:background="@drawable/arrow" />
 
         <ImageButton
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/sos"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/back"
-            android:layout_toEndOf="@+id/back"
             android:background="@drawable/sos_passiv"
             android:adjustViewBounds="false"
             tools:ignore="RtlHardcoded"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -56,9 +48,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/round"
-                android:layout_alignTop="@+id/lengthFromContact"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
                 android:background="@drawable/around" />
         </LinearLayout>
 
@@ -72,14 +61,16 @@
             android:layout_marginRight="73dp"
             android:id="@+id/backgraundContact"
             android:layout_alignParentRight="true"
-            android:gravity="right">
+            android:gravity="right"
+            tools:ignore="RtlHardcoded">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/contactStat"
                 android:background="@drawable/cross"
-                android:layout_gravity="right" />
+                android:layout_gravity="right"
+                tools:ignore="RtlHardcoded" />
         </LinearLayout>
 
         <TextView
@@ -90,7 +81,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -98,9 +90,10 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/testDis"
             android:textColor="#fffefd"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_marginTop="40dp"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -123,7 +116,8 @@
             android:textSize="16sp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            tools:ignore="RtlHardcoded" />
 
         <RelativeLayout
             android:orientation="horizontal"
@@ -131,7 +125,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/statistics"
             android:id="@+id/centr_stat"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            tools:ignore="RtlHardcoded">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -150,7 +145,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentLeft="false"
                 tools:ignore="RtlHardcoded,TextViewEdits"
-                android:text="1"
                 android:textSize="17sp"
                 android:gravity="center"
                 android:layout_centerInParent="true" />
@@ -163,7 +157,8 @@
                 android:layout_toRightOf="@+id/imageView8"
                 android:layout_marginLeft="10dp"
                 android:textSize="17sp"
-                android:textColor="#979ba6" />
+                android:textColor="#979ba6"
+                tools:ignore="RelativeOverlap,RtlHardcoded" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -172,7 +167,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/auto_stat"
             android:layout_below="@+id/centr_stat"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            tools:ignore="RtlHardcoded">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -189,7 +185,6 @@
                 android:textColor="#979ba6"
                 android:inputType="number"
                 tools:ignore="RtlHardcoded,TextViewEdits"
-                android:text="2"
                 android:textSize="17sp"
                 android:layout_alignParentRight="true"
                 android:gravity="center"
@@ -203,7 +198,8 @@
                 android:layout_toRightOf="@+id/imageView9"
                 android:layout_marginLeft="10dp"
                 android:textSize="17sp"
-                android:textColor="#979ba6" />
+                android:textColor="#979ba6"
+                tools:ignore="RelativeOverlap,RtlHardcoded" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -213,7 +209,8 @@
             android:id="@+id/north_stat"
             android:layout_below="@+id/auto_stat"
             android:layout_alignParentEnd="false"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            tools:ignore="RtlHardcoded">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -230,7 +227,6 @@
                 android:textColor="#979ba6"
                 android:inputType="number"
                 tools:ignore="RtlHardcoded,TextViewEdits"
-                android:text="3"
                 android:textSize="17sp"
                 android:layout_alignParentEnd="false"
                 android:gravity="center"
@@ -245,7 +241,8 @@
                 android:layout_toRightOf="@+id/imageView10"
                 android:layout_marginLeft="10dp"
                 android:textSize="17sp"
-                android:textColor="#979ba6" />
+                android:textColor="#979ba6"
+                tools:ignore="RelativeOverlap,RtlHardcoded" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -254,7 +251,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/ubil_stat"
             android:layout_below="@+id/north_stat"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            tools:ignore="RtlHardcoded">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -270,7 +268,6 @@
                 android:id="@+id/ubil_count"
                 android:textColor="#979ba6"
                 tools:ignore="RtlHardcoded"
-                android:text="4"
                 android:textSize="17sp"
                 android:layout_alignParentRight="true"
                 android:gravity="center"
@@ -285,7 +282,8 @@
                 android:layout_toRightOf="@+id/imageView11"
                 android:layout_marginLeft="10dp"
                 android:textSize="17sp"
-                android:textColor="#979ba6" />
+                android:textColor="#979ba6"
+                tools:ignore="RelativeOverlap,RtlHardcoded" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -294,7 +292,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/bass_stat"
             android:layout_below="@+id/ubil_stat"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            tools:ignore="RtlHardcoded">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -310,7 +309,6 @@
                 android:id="@+id/bass_cout"
                 android:textColor="#979ba6"
                 tools:ignore="RtlHardcoded,TextViewEdits"
-                android:text="5"
                 android:textSize="17sp"
                 android:layout_gravity="right"
                 android:layout_alignParentEnd="false"
@@ -323,10 +321,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/bass_info"
                 android:id="@+id/textView6"
-                android:layout_toRightOf="@+id/imageView12"
                 android:layout_marginLeft="10dp"
                 android:textSize="17sp"
-                android:textColor="#979ba6" />
+                android:textColor="#979ba6"
+                tools:ignore="RelativeOverlap,RtlHardcoded"
+                android:layout_toRightOf="@+id/imageView12" />
         </RelativeLayout>
 
     </RelativeLayout>

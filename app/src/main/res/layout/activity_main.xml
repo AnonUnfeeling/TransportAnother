@@ -5,12 +5,12 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
-    android:background="@android:color/black"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="Overdraw">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@android:color/black"
         tools:ignore="Overdraw">
 
@@ -18,7 +18,8 @@
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#424756">
+        android:background="#424756"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -42,11 +43,11 @@
             android:layout_weight="1">
 
             <ImageButton
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
                 android:id="@+id/pedestrian"
             android:layout_weight="1"
-                tools:ignore="ContentDescription"
+                tools:ignore="ContentDescription,NestedWeights"
                 android:background="@drawable/pedestrian_passiv"
                 android:adjustViewBounds="false" />
         </LinearLayout>
@@ -59,12 +60,12 @@
             android:layout_weight="1">
 
             <ImageButton
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/driver_passiv"
             android:id="@+id/driver"
             android:layout_weight="1"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription,NestedWeights" />
         </LinearLayout>
 
     </LinearLayout>
@@ -103,9 +104,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/anniversary"
                 android:background="@drawable/anniversary_passiv"
-                android:allowUndo="false"
-                android:clickable="false"
-                android:contextClickable="false"
                 android:button="@android:color/transparent" />
 
             <CheckBox
