@@ -1,14 +1,15 @@
 <resources>
-    <string name="app_name">Transport Another</string>
+    <string name="app_name">Підвези Іншого</string>
 
-    <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею</string>
+    <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею та перезапустіть додаток</string>
 
     <string name="loadSettings">Завантажуються ваші персональні дані</string>
 
     <string name="count_drivers">К-сть водіїв в напрямку</string>
     <string name="count_people">К-сть попутників в напрямку</string>
 
-    <string name="distation">Відстань до контакту</string>
+    <string name="distationForDriver">Відстань до водія</string>
+    <string name="distationForPedestrian">Відстань до пішохода</string>
 
     <string name="you_status">Ваш статус</string>
     <string name="reting_pasage">Рейтинг від пасажирів</string>
@@ -25,6 +26,8 @@
     <string name="north_info">Північний</string>
     <string name="ubil_info">Ювілейний</string>
     <string name="bass_info">Басів Кут</string>
+
+    <string name="driver_status">Статус водія</string>
 
     <string name="contact_end">Контакт завершився</string>
     <string name="you_emotion">Ваші враження</string>

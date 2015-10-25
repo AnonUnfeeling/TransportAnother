@@ -16,7 +16,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/layout"
+        android:id="@+id/title_layout"
         android:background="#2E313E">
 
         <ImageButton
@@ -41,7 +41,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layout">
+            android:layout_below="@+id/title_layout">
 
 
             <RelativeLayout
