@@ -70,6 +70,7 @@ public class TransportAnother extends Service implements LocationListener {
 
             if (data[0] != 0) {
                 idPing = (int) data[0];
+                target = (int) data[8];
                 distation = Info.gps2m(data[1], data[2], this.location.getLatitude(), this.location.getLongitude());
             } else {
                 idPing = 0;
@@ -126,7 +127,9 @@ public class TransportAnother extends Service implements LocationListener {
                             startActivity(new Intent(this,StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("isExit",true));
                         }else{
                             if (!isShowStartContact) {
-                                startActivity(new Intent(this, StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("target", target));
+                                startActivity(new Intent(this, StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("target", target)
+                                        .putExtra("statusContact",workWithDataBase.contactStatus(idPing))
+                                        .putExtra("id",id));
                                 isShowStartContact = true;
                             }
                         }
@@ -148,6 +151,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                         if(distation>100){
                             startActivity(new Intent(this,Rating.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("id", id));
+                            stopService(new Intent(this, TransportAnother.class));
                         }else {
                             Intent in = new Intent("Contact_start")
                                     .putExtra("isContact", true)
@@ -172,6 +176,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                     if (data[0] != 0) {
                         idPing = (int) data[0];
+                        target = (int) data[8];
                         distation = Info.gps2m(data[1], data[2], this.location.getLatitude(), this.location.getLongitude());
 
                         Intent in = new Intent("Info_start_online")

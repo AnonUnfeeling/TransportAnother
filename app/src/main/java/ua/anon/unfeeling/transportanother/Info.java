@@ -18,8 +18,6 @@ import android.widget.TextView;
 
 import com.example.hjk.transportanother.R;
 
-import java.util.concurrent.TimeUnit;
-
 @SuppressWarnings("MismatchedReadAndWriteOfArray")
 public class Info extends Activity implements View.OnClickListener{
 
@@ -34,6 +32,7 @@ public class Info extends Activity implements View.OnClickListener{
     private final double[] coo = new double[2];
     private final double[] cooSos = new double[2];
     private ImageButton back;
+    private boolean isSendSos = true;
     private ImageView round,contactStat;
     private LinearLayout backgroungRound, backgroundContact;
 
@@ -99,8 +98,6 @@ public class Info extends Activity implements View.OnClickListener{
         sos.setOnClickListener(this);
     }
 
-
-
     private void setBackground(char[] target){
         for (char aTarget : target) {
             if (aTarget == '1') {
@@ -141,12 +138,17 @@ public class Info extends Activity implements View.OnClickListener{
                             progressDialog.dismiss();
                         }
 
-                        contactStat.setBackgroundResource(R.drawable.ok);
+                        contactStat.setBackgroundResource(R.drawable.arrow_up);
 
                         final int distantn = intent.getIntExtra("dist", 0);
 
-                        lengthFromContact.setText("");
-                        lengthFromContact.setText(getResources().getString(R.string.distation));
+                        if(driver==1) {
+                            lengthFromContact.setText("");
+                            lengthFromContact.setText(getResources().getString(R.string.distationForPedestrian));
+                        }else {
+                            lengthFromContact.setText("");
+                            lengthFromContact.setText(getResources().getString(R.string.distationForDriver));
+                        }
 
                         distation.setText(distantn + "м");
 
@@ -197,8 +199,17 @@ public class Info extends Activity implements View.OnClickListener{
 
                     final int distantn = intent.getIntExtra("dist", -1);
 
-                    lengthFromContact.setText("");
-                    lengthFromContact.setText(getResources().getString(R.string.distation));
+                    if(progressDialog!=null) {
+                        progressDialog.dismiss();
+                    }
+
+                    if(driver==1) {
+                        lengthFromContact.setText("");
+                        lengthFromContact.setText(getResources().getString(R.string.distationForPedestrian));
+                    }else {
+                        lengthFromContact.setText("");
+                        lengthFromContact.setText(getResources().getString(R.string.distationForDriver));
+                    }
 
                     contactStat.setBackgroundResource(R.drawable.arrow_up);
 
@@ -210,8 +221,17 @@ public class Info extends Activity implements View.OnClickListener{
                     if(intent.getBooleanExtra("isContact",false)) {
                         contactStat.setBackgroundResource(R.drawable.ok);
 
-                        lengthFromContact.setText("");
-                        lengthFromContact.setText(getResources().getString(R.string.distation));
+                        if(progressDialog!=null) {
+                            progressDialog.dismiss();
+                        }
+
+                        if(driver==1) {
+                            lengthFromContact.setText("");
+                            lengthFromContact.setText(getResources().getString(R.string.distationForPedestrian));
+                        }else {
+                            lengthFromContact.setText("");
+                            lengthFromContact.setText(getResources().getString(R.string.distationForDriver));
+                        }
 
                         distation.setText(distantn + "м");
                     }else {
@@ -295,6 +315,9 @@ public class Info extends Activity implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
+                LinearLayout headLayout = (LinearLayout) findViewById(R.id.headLayout);
+                headLayout.setBackgroundColor(Color.parseColor("#52596B"));
+
                 Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
                 intent.putExtra("enabled", false);
                 sendBroadcast(intent);
@@ -316,22 +339,21 @@ public class Info extends Activity implements View.OnClickListener{
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            for (int i = 0; i < 100; i++) {
-                                if(gps2m(coo[0],coo[1],cooSos[0],cooSos[1])==200) {
+                            if(isSendSos) {
+                                if (gps2m(coo[0], coo[1], cooSos[0], cooSos[1]) >= 200) {
 
                                     workWithDataBase.sos(id, 0, coo[0], coo[1]);
 
                                     cooSos[0] = coo[0];
                                     cooSos[1] = coo[1];
-
-                                    try {
-                                        TimeUnit.MINUTES.sleep(21);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
                                 }
-                            }
+                            }else {
+                                workWithDataBase.sos(id, 0, coo[0], coo[1]);
+                                isSendSos = true;
 
+                                cooSos[0] = coo[0];
+                                cooSos[1] = coo[1];
+                            }
                         }
                     }).start();
                 }else {

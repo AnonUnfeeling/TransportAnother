@@ -85,6 +85,7 @@ class WorkWithDataBase{
             statement.registerOutParameter(1, Types.INTEGER);
             statement.setInt(2, driver);
             statement.setInt(3,target);
+            statement.registerOutParameter(3, Types.INTEGER);
             statement.setDouble(4, x);
             statement.setDouble(5, y);
             statement.registerOutParameter(4, Types.DOUBLE);
@@ -105,6 +106,7 @@ class WorkWithDataBase{
             data[5] = statement.getInt(9);
             data[6] = statement.getInt(10);
             data[7] = statement.getInt(11);
+            data[8] = statement.getInt(3);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -123,7 +125,7 @@ class WorkWithDataBase{
     }
 
     public double[] onlineStart(int id, int driver, int target, double x, double y){
-        double[] data = new double[8];
+        double[] data = new double[9];
         try {
             connection = setInstance();
             CallableStatement statement = connection.prepareCall("call online_start(?,?,?,?,?,?,?,?,?,?)");
@@ -131,6 +133,7 @@ class WorkWithDataBase{
             statement.registerOutParameter(1, Types.INTEGER);
             statement.setInt(2, driver);
             statement.setInt(3, target);
+            statement.registerOutParameter(3, Types.INTEGER);
             statement.setDouble(4, x);
             statement.registerOutParameter(4, Types.DOUBLE);
             statement.setDouble(5, y);
@@ -143,6 +146,7 @@ class WorkWithDataBase{
             statement.executeQuery();
 
             data[0] = statement.getInt(1);
+            data[8] = statement.getInt(3);
             data[1] = statement.getDouble(4);
             data[2] = statement.getDouble(5);
             data[3] = statement.getInt(6);
@@ -190,6 +194,25 @@ class WorkWithDataBase{
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String contactStatus (int id){
+        String status="";
+        try {
+            connection = setInstance();
+
+            CallableStatement statement = connection.prepareCall("call contact_ (?)");
+
+            statement.setInt(1, id);
+            statement.registerOutParameter(2, Types.VARCHAR);
+            statement.executeQuery();
+
+            status = statement.getString(2);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return status;
     }
 
     public int contact (int idUser, int idDriver, double x, double y, int driver){

@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
@@ -22,7 +24,9 @@ import android.widget.Toast;
 
 import com.example.hjk.transportanother.R;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
@@ -35,28 +39,19 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private CheckBox anniversary;
     private CheckBox centr;
     private CheckBox angleBass;
-    private String target="0";
+    private String target="";
     private int id=-1;
     private int driv;
+    private boolean isOnline = false;
     private LinearLayout layoutForPedestrian,layoutForDriver;
     private int[] data;
     private boolean flagForLoginProcedure = false;
     private ProgressDialog progressDialog;
-    private final Thread thread =  new Thread(new Runnable() {
+    private SelectedTarget selectedTarget = new SelectedTarget();
+    Thread startThread = new Thread(new Runnable() {
         @Override
         public void run() {
-            for (int i = 0; i < 5; i++) {
-                if (i == 4) {
-                    if(target.toCharArray().length>0) {
-                        counting(Integer.parseInt(target));
-                    }
-                }
-                try {
-                    TimeUnit.SECONDS.sleep(2);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            data = workWithDataBase.setNumberPhone(getNumberPhone());
         }
     });
 
@@ -69,19 +64,13 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         if (checkAccess()) {
             if(!flagForLoginProcedure) {
 
-               Thread startThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        data = workWithDataBase.setNumberPhone(getNumberPhone());
-                    }
-                });
-
                 startThread.start();
 
                 try {
-                    startThread.join() ;
-                        id = data[0];
-                        driv = data[1];
+                    startThread.join();
+                    id = data[0];
+                    driv = data[1];
+                    isOnline = true;
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -90,14 +79,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 flagForLoginProcedure = true;
             }
 
-            if(driv==0){
+            if(loadIsDriver()==0){
                 layoutForPedestrian = (LinearLayout) findViewById(R.id.layoutForPedestrian);
                 layoutForPedestrian.setBackgroundColor(Color.parseColor("#2E313E"));
 
                 pedestrian.setBackgroundResource(R.drawable.pedestrian_activ);
 
                 driver.setBackgroundResource(R.drawable.driver_passiv);
-            }else if(driv==1){
+            }else if(loadIsDriver()==1){
                 layoutForDriver = (LinearLayout) findViewById(R.id.layoutForDriver);
                 layoutForDriver.setBackgroundColor(Color.parseColor("#2E313E"));
 
@@ -130,10 +119,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             if (id != -1) {
                 workWithDataBase.onlineEnd(id);
             }
+        }
 
-            if(thread.isAlive()){
-                thread.interrupt();
-            }
+        if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING){
+            selectedTarget.cancel(true);
+        }
+
+        if(startThread.isAlive()){
+            startThread.interrupt();
         }
     }
 
@@ -165,6 +158,18 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
         driver = (ImageButton) findViewById(R.id.driver);
         driver.setOnClickListener(this);
+    }
+
+    private void saveIsDriver(int isDriver){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("isDriver",isDriver);
+        editor.apply();
+    }
+
+    private int loadIsDriver (){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        return preferences.getInt("isDriver", 1);
     }
 
     private Long getNumberPhone(){
@@ -217,6 +222,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
                 driv = 1;
 
+                saveIsDriver(driv);
+
                 break;
             case R.id.pedestrian:
                 layoutForDriver = (LinearLayout) findViewById(R.id.layoutForDriver);
@@ -232,40 +239,55 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
                 driv = 0;
 
+                saveIsDriver(driv);
+
                 break;
             case R.id.menu:
-                startActivity(new Intent(this, Settings.class).putExtra("id", id));
+                menu.setBackgroundColor(Color.parseColor("#52596B"));
+                if(progressDialog!=null){
+                    progressDialog.dismiss();
+                }
+
+                if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING){
+                    selectedTarget.cancel(true);
+                }
+
+                startActivity(new Intent(this, ua.anon.unfeeling.transportanother.Settings.class).putExtra("id", id));
 
                 break;
         }
     }
 
-    private void startService(final int target){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (checkAccess()) {
-                    startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
-                            .putExtra("driver", driv).putExtra("target", target));
-
-                } else {
-                    Looper.prepare();
-                    accessError();
-                    Looper.loop();
-                }
-            }
-        }).start();
-    }
-
     private void counting(final int target) {
         Looper.prepare();
-        progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                startService(target);
+        if (checkAccess()) {
+            progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
+            if(isOnline) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
+                                .putExtra("driver", driv).putExtra("target", target));
+                    }
+                }).start();
+            }else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startThread.start();
+                        try {
+                            startThread.join();
+                            startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", data[0])
+                                    .putExtra("driver", driv).putExtra("target", target));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
-        }).start();
+        } else {
+            accessError();
+        }
         Looper.loop();
     }
 
@@ -280,26 +302,21 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_DOWN:
                 switch (v.getId()) {
                     case R.id.centr:
                         if (!centr.isChecked()) {
                             centr.setBackgroundResource(R.drawable.centr_activ);
 
-                            target += 1;
+                            target += "1";
+
                             if (target.toCharArray().length > 2) {
                                 target = removeTarget(target.toCharArray());
                             }
 
-                            if (!thread.isAlive()) {
-                                thread.start();
-                            } else {
-                                threadPause();
-                            }
+                            startSearch();
                         } else {
-                            if (target.toCharArray().length > 0) {
-                                target = removeTarget(target.toCharArray());
-                            }
+                            target = deleteTarget('1',target.toCharArray());
                             centr.setBackgroundResource(R.drawable.centr_passiv);
                         }
 
@@ -308,21 +325,16 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                         if (!auto.isChecked()) {
                             auto.setBackgroundResource(R.drawable.auto_activ);
 
-                            target += 2;
+                            target += "2";
 
                             if (target.toCharArray().length > 2) {
                                 target = removeTarget(target.toCharArray());
                             }
 
-                            if (!thread.isAlive()) {
-                                thread.start();
-                            } else {
-                                threadPause();
-                            }
-                        } else {
-                            if (target.toCharArray().length > 0) {
-                                target = removeTarget(target.toCharArray());
-                            }
+                            startSearch();
+                        }
+                         if(auto.isChecked()){
+                            target = deleteTarget('2',target.toCharArray());
                             auto.setBackgroundResource(R.drawable.auto_passiv);
                         }
 
@@ -337,15 +349,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 target = removeTarget(target.toCharArray());
                             }
 
-                            if (!thread.isAlive()) {
-                                thread.start();
-                            } else {
-                                threadPause();
-                            }
+                            startSearch();
                         } else {
-                            if (target.toCharArray().length > 0) {
-                                target = removeTarget(target.toCharArray());
-                            }
+                            target = deleteTarget('3',target.toCharArray());
                             north.setBackgroundResource(R.drawable.north_passiv);
                         }
                         break;
@@ -359,15 +365,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 target = removeTarget(target.toCharArray());
                             }
 
-                            if (!thread.isAlive()) {
-                                thread.start();
-                            } else {
-                                threadPause();
-                            }
+                            startSearch();
                         } else {
-                            if (target.toCharArray().length > 0) {
-                                target = removeTarget(target.toCharArray());
-                            }
+                            target = deleteTarget('4',target.toCharArray());
                             anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
                         }
 
@@ -382,15 +382,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 target = removeTarget(target.toCharArray());
                             }
 
-                            if (!thread.isAlive()) {
-                                thread.start();
-                            } else {
-                                threadPause();
-                            }
+                            startSearch();
                         } else {
-                            if (target.toCharArray().length > 0) {
-                                target = removeTarget(target.toCharArray());
-                            }
+                            target = deleteTarget('5',target.toCharArray());
                             angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
                         }
 
@@ -401,57 +395,37 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         return false;
     }
 
-    private void threadPause(){
-        Thread thread1= new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    thread.join(6000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+    private String deleteTarget(char index, char[] target){
+        String str="";
 
-            }
-        });
-
-        if(!thread1.isAlive()){
-            thread1.start();
-        }else {
-            try {
-                thread1.join(6000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        for (int i = 0; i < target.length; i++) {
+            if(target[i]!=index){
+                str+=target[i];
             }
         }
+
+        return str;
     }
 
     private String removeTarget(char[] target){
         String str="";
 
-        if(target.length>0) {
-            if (target[0] != '1') {
-                if (target[0] == '2') {
-                    auto.setBackgroundResource(R.drawable.auto_passiv);
-                } else if (target[0] == '3') {
-                    north.setBackgroundResource(R.drawable.north_passiv);
-                } else if (target[0] == '4') {
-                    anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
-                } else if (target[0] == '5') {
-                    angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
-                }
-            } else {
-                if (target[1] == '1') {
-                    centr.setBackgroundResource(R.drawable.centr_passiv);
-                } else if (target[1] == '2') {
-                    auto.setBackgroundResource(R.drawable.auto_passiv);
-                } else if (target[1] == '3') {
-                    north.setBackgroundResource(R.drawable.north_passiv);
-                } else if (target[1] == '4') {
-                    anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
-                } else if (target[1] == '5') {
-                    angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
-                }
-            }
+        switch (target[0]){
+            case '1':
+                centr.setBackgroundResource(R.drawable.centr_passiv);
+                break;
+            case '2':
+                auto.setBackgroundResource(R.drawable.auto_passiv);
+                break;
+            case '3':
+                north.setBackgroundResource(R.drawable.north_passiv);
+                break;
+            case '4':
+                anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
+                break;
+            case '5':
+                angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
+                break;
         }
 
         if(target.length>0) {
@@ -485,6 +459,55 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             north.setLayoutParams(params2);
             anniversary.setLayoutParams(params2);
             angleBass.setLayoutParams(params2);
+        }
+    }
+
+    private void startSearch(){
+        if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        selectedTarget.get(4, TimeUnit.SECONDS);
+                        selectedTarget.execute();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }else {
+            selectedTarget.execute();
+        }
+    }
+
+    class SelectedTarget extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            for (int i = 0; i < 5; i++) {
+                if (i == 4) {
+                    if(target.toCharArray().length>0) {
+                        counting(Integer.parseInt(target));
+                    }
+                }
+
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
         }
     }
 }

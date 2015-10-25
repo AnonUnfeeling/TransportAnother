@@ -3,6 +3,7 @@ package ua.anon.unfeeling.transportanother;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -11,8 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.example.hjk.transportanother.R;
-
-import java.util.concurrent.TimeUnit;
 
 @SuppressLint("Registered")
 public class Rating extends Activity implements View.OnClickListener {
@@ -94,6 +93,12 @@ public class Rating extends Activity implements View.OnClickListener {
     }
 
     @Override
+    public void onBackPressed() {
+        finish();
+        startActivity(new Intent(this,MainActivity.class));
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
@@ -110,16 +115,8 @@ public class Rating extends Activity implements View.OnClickListener {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            for (int i = 0; i < 100; i++) {
 
                                 new WorkWithDataBase().sos(id, 0, 0, 0);
-
-                                try {
-                                    TimeUnit.MINUTES.sleep(21);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
                         }
                     }).start();
                 }else {
@@ -128,12 +125,19 @@ public class Rating extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.positiv:
-                setRating(id,1);
+                LinearLayout pos_layout = (LinearLayout) findViewById(R.id.positiv_layout);
+                pos_layout.setBackgroundColor(Color.parseColor("#2E313E"));
+                setRating(id, 1);
+                positiv.setClickable(false);
                 negativ.setClickable(false);
+
                 break;
             case R.id.negativ:
-                setRating(id,-1);
+                LinearLayout neg_layout = (LinearLayout) findViewById(R.id.negativ_layout);
+                neg_layout.setBackgroundColor(Color.parseColor("#2E313E"));
+                setRating(id, -1);
                 positiv.setClickable(false);
+                negativ.setClickable(false);
 
                 break;
         }
