@@ -100,9 +100,11 @@ public class Settings extends Activity implements View.OnClickListener{
             public void onClick(View v) {
                 final LinearLayout titleLayout = (LinearLayout) findViewById(R.id.title_layout);
                 titleLayout.setBackgroundColor(Color.parseColor("#424756"));
-                Settings.this.finish();
-                startActivity(new Intent(Settings.this, MainActivity.class));
                 saveSettings(isCheck);
+
+                finish();
+
+                startActivity(new Intent(Settings.this, MainActivity.class));
             }
         });
 
@@ -110,11 +112,12 @@ public class Settings extends Activity implements View.OnClickListener{
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showAuthor==5){
-                    Toast.makeText(getApplicationContext(),"Create by AnonUnfeeling",Toast.LENGTH_LONG).show();
-                }else {
-                    showAuthor++;
-                }
+                Toast.makeText(getApplicationContext(), "Підвези іншого ©" +
+                        "\nАвтори:" +
+                        "\nГрисюк Андрій" +
+                        "\nРябунець Богдан" +
+                        "\nМахно Анна", Toast.LENGTH_LONG).show();
+                showAuthor = 0;
             }
         });
 

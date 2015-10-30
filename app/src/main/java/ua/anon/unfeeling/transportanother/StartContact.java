@@ -35,50 +35,10 @@ public class StartContact extends Activity {
         driver = getIntent().getIntExtra("driver",-1);
 
         TextView statusDriver = (TextView) findViewById(R.id.driverStatus);
+        System.out.println(getIntent().getStringExtra("statusContact"));
         statusDriver.setText(getIntent().getStringExtra("statusContact"));
 
-        ImageButton closeContact = (ImageButton) findViewById(R.id.closeContact);
-        closeContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
-                        .putExtra("driver", driver).putExtra("target", target));
-                finish();
-            }
-        });
-
-        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        MediaPlayer mp = MediaPlayer.create(this, R.raw.sound);
-
         ImageView signal = (ImageView) findViewById(R.id.signal);
-
-        boolean isExit = getIntent().getBooleanExtra("isExit", false);
-        if(isExit){
-            startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
-                    .putExtra("driver", driver).putExtra("target", target));
-            finish();
-        }
-
-        if(getSound()&&getVibr()){
-            for (int i = 0; i < 5; ) {
-                if(!mp.isPlaying()){
-                    vibrator.vibrate(1000);
-                    mp.start();
-                    i++;
-                }
-            }
-        }else if(getSound()){
-            for (int i = 0; i < 5; i++) {
-                if(!mp.isPlaying()){
-                    mp.start();
-                }
-            }
-        }else if(getVibr()){
-            for (int i = 0; i < 5; i++) {
-                vibrator.vibrate(1000);
-            }
-        }
 
         if (target == 1) {
             signal.setBackgroundColor(Color.parseColor("#fffdfc"));
@@ -90,6 +50,47 @@ public class StartContact extends Activity {
             signal.setBackgroundColor(Color.parseColor("#73e97e "));
         }else if(target ==5){
             signal.setBackgroundColor(Color.parseColor("#ff5564"));
+        }
+
+        ImageButton closeContact = (ImageButton) findViewById(R.id.closeContact);
+        closeContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
+                        .putExtra("driver", driver).putExtra("target", target));
+            }
+        });
+
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        MediaPlayer mp = MediaPlayer.create(this, R.raw.sound);
+
+        boolean isExit = getIntent().getBooleanExtra("isExit", false);
+        if(isExit){
+            System.exit(0);
+
+            startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
+                    .putExtra("driver", driver).putExtra("target", target));
+        }
+
+        if(getSound()&&getVibr()){
+            for (int i = 0; i < 2; ) {
+                if(!mp.isPlaying()){
+                    vibrator.vibrate(1000);
+                    mp.start();
+                    i++;
+                }
+            }
+        }else if(getSound()){
+            for (int i = 0; i < 2; i++) {
+                if(!mp.isPlaying()){
+                    mp.start();
+                }
+            }
+        }else if(getVibr()){
+            for (int i = 0; i < 2; i++) {
+                vibrator.vibrate(1000);
+            }
         }
     }
 

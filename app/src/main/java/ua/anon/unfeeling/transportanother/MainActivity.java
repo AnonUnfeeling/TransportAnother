@@ -184,7 +184,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     public void onBackPressed() {
-        finish();
+        System.exit(0);
     }
 
     @Override
@@ -242,11 +242,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         Looper.prepare();
         if (checkAccess()) {
             selectedTarget.cancel(true);
-            try {
-                progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+//            try {
+//                progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
 
             if(isOnline) {
                 new Thread(new Runnable() {

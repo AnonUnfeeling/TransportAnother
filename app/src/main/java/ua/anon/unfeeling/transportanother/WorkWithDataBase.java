@@ -221,13 +221,14 @@ class WorkWithDataBase{
         try {
             connection = setInstance();
 
-            CallableStatement statement = connection.prepareCall("call contact_ (?)");
+            CallableStatement statement = connection.prepareCall("call contact_status (?,?)");
 
             statement.setInt(1, id);
             statement.registerOutParameter(2, Types.VARCHAR);
             statement.executeQuery();
 
             status = statement.getString(2);
+            System.out.println(status);
         } catch (SQLException e) {
             e.printStackTrace();
         }

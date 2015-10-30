@@ -90,7 +90,7 @@ public class Rating extends Activity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        finish();
+        System.exit(0);
         startActivity(new Intent(this,MainActivity.class));
     }
 
@@ -98,7 +98,7 @@ public class Rating extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
-                finish();
+                System.exit(0);
                 startActivity(new Intent(this, MainActivity.class));
 
                 break;

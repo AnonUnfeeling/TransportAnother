@@ -25,7 +25,7 @@ public class Info extends Activity implements View.OnClickListener{
     private ImageButton sos;
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     private int id,driver,target;
-    private BroadcastReceiver service=null;
+    private BroadcastReceiver service;
     private ProgressDialog progressDialog;
     private boolean isCheckSos=false;
     @SuppressWarnings("MismatchedReadAndWriteOfArray")
