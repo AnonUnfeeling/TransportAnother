@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -23,7 +22,7 @@ public class TransportAnother extends Service implements LocationListener {
     private int countPingSet = 5;
     private int distation = 0, isContactFlag = 1,isCloseContact = 3;
     private Location location = null;
-    private boolean isShowStartContact = true;
+    private boolean isShowStartContact = true, isShowContactEnd = true;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -35,7 +34,6 @@ public class TransportAnother extends Service implements LocationListener {
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
-            System.out.println("network");
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
         } catch (Exception e) {
@@ -43,17 +41,13 @@ public class TransportAnother extends Service implements LocationListener {
         }
 
         try {
-            System.out.println("passive");
             locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-
         try {
-            System.out.println("gps");
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,165 +61,270 @@ public class TransportAnother extends Service implements LocationListener {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        this.location = location;
-        System.out.println(this.location.getLatitude() + " " + this.location.getLongitude());
+    double[] data;
 
-        double[] data;
+    @Override
+    public void onLocationChanged(final Location location) {
+        this.location = location;
+
         if (!flag) {
 
-            data = workWithDataBase.onlineStart(id, driver, target, this.location.getLatitude(), this.location.getLongitude());
+           Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    data = workWithDataBase.onlineStart(id, driver, target, location.getLatitude(), location.getLongitude());
+                }
+            });
 
-            if (data[0] != 0) {
-                idPing = (int) data[0];
-                target = (int) data[8];
-                distation = Info.gps2m(data[1], data[2], this.location.getLatitude(), this.location.getLongitude());
-            } else {
-                idPing = 0;
+            thread.start();
+
+            try {
+                thread.join();
+                if (data[0] != 0) {
+                    idPing = (int) data[0];
+                    target = (int) data[8];
+                    distation = Info.gps2m(data[1], data[2], location.getLatitude(), location.getLongitude());
+                } else {
+                    idPing = 0;
+                }
+
+                Intent in = new Intent("Info_start_online")
+                        .putExtra("dist", distation)
+                        .putExtra("centr", (int) data[3])
+                        .putExtra("auto", (int) data[4])
+                        .putExtra("north", (int) data[5])
+                        .putExtra("ubil", (int) data[6])
+                        .putExtra("bass", (int) data[7]);
+
+                sendBroadcast(in);
+
+                flag = true;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            Intent in = new Intent("Info_start_online")
-                    .putExtra("dist", distation)
-                    .putExtra("centr", (int) data[3])
-                    .putExtra("auto", (int) data[4])
-                    .putExtra("north", (int) data[5])
-                    .putExtra("ubil", (int) data[6])
-                    .putExtra("bass", (int) data[7]);
 
-            sendBroadcast(in);
 
-            flag = true;
         } else {
 
             startPing:
 
             if (idPing != 0) {
                 if (countDistantion < 1) {
-                    data = workWithDataBase.ping(id, idPing, driver, this.location.getLatitude(), this.location.getLongitude());
-                    if(data[2]==0) {
-                        if (distation != 0 && (distation - Info.gps2m(data[0], data[1], this.location.getLatitude()
-                                , this.location.getLongitude())) > -50) {
-
-                            distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
-                                    , this.location.getLongitude());
-
-                            if (distation < 1000) {
-                                countDistantion++;
-                            }
-
-                            Intent in = new Intent("Info_ping")
-                                    .putExtra("dist", distation);
-                            sendBroadcast(in);
-
-                            break startPing;
-                        } else {
-                            distation = 0;
-                            idPing = 0;
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            data = workWithDataBase.ping(id, idPing, driver, location.getLatitude(), location.getLongitude());
                         }
-                    }else {
-                        countDistantion+=10;
+                    });
+
+                    thread.start();
+
+                    try {
+                        thread.join();
+                        if (data[2] == 0) {
+                            if (distation != 0 && (distation - Info.gps2m(data[0], data[1], location.getLatitude()
+                                    , location.getLongitude())) > -50) {
+
+                                distation = Info.gps2m(data[0], data[1], location.getLatitude()
+                                        , location.getLongitude());
+
+                                if (distation < 1000) {
+                                    countDistantion++;
+                                }
+
+                                Intent in = new Intent("Info_ping")
+                                        .putExtra("dist", distation);
+                                sendBroadcast(in);
+
+                                break startPing;
+                            } else {
+                                distation = 0;
+                                idPing = 0;
+                            }
+                        } else {
+                            countDistantion += 10;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+
+
                 } else if (countDistantion >= 1) {
                     if (countDistantion < 2) {
 
-                        data = workWithDataBase.ping(id, idPing, driver, this.location.getLatitude(), this.location.getLongitude());
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                data = workWithDataBase.ping(id, idPing, driver, location.getLatitude(), location.getLongitude());
+                            }
+                        });
 
-                        distation = Info.gps2m(this.location.getLatitude(), this.location.getLongitude(), data[0], data[1]);
+                        thread.start();
 
-                        if (distation < 50) {
-                            if (isContactFlag == 0) {
-                                idContact = workWithDataBase.contact(id, idPing, this.location.getLatitude(), this.location.getLongitude(), driver);
+                        try {
+                            thread.join();
+                            distation = Info.gps2m(location.getLatitude(), location.getLongitude(), data[0], data[1]);
 
-                                countDistantion += 10;
+                            if (distation < 50) {
+                                if (isContactFlag == 0) {
 
-                                if(isShowStartContact==false) {
-                                    Intent in = new Intent("Contact")
-                                            .putExtra("isContact", true);
-                                    sendBroadcast(in);
+                                    Thread thread1 = new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            idContact = workWithDataBase.contact(id, idPing, location.getLatitude(), location.getLongitude(), driver);
+                                        }
+                                    });
+
+                                    thread1.start();
+
+                                    try {
+                                        thread1.join();
+
+                                        countDistantion += 10;
+
+                                        if (isShowStartContact == false) {
+                                            Intent in = new Intent("Contact")
+                                                    .putExtra("isContact", true);
+                                            sendBroadcast(in);
+                                        }
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                } else {
+                                    isContactFlag--;
+                                    break startPing;
                                 }
                             } else {
-                                isContactFlag--;
-                                break startPing;
-                            }
-                        } else {
-                            if (isShowStartContact) {
-                                startActivity(new Intent(this, StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("target", target)
-                                        .putExtra("statusContact", workWithDataBase.contactStatus(idPing))
-                                        .putExtra("id", id).putExtra("target", target).putExtra("driver", driver));
+                                if (isShowStartContact) {
+                                    startActivity(new Intent(TransportAnother.this, StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("target", target)
+                                            .putExtra("statusContact", workWithDataBase.contactStatus(idPing))
+                                            .putExtra("id", id).putExtra("target", target).putExtra("driver", driver));
 
-                                isShowStartContact = false;
+                                    isShowStartContact = false;
+                                }
                             }
+
+                            Intent in = new Intent("Contact_start")
+                                    .putExtra("isContact", true)
+                                    .putExtra("dist", distation)
+                                    .putExtra("contact", true);
+                            sendBroadcast(in);
+
+                            break startPing;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
 
-                        Intent in = new Intent("Contact_start")
-                                .putExtra("isContact", true)
-                                .putExtra("dist", distation)
-                                .putExtra("contact", true);
-                        sendBroadcast(in);
 
-                        break startPing;
                     } else {
                         countDistantion++;
 
-                        data = workWithDataBase.contactSet(id, this.location.getLatitude(), this.location.getLongitude());
-
-                        distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
-                                , this.location.getLongitude());
-
-                        if(distation>200){
-                            if(isCloseContact==0) {
-                                Intent in = new Intent("Contact_end");
-                                in.putExtra("id", idContact);
-                                sendBroadcast(in);
-                            }else {
-                                isCloseContact--;
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                data = workWithDataBase.contactSet(id, location.getLatitude(), location.getLongitude());
                             }
-                        }else {
-                            Intent in = new Intent("Contact_start")
-                                    .putExtra("isContact", true)
-                                    .putExtra("dist", 0)
-                                    .putExtra("contact", true);
-                            sendBroadcast(in);
-                        }
+                        });
 
-                        break startPing;
+                        thread.start();
+
+                        try {
+                            thread.join();
+
+                            distation = Info.gps2m(data[0], data[1], location.getLatitude()
+                                    , location.getLongitude());
+
+                            if (distation > 200) {
+                                if(isShowContactEnd) {
+                                    if (isCloseContact == 0) {
+                                        Intent in = new Intent("Contact_end");
+                                        in.putExtra("id", idContact);
+                                        sendBroadcast(in);
+
+                                        isShowContactEnd=false;
+                                    } else {
+                                        isCloseContact--;
+                                    }
+                                }
+                            } else {
+                                Intent in = new Intent("Contact_start")
+                                        .putExtra("isContact", true)
+                                        .putExtra("dist", 0)
+                                        .putExtra("contact", true);
+                                sendBroadcast(in);
+                            }
+
+                            break startPing;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
             } else {
                 if (countPingSet > 1) {
-                    workWithDataBase.pingSet(id, driver, this.location.getLatitude(), this.location.getLongitude());
-
-                    countPingSet--;
-                } else {
-                    data = workWithDataBase.search(id, driver, target, this.location.getLatitude(), this.location.getLongitude());
-
-                    if (data[0] != 0) {
-                        idPing = (int) data[0];
-                        if((int)data[8]!=-1){
-                            target = (int) data[8];
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            workWithDataBase.pingSet(id, driver, location.getLatitude(), location.getLongitude());
                         }
-                        distation = Info.gps2m(data[1], data[2], this.location.getLatitude(), this.location.getLongitude());
+                    });
 
-                        Intent in = new Intent("Info_start_online")
-                                .putExtra("dist", distation)
-                                .putExtra("centr", (int) data[3])
-                                .putExtra("auto", (int) data[4])
-                                .putExtra("north", (int) data[5])
-                                .putExtra("ubil", (int) data[6])
-                                .putExtra("bass", (int) data[7]);
+                    thread.start();
 
-                        sendBroadcast(in);
-                    }else {
-                        countPingSet = 5;
+                    try {
+                        thread.join();
+
+                        countPingSet--;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
 
-                    break startPing;
+                } else {
+
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            data = workWithDataBase.search(id, driver, target, location.getLatitude(), location.getLongitude());
+                        }
+                    });
+
+                    thread.start();
+
+                    try {
+                        thread.join();
+
+                        if (data[0] != 0) {
+                            idPing = (int) data[0];
+                            if ((int) data[8] != -1) {
+                                target = (int) data[8];
+                            }
+                            distation = Info.gps2m(data[1], data[2], location.getLatitude(), location.getLongitude());
+
+                            Intent in = new Intent("Info_start_online")
+                                    .putExtra("dist", distation)
+                                    .putExtra("centr", (int) data[3])
+                                    .putExtra("auto", (int) data[4])
+                                    .putExtra("north", (int) data[5])
+                                    .putExtra("ubil", (int) data[6])
+                                    .putExtra("bass", (int) data[7]);
+
+                            sendBroadcast(in);
+                        } else {
+                            countPingSet = 5;
+                        }
+
+                        break startPing;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
     }
+
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {

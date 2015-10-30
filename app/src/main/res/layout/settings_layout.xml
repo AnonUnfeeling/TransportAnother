@@ -25,8 +25,7 @@
             android:id="@+id/back"
             android:background="@drawable/menu_end"
             android:adjustViewBounds="false"
-            tools:ignore="ContentDescription"
-            android:layout_weight="1" />
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:layout_width="match_parent"

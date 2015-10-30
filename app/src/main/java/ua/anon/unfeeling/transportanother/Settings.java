@@ -193,10 +193,14 @@ public class Settings extends Activity implements View.OnClickListener{
 
         if(width >=320&& height >=480) {
 
-            LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     (int) (height * 0.3f + 0.5f));
-            back.setLayoutParams(params1);
+            back.setLayoutParams(params);
+
+            LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (int) (height * 0.3f + 0.5f));
             title.setLayoutParams(params1);
 
             RelativeLayout statusLayout = (RelativeLayout) findViewById(R.id.status);

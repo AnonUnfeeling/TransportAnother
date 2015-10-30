@@ -10,17 +10,18 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/headLayout"
-        android:background="#424756" >
+        android:background="#424756"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true">
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/back"
-            android:background="@drawable/arrow"
-            android:layout_weight="1" />
+            android:background="@drawable/arrow" />
 
         <ImageButton
             android:layout_width="match_parent"

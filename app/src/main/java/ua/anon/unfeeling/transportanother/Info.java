@@ -241,8 +241,6 @@ public class Info extends Activity implements View.OnClickListener{
                     }
                 }else if(intent.getAction().equals("Contact_end")){
 
-                    System.out.println("contact end");
-
                     if(service!= null){
 
                         try {
@@ -250,16 +248,13 @@ public class Info extends Activity implements View.OnClickListener{
                         }catch (Exception e){
                             e.printStackTrace();
                         }
-
-                        try{
-                            stopService(new Intent(Info.this, TransportAnother.class));
-                        }catch (Exception ex){
-                            ex.printStackTrace();
-                        }
                     }
 
-                    finish();
-
+                    try{
+                        stopService(new Intent(Info.this, TransportAnother.class));
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     startActivity(new Intent(Info.this, Rating.class).putExtra("id", intent.getIntExtra("id",-1)));
                 }else if(intent.getAction().equals("Contact")){
                     startActivity(new Intent(Info.this, StartContact.class).putExtra("isExit", true)
@@ -313,7 +308,13 @@ public class Info extends Activity implements View.OnClickListener{
         }
 
         if (id != -1) {
-            workWithDataBase.onlineEnd(id);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    workWithDataBase.onlineEnd(id);
+                }
+            }).start();
+
         }
         finish();
 
@@ -338,7 +339,6 @@ public class Info extends Activity implements View.OnClickListener{
                 headLayout.setBackgroundColor(Color.parseColor("#2E313E"));
 
                 close();
-                startActivity(new Intent(this, MainActivity.class));
 
                 break;
             case R.id.sos:
@@ -381,10 +381,14 @@ public class Info extends Activity implements View.OnClickListener{
         int height = displayMetrics.heightPixels;
 
         if(width >=320&& height >=480) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (int) (height * 0.3f + 0.5f));
+            sos.setLayoutParams(params);
+
             LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     (int) (height * 0.3f + 0.5f));
-            sos.setLayoutParams(params1);
             back.setLayoutParams(params1);
 
             LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
@@ -399,7 +403,6 @@ public class Info extends Activity implements View.OnClickListener{
                     (int) (height * 0.4f + 0.5f));
             params3.addRule(RelativeLayout.BELOW, R.id.mainInfo);
             stat.setLayoutParams(params3);
-
         }
     }
 }

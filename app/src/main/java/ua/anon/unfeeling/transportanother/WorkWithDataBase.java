@@ -12,30 +12,25 @@ class WorkWithDataBase{
     private static Connection connection;
 
     private static synchronized Connection setInstance(){
-//        if(connection==null) {
-//            try {
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        if(connection==null) {
+            try {
+                Class.forName("com.mysql.jdbc.Driver").newInstance();
+
+                connection = DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
+                        "oberigrv_carstop", "potq32ha");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }else {
+            return connection;
         }
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
-                             "oberigrv_carstop", "potq32ha");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-//            } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-//                e.printStackTrace();
-//            }
-//        }else {
-//            return connection;
-//        }
-//
+
         return connection;
     }
 

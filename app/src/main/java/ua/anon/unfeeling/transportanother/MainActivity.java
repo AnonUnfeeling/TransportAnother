@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private int[] data;
     private boolean flagForLoginProcedure = false;
     private ProgressDialog progressDialog;
-    private SelectedTarget selectedTarget = new SelectedTarget();
+    private SelectedTarget selectedTarget=null;
     Thread startThread = new Thread(new Runnable() {
         @Override
         public void run() {
@@ -185,7 +185,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     @Override
     public void onBackPressed() {
         finish();
-        super.onBackPressed();
     }
 
     @Override
@@ -225,7 +224,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
                 break;
             case R.id.menu:
-                menu.setBackgroundColor(Color.parseColor("#2E313E"));
+                LinearLayout menuLayout = (LinearLayout) findViewById(R.id.menuLayout);
+
+                menuLayout.setBackgroundColor(Color.parseColor("#2E313E"));
 
                 if(selectedTarget!=null){
                     selectedTarget.cancel(true);
@@ -251,6 +252,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        MainActivity.this.finish();
                         startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
                                 .putExtra("driver", driv).putExtra("target", target));
                     }
@@ -262,6 +264,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                         startThread.start();
                         try {
                             startThread.join();
+                            MainActivity.this.finish();
                             startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", data[0])
                                     .putExtra("driver", driv).putExtra("target", target));
                         } catch (InterruptedException e) {
@@ -445,10 +448,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         int height = displayMetrics.heightPixels;
 
         if(width >=320&& height >=480) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    (int) (height * 0.3f + 0.5f));
+            menu.setLayoutParams(params);
+
             LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     (int) (height * 0.3f + 0.5f));
-            menu.setLayoutParams(params1);
             pedestrian.setLayoutParams(params1);
             driver.setLayoutParams(params1);
 
@@ -464,6 +471,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     private void startSearch(){
+        selectedTarget = new SelectedTarget();
         if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING) {
             selectedTarget.cancel(true);
             selectedTarget = new SelectedTarget();
