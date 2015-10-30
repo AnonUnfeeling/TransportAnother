@@ -18,6 +18,8 @@ import com.example.hjk.transportanother.R;
 
 public class StartContact extends Activity {
 
+    private int id,target,driver;
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -28,6 +30,10 @@ public class StartContact extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_contact);
 
+        id = getIntent().getIntExtra("id",-1);
+        target = getIntent().getIntExtra("target",-1);
+        driver = getIntent().getIntExtra("driver",-1);
+
         TextView statusDriver = (TextView) findViewById(R.id.driverStatus);
         statusDriver.setText(getIntent().getStringExtra("statusContact"));
 
@@ -35,14 +41,9 @@ public class StartContact extends Activity {
         closeContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new WorkWithDataBase().contactEnd(getIntent().getIntExtra("id",-1),-1);
-                    }
-                }).start();
+                startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
+                        .putExtra("driver", driver).putExtra("target", target));
                 finish();
-                startActivity(new Intent(StartContact.this,Info.class));
             }
         });
 
@@ -54,10 +55,10 @@ public class StartContact extends Activity {
 
         boolean isExit = getIntent().getBooleanExtra("isExit", false);
         if(isExit){
+            startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
+                    .putExtra("driver", driver).putExtra("target", target));
             finish();
         }
-
-        int target = getIntent().getIntExtra("target", -1);
 
         if(getSound()&&getVibr()){
             for (int i = 0; i < 5; ) {

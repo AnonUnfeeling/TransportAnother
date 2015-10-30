@@ -13,16 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/headLayout"
-        android:background="#2E313E" >
+        android:background="#424756" >
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/back"
-            android:background="@drawable/arrow" />
+            android:background="@drawable/arrow"
+            android:layout_weight="1" />
 
         <ImageButton
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/sos"
             android:background="@drawable/sos_passiv"

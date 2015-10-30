@@ -5,24 +5,25 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 
 @SuppressWarnings("UnnecessaryBreak")
 public class TransportAnother extends Service implements LocationListener {
 
-    private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
+    private WorkWithDataBase workWithDataBase = new WorkWithDataBase();
 
     private boolean flag = false;
     private int id;
     private int driver;
     private int target;
-    private int idPing = 0;
-    private int countDistantion=0;
+    private int idPing = 0, idContact = 0;
+    private int countDistantion = 0;
     private int countPingSet = 5;
-    private int distation = 0;
+    private int distation = 0, isContactFlag = 1,isCloseContact = 3;
     private Location location = null;
-    private boolean isShowStartContact = false;
+    private boolean isShowStartContact = true;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -33,20 +34,26 @@ public class TransportAnother extends Service implements LocationListener {
         location = null;
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         try {
-            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
+            System.out.println("network");
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
+            System.out.println("passive");
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+        try {
+            System.out.println("gps");
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,12 +67,14 @@ public class TransportAnother extends Service implements LocationListener {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
+        System.out.println(this.location.getLatitude() + " " + this.location.getLongitude());
+
         double[] data;
         if (!flag) {
+
             data = workWithDataBase.onlineStart(id, driver, target, this.location.getLatitude(), this.location.getLongitude());
 
             if (data[0] != 0) {
@@ -77,7 +86,7 @@ public class TransportAnother extends Service implements LocationListener {
             }
 
             Intent in = new Intent("Info_start_online")
-                    .putExtra("dist",distation)
+                    .putExtra("dist", distation)
                     .putExtra("centr", (int) data[3])
                     .putExtra("auto", (int) data[4])
                     .putExtra("north", (int) data[5])
@@ -94,25 +103,28 @@ public class TransportAnother extends Service implements LocationListener {
             if (idPing != 0) {
                 if (countDistantion < 1) {
                     data = workWithDataBase.ping(id, idPing, driver, this.location.getLatitude(), this.location.getLongitude());
+                    if(data[2]==0) {
+                        if (distation != 0 && (distation - Info.gps2m(data[0], data[1], this.location.getLatitude()
+                                , this.location.getLongitude())) > -50) {
 
-                    if (distation != 0 && (distation - Info.gps2m(data[0], data[1], this.location.getLatitude()
-                            , this.location.getLongitude())) > -50) {
+                            distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
+                                    , this.location.getLongitude());
 
-                        distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
-                                , this.location.getLongitude());
+                            if (distation < 1000) {
+                                countDistantion++;
+                            }
 
-                        if (distation < 1000) {
-                            countDistantion++;
+                            Intent in = new Intent("Info_ping")
+                                    .putExtra("dist", distation);
+                            sendBroadcast(in);
+
+                            break startPing;
+                        } else {
+                            distation = 0;
+                            idPing = 0;
                         }
-
-                        Intent in = new Intent("Info_ping")
-                                .putExtra("dist", distation);
-                        sendBroadcast(in);
-
-                        break startPing;
                     }else {
-                        distation = 0;
-                        idPing = 0;
+                        countDistantion+=10;
                     }
                 } else if (countDistantion >= 1) {
                     if (countDistantion < 2) {
@@ -121,21 +133,33 @@ public class TransportAnother extends Service implements LocationListener {
 
                         distation = Info.gps2m(this.location.getLatitude(), this.location.getLongitude(), data[0], data[1]);
 
-                        if(distation<50) {
-                            int idContact = workWithDataBase.contact(id, idPing, this.location.getLatitude(), this.location.getLongitude(), driver);
-                            countDistantion++;
-                            startActivity(new Intent(this,StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("isExit",true));
-                        }else{
-                            if (!isShowStartContact) {
+                        if (distation < 50) {
+                            if (isContactFlag == 0) {
+                                idContact = workWithDataBase.contact(id, idPing, this.location.getLatitude(), this.location.getLongitude(), driver);
+
+                                countDistantion += 10;
+
+                                if(isShowStartContact==false) {
+                                    Intent in = new Intent("Contact")
+                                            .putExtra("isContact", true);
+                                    sendBroadcast(in);
+                                }
+                            } else {
+                                isContactFlag--;
+                                break startPing;
+                            }
+                        } else {
+                            if (isShowStartContact) {
                                 startActivity(new Intent(this, StartContact.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("target", target)
-                                        .putExtra("statusContact",workWithDataBase.contactStatus(idPing))
-                                        .putExtra("id",id));
-                                isShowStartContact = true;
+                                        .putExtra("statusContact", workWithDataBase.contactStatus(idPing))
+                                        .putExtra("id", id).putExtra("target", target).putExtra("driver", driver));
+
+                                isShowStartContact = false;
                             }
                         }
 
                         Intent in = new Intent("Contact_start")
-                                .putExtra("isContact",true)
+                                .putExtra("isContact", true)
                                 .putExtra("dist", distation)
                                 .putExtra("contact", true);
                         sendBroadcast(in);
@@ -149,9 +173,14 @@ public class TransportAnother extends Service implements LocationListener {
                         distation = Info.gps2m(data[0], data[1], this.location.getLatitude()
                                 , this.location.getLongitude());
 
-                        if(distation>100){
-                            startActivity(new Intent(this,Rating.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("id", id));
-                            stopService(new Intent(this, TransportAnother.class));
+                        if(distation>200){
+                            if(isCloseContact==0) {
+                                Intent in = new Intent("Contact_end");
+                                in.putExtra("id", idContact);
+                                sendBroadcast(in);
+                            }else {
+                                isCloseContact--;
+                            }
                         }else {
                             Intent in = new Intent("Contact_start")
                                     .putExtra("isContact", true)
@@ -172,11 +201,11 @@ public class TransportAnother extends Service implements LocationListener {
                 } else {
                     data = workWithDataBase.search(id, driver, target, this.location.getLatitude(), this.location.getLongitude());
 
-                    countPingSet = 5;
-
                     if (data[0] != 0) {
                         idPing = (int) data[0];
-                        target = (int) data[8];
+                        if((int)data[8]!=-1){
+                            target = (int) data[8];
+                        }
                         distation = Info.gps2m(data[1], data[2], this.location.getLatitude(), this.location.getLongitude());
 
                         Intent in = new Intent("Info_start_online")
@@ -188,6 +217,8 @@ public class TransportAnother extends Service implements LocationListener {
                                 .putExtra("bass", (int) data[7]);
 
                         sendBroadcast(in);
+                    }else {
+                        countPingSet = 5;
                     }
 
                     break startPing;

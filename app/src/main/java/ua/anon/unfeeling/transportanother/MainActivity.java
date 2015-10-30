@@ -24,10 +24,6 @@ import android.widget.Toast;
 
 import com.example.hjk.transportanother.R;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
@@ -61,7 +57,17 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
         mastabation();
 
-        if (checkAccess()) {
+        @SuppressWarnings("deprecation") String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+        if(!provider.contains("gps")){
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            sendBroadcast(poke);
+        }
+
+        if (isConnectingToInternet()) {
             if(!flagForLoginProcedure) {
 
                 startThread.start();
@@ -86,6 +92,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 pedestrian.setBackgroundResource(R.drawable.pedestrian_activ);
 
                 driver.setBackgroundResource(R.drawable.driver_passiv);
+
+                driv = 0;
             }else if(loadIsDriver()==1){
                 layoutForDriver = (LinearLayout) findViewById(R.id.layoutForDriver);
                 layoutForDriver.setBackgroundColor(Color.parseColor("#2E313E"));
@@ -93,21 +101,12 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 driver.setBackgroundResource(R.drawable.driver_activ);
 
                 pedestrian.setBackgroundResource(R.drawable.pedestrian_passiv);
-            }
 
+                driv = 1;
+            }
 
         }else {
             accessError();
-        }
-
-        @SuppressWarnings("deprecation") String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-
-        if(!provider.contains("gps")){
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3"));
-            sendBroadcast(poke);
         }
     }
 
@@ -115,13 +114,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     protected void onDestroy() {
         super.onDestroy();
 
-        if(checkAccess()) {
-            if (id != -1) {
-                workWithDataBase.onlineEnd(id);
-            }
-        }
-
-        if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING){
+        if(selectedTarget!=null){
             selectedTarget.cancel(true);
         }
 
@@ -160,18 +153,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         driver.setOnClickListener(this);
     }
 
-    private void saveIsDriver(int isDriver){
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("isDriver",isDriver);
-        editor.apply();
-    }
-
-    private int loadIsDriver (){
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        return preferences.getInt("isDriver", 1);
-    }
-
     private Long getNumberPhone(){
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         return Long.valueOf(telephonyManager.getDeviceId());
@@ -204,6 +185,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     @Override
     public void onBackPressed() {
         finish();
+        super.onBackPressed();
     }
 
     @Override
@@ -220,9 +202,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
                 driver.setBackgroundResource(R.drawable.driver_activ);
 
-                driv = 1;
+                saveIsDriver(1);
 
-                saveIsDriver(driv);
+                driv = 1;
 
                 break;
             case R.id.pedestrian:
@@ -237,18 +219,15 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 driver.setBackgroundResource(0);
                 driver.setBackgroundResource(R.drawable.driver_passiv);
 
-                driv = 0;
+                saveIsDriver(0);
 
-                saveIsDriver(driv);
+                driv = 0;
 
                 break;
             case R.id.menu:
-                menu.setBackgroundColor(Color.parseColor("#52596B"));
-                if(progressDialog!=null){
-                    progressDialog.dismiss();
-                }
+                menu.setBackgroundColor(Color.parseColor("#2E313E"));
 
-                if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING){
+                if(selectedTarget!=null){
                     selectedTarget.cancel(true);
                 }
 
@@ -261,7 +240,13 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private void counting(final int target) {
         Looper.prepare();
         if (checkAccess()) {
-            progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
+            selectedTarget.cancel(true);
+            try {
+                progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             if(isOnline) {
                 new Thread(new Runnable() {
                     @Override
@@ -289,6 +274,18 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             accessError();
         }
         Looper.loop();
+    }
+
+    private void saveIsDriver(int isDriver){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("isDriver",isDriver);
+        editor.apply();
+    }
+
+    private int loadIsDriver (){
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        return preferences.getInt("isDriver", 1);
     }
 
     @Override
@@ -324,7 +321,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                     case R.id.auto:
                         if (!auto.isChecked()) {
                             auto.setBackgroundResource(R.drawable.auto_activ);
-
                             target += "2";
 
                             if (target.toCharArray().length > 2) {
@@ -413,18 +409,23 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         switch (target[0]){
             case '1':
                 centr.setBackgroundResource(R.drawable.centr_passiv);
+                centr.setChecked(false);
                 break;
             case '2':
                 auto.setBackgroundResource(R.drawable.auto_passiv);
+                auto.setChecked(false);
                 break;
             case '3':
                 north.setBackgroundResource(R.drawable.north_passiv);
+                north.setChecked(false);
                 break;
             case '4':
                 anniversary.setBackgroundResource(R.drawable.anniversary_passiv);
+                anniversary.setChecked(false);
                 break;
             case '5':
                 angleBass.setBackgroundResource(R.drawable.angle_bass_passive);
+                angleBass.setChecked(false);
                 break;
         }
 
@@ -464,21 +465,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     private void startSearch(){
         if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        selectedTarget.get(4, TimeUnit.SECONDS);
-                        selectedTarget.execute();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (TimeoutException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
+            selectedTarget.cancel(true);
+            selectedTarget = new SelectedTarget();
+            selectedTarget.execute();
         }else {
             selectedTarget.execute();
         }
@@ -487,26 +476,38 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     class SelectedTarget extends AsyncTask<Void,Void,Void>{
 
         @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
         protected void onPostExecute(Void aVoid) {
-            progressDialog.dismiss();
+            if(progressDialog!=null) {
+                progressDialog.dismiss();
+            }
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+
             for (int i = 0; i < 5; i++) {
+                if (isCancelled()) {
+                    break;
+                }
+
                 if (i == 4) {
-                    if(target.toCharArray().length>0) {
+                    if (target.toCharArray().length > 0) {
                         counting(Integer.parseInt(target));
                     }
                 }
 
                 try {
-                    Thread.currentThread();
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+
             return null;
         }
     }

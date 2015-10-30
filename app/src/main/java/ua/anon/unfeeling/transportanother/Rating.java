@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -39,12 +40,7 @@ public class Rating extends Activity implements View.OnClickListener {
     }
 
     private void setRating(final int id, final int ratig){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new WorkWithDataBase().contactEnd(id,ratig);
-            }
-        }).start();
+        new SetRating().execute(id,ratig);
     }
 
     private void mastabation(){
@@ -102,9 +98,7 @@ public class Rating extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
-
                 finish();
-
                 startActivity(new Intent(this, MainActivity.class));
 
                 break;
@@ -115,14 +109,14 @@ public class Rating extends Activity implements View.OnClickListener {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-
-                                new WorkWithDataBase().sos(id, 0, 0, 0);
+                            new WorkWithDataBase().sos(id, 0, 0, 0);
                         }
                     }).start();
                 }else {
                     isCheckSos=false;
                     sos.setBackgroundResource(R.drawable.sos_passiv);
                 }
+
                 break;
             case R.id.positiv:
                 LinearLayout pos_layout = (LinearLayout) findViewById(R.id.positiv_layout);
@@ -130,6 +124,8 @@ public class Rating extends Activity implements View.OnClickListener {
                 setRating(id, 1);
                 positiv.setClickable(false);
                 negativ.setClickable(false);
+                finish();
+                startActivity(new Intent(this, MainActivity.class));
 
                 break;
             case R.id.negativ:
@@ -138,8 +134,19 @@ public class Rating extends Activity implements View.OnClickListener {
                 setRating(id, -1);
                 positiv.setClickable(false);
                 negativ.setClickable(false);
+                finish();
+                startActivity(new Intent(this, MainActivity.class));
 
                 break;
+        }
+    }
+
+    class SetRating extends AsyncTask<Integer,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+            new WorkWithDataBase().contactEnd(params[0],params[1]);
+            return null;
         }
     }
 }

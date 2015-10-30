@@ -9,19 +9,33 @@ import java.sql.Types;
 
 class WorkWithDataBase{
 
-    private static Connection connection=null;
+    private static Connection connection;
 
     private static synchronized Connection setInstance(){
-        if(connection==null) {
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance();
-                 return DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
-                         "oberigrv_carstop", "potq32ha");
-            } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-                e.printStackTrace();
-            }
+//        if(connection==null) {
+//            try {
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
+                             "oberigrv_carstop", "potq32ha");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+//            } catch (SQLException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+//                e.printStackTrace();
+//            }
+//        }else {
+//            return connection;
+//        }
+//
         return connection;
     }
 
@@ -46,7 +60,6 @@ class WorkWithDataBase{
             status[2]= String.valueOf(statement.getInt(4));
             status[3]= String.valueOf(statement.getInt(5));
             status[4]= statement.getString(6);
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -68,6 +81,7 @@ class WorkWithDataBase{
 
             data[0]=statement.getInt(2);
             data[1]=statement.getInt(3);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -118,7 +132,7 @@ class WorkWithDataBase{
         try {
             connection = setInstance();
             Statement statement = connection.createStatement();
-            statement.execute("call sos_ (" + idUser + ","+idContact+","+ 0 +","+x+","+y+")");
+            statement.execute("call sos_ (" + idUser + ","+idContact+","+x+","+y+")");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -142,7 +156,7 @@ class WorkWithDataBase{
             statement.registerOutParameter(7, Types.SMALLINT);
             statement.registerOutParameter(8,Types.SMALLINT);
             statement.registerOutParameter(9,Types.SMALLINT);
-            statement.registerOutParameter(10,Types.SMALLINT);
+            statement.registerOutParameter(10, Types.SMALLINT);
             statement.executeQuery();
 
             data[0] = statement.getInt(1);
@@ -154,11 +168,22 @@ class WorkWithDataBase{
             data[5] = statement.getInt(8);
             data[6] = statement.getInt(9);
             data[7] = statement.getInt(10);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return data;
+    }
+
+    public void closeConnection(){
+        if(connection!=null){
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public double[] contactSet(int id, double x, double y){
@@ -249,12 +274,12 @@ class WorkWithDataBase{
     }
 
     public double[] ping(int idUser, int idPing,int driver, double x, double y){
-        double[] xy = new double[2];
+        double[] xy = new double[3];
 
         CallableStatement statement;
         try {
             connection = setInstance();
-            statement = connection.prepareCall("{call ping_ (?,?,?,?,?)}");
+            statement = connection.prepareCall("{call ping_ (?,?,?,?,?,?)}");
             statement.setInt(1, idUser);
             statement.setInt(2,idPing);
             statement.setInt(3, driver);
@@ -262,11 +287,12 @@ class WorkWithDataBase{
             statement.setDouble(5, y);
             statement.registerOutParameter(4, Types.DOUBLE);
             statement.registerOutParameter(5, Types.DOUBLE);
+            statement.registerOutParameter(6,Types.BIGINT);
             statement.executeUpdate();
 
             xy[0] = statement.getDouble(4);
             xy[1] = statement.getDouble(5);
-
+            xy[2] = statement.getInt(6);
         } catch (SQLException e) {
             e.printStackTrace();
         }

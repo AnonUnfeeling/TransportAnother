@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.hjk.transportanother.R;
 
+import java.util.concurrent.ExecutionException;
+
 public class Settings extends Activity implements View.OnClickListener{
     private ImageButton sound;
     private ImageButton vibration;
@@ -29,13 +32,9 @@ public class Settings extends Activity implements View.OnClickListener{
     private String[] status;
     private ImageButton back;
     private int showAuthor = 0;
+    private double rating = 0;
+    private ProgressDialog progressDialog;
     private ImageView title;
-    private final Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            status = workWithDataBase.getStatus(getIntent().getIntExtra("id",-1));
-        }
-    });
 
     @Override
     protected void onResume() {
@@ -64,40 +63,43 @@ public class Settings extends Activity implements View.OnClickListener{
         TextView countPasag = (TextView) findViewById(R.id.coutPasag);
         TextView countDriver = (TextView) findViewById(R.id.countDriver);
 
-        ProgressDialog progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loadSettings));
-
-        thread.start();
-
+        progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loadSettings));
+        LoadStatistics loadStatistics = new LoadStatistics();
+        loadStatistics.execute();
         try {
-            thread.join();
-            progressDialog.dismiss();
+            status = loadStatistics.get();
+
+            rating = ((Double.parseDouble(status[0])+Double.parseDouble(status[2]))
+                    /(Double.parseDouble(status[1])+Double.parseDouble(status[3])));
+
+            if (status[4] != null) {
+                youStatus.append(status[4]);
+            }
+
+            if (Integer.parseInt(status[0]) != 0) {
+               statist.append(String.valueOf((int)(rating * 100)));
+            } else {
+                statist.append("0");
+            }
+
+            ratingForPasage.append(status[0]);
+            countPasag.append(status[1]);
+
+            ratingForDriver.append(status[2]);
+            countDriver.append(status[3]);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-
-        if(status[4]!=null) {
-            youStatus.append(status[4]);
-        }
-
-        if(Integer.parseInt(status[0])!=0) {
-            statist.append(String.valueOf(((Integer.parseInt(status[0]) / Integer.parseInt(status[1]))
-                    + (Integer.parseInt(status[2]) / Integer.parseInt(status[3]))) / 2));
-        }else {
-            statist.append("0");
-        }
-
-        ratingForPasage.append(status[0]);
-        countPasag.append(status[1]);
-
-        ratingForDriver.append(status[2]);
-        countDriver.append(status[3]);
 
         back = (ImageButton) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final LinearLayout titleLayout = (LinearLayout) findViewById(R.id.title_layout);
-                titleLayout.setBackgroundColor(Color.parseColor("#52596B"));
+                titleLayout.setBackgroundColor(Color.parseColor("#424756"));
                 Settings.this.finish();
                 startActivity(new Intent(Settings.this, MainActivity.class));
                 saveSettings(isCheck);
@@ -125,10 +127,6 @@ public class Settings extends Activity implements View.OnClickListener{
 
     @Override
     public void onBackPressed() {
-
-        if(thread.isAlive()) {
-            thread.interrupt();
-        }
         finish();
         startActivity(new Intent(this,MainActivity.class));
     }
@@ -194,6 +192,7 @@ public class Settings extends Activity implements View.OnClickListener{
         int height = displayMetrics.heightPixels;
 
         if(width >=320&& height >=480) {
+
             LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     (int) (height * 0.3f + 0.5f));
@@ -216,6 +215,23 @@ public class Settings extends Activity implements View.OnClickListener{
                     (int) (height * 0.13f + 0.5f));
             sound.setLayoutParams(params3);
             vibration.setLayoutParams(params3);
+        }
+    }
+
+    class LoadStatistics extends AsyncTask<Void,Void,String[]>{
+
+        String[] status;
+
+        @Override
+        protected void onPostExecute(String[] aVoid) {
+            progressDialog.dismiss();
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected String[] doInBackground(Void... params) {
+            status = workWithDataBase.getStatus(getIntent().getIntExtra("id",-1));
+            return status;
         }
     }
 }
