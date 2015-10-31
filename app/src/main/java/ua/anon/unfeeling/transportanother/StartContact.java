@@ -47,7 +47,7 @@ public class StartContact extends Activity {
         }else if(target ==3){
             signal.setBackgroundColor(Color.parseColor("#fde06d"));
         }else if(target ==4){
-            signal.setBackgroundColor(Color.parseColor("#73e97e "));
+            signal.setBackgroundColor(Color.parseColor("#73e97e"));
         }else if(target ==5){
             signal.setBackgroundColor(Color.parseColor("#ff5564"));
         }

@@ -123,6 +123,46 @@ class WorkWithDataBase{
         return data;
     }
 
+    public double[] search(int id, int driver, int target, double x, double y, String exeption){
+        double[] data = new double[10];
+
+        CallableStatement statement;
+        try {
+            connection = setInstance();
+            statement = connection.prepareCall("{call search_(?,?,?,?,?,?,?,?,?,?,?)}");
+            statement.setInt(1,id);
+            statement.registerOutParameter(1, Types.INTEGER);
+            statement.setInt(2, driver);
+            statement.setInt(3,target);
+            statement.registerOutParameter(3, Types.INTEGER);
+            statement.setDouble(4, x);
+            statement.setDouble(5, y);
+            statement.registerOutParameter(4, Types.DOUBLE);
+            statement.registerOutParameter(5, Types.DOUBLE);
+            statement.setString(6, exeption);
+            statement.registerOutParameter(7, Types.SMALLINT);
+            statement.registerOutParameter(8, Types.SMALLINT);
+            statement.registerOutParameter(9,Types.SMALLINT);
+            statement.registerOutParameter(10,Types.SMALLINT);
+            statement.registerOutParameter(11, Types.SMALLINT);
+            statement.executeQuery();
+
+            data[0] = statement.getInt(1);
+            data[1] = statement.getDouble(4);
+            data[2] = statement.getDouble(5);
+            data[3] = statement.getInt(7);
+            data[4] = statement.getInt(8);
+            data[5] = statement.getInt(9);
+            data[6] = statement.getInt(10);
+            data[7] = statement.getInt(11);
+            data[8] = statement.getInt(3);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     public void sos(int idUser, @SuppressWarnings("SameParameterValue") int idContact, double x, double y){
         try {
             connection = setInstance();
@@ -169,16 +209,6 @@ class WorkWithDataBase{
         }
 
         return data;
-    }
-
-    public void closeConnection(){
-        if(connection!=null){
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public double[] contactSet(int id, double x, double y){

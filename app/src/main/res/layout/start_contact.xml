@@ -42,8 +42,9 @@
             android:layout_alignLeft="@+id/textView9"
             android:layout_alignStart="@+id/textView9"
             android:textSize="20sp"
-            android:layout_margin="10dp"
-            android:textColor="#fffdfc" />
+            android:textColor="#fffdfc"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp" />
 
     </RelativeLayout>
 

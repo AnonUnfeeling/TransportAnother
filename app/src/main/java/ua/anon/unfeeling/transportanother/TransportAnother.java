@@ -14,12 +14,13 @@ public class TransportAnother extends Service implements LocationListener {
     private WorkWithDataBase workWithDataBase = new WorkWithDataBase();
 
     private boolean flag = false;
-    private int id;
-    private int driver;
-    private int target;
+    private int id,pointDistantion=0;
+    private int driver,flagPoint=0;
+    private int target,defaultTarget;
     private int idPing = 0, idContact = 0;
     private int countDistantion = 0;
     private int countPingSet = 5;
+    private String exception = "0";
     private int distation = 0, isContactFlag = 1,isCloseContact = 3;
     private Location location = null;
     private boolean isShowStartContact = true, isShowContactEnd = true;
@@ -28,7 +29,7 @@ public class TransportAnother extends Service implements LocationListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         id = intent.getIntExtra("id", -1);
         driver = intent.getIntExtra("driver", 0);
-        target = intent.getIntExtra("target", 0);
+        defaultTarget = intent.getIntExtra("target", 0);
 
         location = null;
 
@@ -72,7 +73,7 @@ public class TransportAnother extends Service implements LocationListener {
            Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    data = workWithDataBase.onlineStart(id, driver, target, location.getLatitude(), location.getLongitude());
+                    data = workWithDataBase.onlineStart(id, driver, defaultTarget, location.getLatitude(), location.getLongitude());
                 }
             });
 
@@ -102,9 +103,6 @@ public class TransportAnother extends Service implements LocationListener {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
-
         } else {
 
             startPing:
@@ -123,24 +121,78 @@ public class TransportAnother extends Service implements LocationListener {
                     try {
                         thread.join();
                         if (data[2] == 0) {
-                            if (distation != 0 && (distation - Info.gps2m(data[0], data[1], location.getLatitude()
-                                    , location.getLongitude())) > -50) {
+                            pointDistantion = Info.gps2m(data[0], data[1], location.getLatitude()
+                                    , location.getLongitude());
+                            System.out.println("dist " + distation);
+                            System.out.println("point dist "+pointDistantion);
+                            if (distation != 0 && (distation - pointDistantion) >= -50) {
 
-                                distation = Info.gps2m(data[0], data[1], location.getLatitude()
-                                        , location.getLongitude());
+                                if (flagPoint < 3) {
+                                    System.out.println("flag ++");
+                                    flagPoint++;
+                                } else if(flagPoint>2){
 
-                                if (distation < 1000) {
-                                    countDistantion++;
+                                    System.out.println("id point " + idPing);
+
+                                    if (distation < 1000) {
+                                        flagPoint=0;
+                                        countDistantion++;
+                                    }
+
+                                    Intent in = new Intent("Info_ping")
+                                            .putExtra("dist", pointDistantion);
+                                    sendBroadcast(in);
+
                                 }
 
-                                Intent in = new Intent("Info_ping")
-                                        .putExtra("dist", distation);
-                                sendBroadcast(in);
-
                                 break startPing;
+
                             } else {
-                                distation = 0;
-                                idPing = 0;
+                                Thread thread1 = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("serch ex target "+defaultTarget);
+
+                                        exception+=","+idPing;
+                                        System.out.println(exception);
+                                        data =workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude(),exception);
+                                    }
+                                });
+
+                                thread1.start();
+
+                                try {
+                                    thread1.join();
+
+                                    if (data[0] != 0) {
+                                        for (int i = 0; i < data.length; i++) {
+                                            System.out.println(data[i]);
+                                        }
+
+                                        idPing = (int) data[0];
+                                        if ((int) data[8] != -1) {
+                                            target = (int) data[8];
+                                        }
+                                        distation = Info.gps2m(data[1], data[2], location.getLatitude(), location.getLongitude());
+
+                                        Intent in = new Intent("Info_start_online")
+                                                .putExtra("dist", distation)
+                                                .putExtra("centr", (int) data[3])
+                                                .putExtra("auto", (int) data[4])
+                                                .putExtra("north", (int) data[5])
+                                                .putExtra("ubil", (int) data[6])
+                                                .putExtra("bass", (int) data[7]);
+
+                                        sendBroadcast(in);
+                                    }else {
+                                        exception="0";
+                                        idPing=0;
+                                    }
+
+                                    break startPing;
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         } else {
                             countDistantion += 10;
@@ -148,8 +200,6 @@ public class TransportAnother extends Service implements LocationListener {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-
                 } else if (countDistantion >= 1) {
                     if (countDistantion < 2) {
 
@@ -164,9 +214,9 @@ public class TransportAnother extends Service implements LocationListener {
 
                         try {
                             thread.join();
-                            distation = Info.gps2m(location.getLatitude(), location.getLongitude(), data[0], data[1]);
+                            pointDistantion = Info.gps2m(location.getLatitude(), location.getLongitude(), data[0], data[1]);
 
-                            if (distation < 50) {
+                            if (pointDistantion < 50) {
                                 if (isContactFlag == 0) {
 
                                     Thread thread1 = new Thread(new Runnable() {
@@ -183,7 +233,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                                         countDistantion += 10;
 
-                                        if (isShowStartContact == false) {
+                                        if (!isShowStartContact) {
                                             Intent in = new Intent("Contact")
                                                     .putExtra("isContact", true);
                                             sendBroadcast(in);
@@ -208,7 +258,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                             Intent in = new Intent("Contact_start")
                                     .putExtra("isContact", true)
-                                    .putExtra("dist", distation)
+                                    .putExtra("dist", pointDistantion)
                                     .putExtra("contact", true);
                             sendBroadcast(in);
 
@@ -216,8 +266,6 @@ public class TransportAnother extends Service implements LocationListener {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-
-
                     } else {
                         countDistantion++;
 
@@ -287,7 +335,7 @@ public class TransportAnother extends Service implements LocationListener {
                     Thread thread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            data = workWithDataBase.search(id, driver, target, location.getLatitude(), location.getLongitude());
+                            data = workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude());
                         }
                     });
 
@@ -301,10 +349,10 @@ public class TransportAnother extends Service implements LocationListener {
                             if ((int) data[8] != -1) {
                                 target = (int) data[8];
                             }
-                            distation = Info.gps2m(data[1], data[2], location.getLatitude(), location.getLongitude());
+                            pointDistantion = Info.gps2m(data[1], data[2], location.getLatitude(), location.getLongitude());
 
                             Intent in = new Intent("Info_start_online")
-                                    .putExtra("dist", distation)
+                                    .putExtra("dist", pointDistantion)
                                     .putExtra("centr", (int) data[3])
                                     .putExtra("auto", (int) data[4])
                                     .putExtra("north", (int) data[5])

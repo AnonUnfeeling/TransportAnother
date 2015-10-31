@@ -47,6 +47,12 @@ public class Info extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.info_layout);
 
+        try {
+            unregisterReceiver(service);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         cooSos[0] = 0;
         cooSos[1] = 0;
 
@@ -241,20 +247,20 @@ public class Info extends Activity implements View.OnClickListener{
                     }
                 }else if(intent.getAction().equals("Contact_end")){
 
-                    if(service!= null){
+//                    if(service!= null){
+//
+//                        try {
+//                            unregisterReceiver(service);
+//                        }catch (Exception e){
+//                            e.printStackTrace();
+//                        }
+//                    }
 
-                        try {
-                            unregisterReceiver(service);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-
-                    try{
-                        stopService(new Intent(Info.this, TransportAnother.class));
-                    }catch (Exception ex){
-                        ex.printStackTrace();
-                    }
+//                    try{
+//                        stopService(new Intent(Info.this, TransportAnother.class));
+//                    }catch (Exception ex){
+//                        ex.printStackTrace();
+//                    }
                     startActivity(new Intent(Info.this, Rating.class).putExtra("id", intent.getIntExtra("id",-1)));
                 }else if(intent.getAction().equals("Contact")){
                     startActivity(new Intent(Info.this, StartContact.class).putExtra("isExit", true)
