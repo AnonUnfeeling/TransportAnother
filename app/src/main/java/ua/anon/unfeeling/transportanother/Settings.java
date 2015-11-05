@@ -63,9 +63,9 @@ public class Settings extends Activity implements View.OnClickListener{
         TextView countPasag = (TextView) findViewById(R.id.coutPasag);
         TextView countDriver = (TextView) findViewById(R.id.countDriver);
 
-        progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loadSettings));
         LoadStatistics loadStatistics = new LoadStatistics();
         loadStatistics.execute();
+        progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loadSettings));
         try {
             status = loadStatistics.get();
 
@@ -76,17 +76,14 @@ public class Settings extends Activity implements View.OnClickListener{
                 youStatus.append(status[4]);
             }
 
-            if (Integer.parseInt(status[0]) != 0) {
-               statist.append(String.valueOf((int)(rating * 100)));
-            } else {
-                statist.append("0");
-            }
+            statist.append(String.valueOf((int)(rating * 100)));
 
-            ratingForPasage.append(status[0]);
-            countPasag.append(status[1]);
 
-            ratingForDriver.append(status[2]);
-            countDriver.append(status[3]);
+            ratingForPasage.append(String.valueOf((int) (Double.parseDouble(status[0]))));
+            countPasag.append(String.valueOf((int) (Double.parseDouble(status[1]))));
+
+            ratingForDriver.append(String.valueOf((int) (Double.parseDouble(status[2]))));
+            countDriver.append(String.valueOf((int) (Double.parseDouble(status[3]))));
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -231,7 +228,9 @@ public class Settings extends Activity implements View.OnClickListener{
 
         @Override
         protected void onPostExecute(String[] aVoid) {
-            progressDialog.dismiss();
+            if(progressDialog!=null) {
+                progressDialog.dismiss();
+            }
             super.onPostExecute(aVoid);
         }
 

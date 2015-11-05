@@ -19,27 +19,78 @@ import android.widget.TextView;
 import com.example.hjk.transportanother.R;
 
 @SuppressWarnings("MismatchedReadAndWriteOfArray")
-public class Info extends Activity implements View.OnClickListener{
+public class Info extends Activity implements View.OnClickListener {
 
     private TextView distation, north_cout, centr_cout, auto_count, ubil_cout, bass_count, lengthFromContact;
     private ImageButton sos;
+    private TextView statistics;
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
-    private int id,driver,target;
-    private BroadcastReceiver service;
+    private int id = 0, driver = 0;
+    private int defaultTarget = 0,distantn=-1;
+    private BroadcastReceiver service=null;
     private ProgressDialog progressDialog;
+    private String statCenrt = "", statAuto="",statNorth="",statUbil="",statBass="";
     private boolean isCheckSos=false;
     @SuppressWarnings("MismatchedReadAndWriteOfArray")
     private final double[] coo = new double[2];
     private final double[] cooSos = new double[2];
     private ImageButton back;
+    private Bundle bundle;
     private boolean isSendSos = false;
     private ImageView round,contactStat;
     private LinearLayout backgroungRound, backgroundContact;
 
     @Override
-    protected void onStart() {
+        protected void onStart() {
         super.onStart();
+
         mastabation();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        System.out.println("save");
+        bundle = new Bundle();
+        outState.putString("centr", centr_cout.getText().toString());
+        outState.putString("auto", auto_count.getText().toString());
+        outState.putString("north", north_cout.getText().toString());
+        outState.putString("ubil", ubil_cout.getText().toString());
+        outState.putString("bass", bass_count.getText().toString());
+
+        outState.putInt("driver", driver);
+        outState.putInt("target", defaultTarget);
+        outState.putInt("id", id);
+        bundle.putAll(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(bundle!=null) {
+            centr_cout.setText(bundle.getString("centr"));
+            auto_count.setText(bundle.getString("auto"));
+            north_cout.setText(bundle.getString("north"));
+            ubil_cout.setText(bundle.getString("ubil"));
+            bass_count.setText(bundle.getString("bass"));
+
+            driver = bundle.getInt("driver");
+            defaultTarget = bundle.getInt("target");
+            id = bundle.getInt("id");
+
+            setBackground(String.valueOf(defaultTarget).toCharArray());
+
+            if(driver ==1) {
+
+                statistics.setText(getResources().getString(R.string.count_people));
+
+            }else if(driver ==0) {
+
+                statistics.setText(getResources().getString(R.string.count_drivers));
+
+            }
+        }
     }
 
     @Override
@@ -47,41 +98,45 @@ public class Info extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.info_layout);
 
-        try {
-            unregisterReceiver(service);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        id = 0;
+        driver = 0;
+        defaultTarget = 0;
+
+        id = getIntent().getIntExtra("id", -1);
+        driver = getIntent().getIntExtra("driver", -1);
+        defaultTarget = getIntent().getIntExtra("target", -1);
 
         cooSos[0] = 0;
         cooSos[1] = 0;
 
+        System.out.println("info: "+id);
+
         lengthFromContact = (TextView) findViewById(R.id.lengthFromContact);
+        lengthFromContact.setText("");
 
         backgroundContact = (LinearLayout) findViewById(R.id.backgraundContact);
         backgroungRound = (LinearLayout) findViewById(R.id.backgroundRound);
         contactStat = (ImageView) findViewById(R.id.contactStat);
+        contactStat.setBackgroundResource(R.drawable.cross);
 
-        id = getIntent().getIntExtra("id", -1);
-        driver = getIntent().getIntExtra("driver", -1);
-        target = getIntent().getIntExtra("target", -1);
+        setBackground(String.valueOf(defaultTarget).toCharArray());
 
-        setBackground(String.valueOf(target).toCharArray());
-
-        TextView statistics = (TextView) findViewById(R.id.statistics);
-        round = (ImageView) findViewById(R.id.round);
+        statistics = (TextView) findViewById(R.id.statistics);
+        statistics.setText("");
 
         if(driver ==1) {
 
             statistics.setText(getResources().getString(R.string.count_people));
-            progressDialog = ProgressDialog.show(this, "", "Пошук попутника");
 
         }else if(driver ==0) {
 
             statistics.setText(getResources().getString(R.string.count_drivers));
-            progressDialog = ProgressDialog.show(this, "", "Пошук водія");
 
         }
+
+        round = (ImageView) findViewById(R.id.round);
+
+        progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати... \nЦе може зайняти декілька хвилин");
 
         distation = (TextView) findViewById(R.id.testDis);
 
@@ -125,9 +180,15 @@ public class Info extends Activity implements View.OnClickListener{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        System.out.println("no back");
+    }
+
     private void workWithService() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("Info_start_online");
+        filter.addAction("checking the distance");
         filter.addAction("Info_ping");
         filter.addAction("Contact_start");
         filter.addAction("Contact_end");
@@ -138,74 +199,26 @@ public class Info extends Activity implements View.OnClickListener{
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("Info_start_online")) {
 
-                    int ping = (int) intent.getDoubleExtra("ping", 0);
-
-                    if (ping != 0) {
-
-                        if(progressDialog!=null) {
-                            progressDialog.dismiss();
-                        }
-
-                        contactStat.setBackgroundResource(R.drawable.arrow_up);
-
-                        final int distantn = intent.getIntExtra("dist", -1);
-
-                        if(driver==1) {
-                            lengthFromContact.setText("");
-                            lengthFromContact.setText(getResources().getString(R.string.distationForPedestrian));
-                        }else {
-                            lengthFromContact.setText("");
-                            lengthFromContact.setText(getResources().getString(R.string.distationForDriver));
-                        }
-
-                        distation.setText(distantn + "м");
-
-                    } else {
-                        if(progressDialog!=null) {
-                            progressDialog.dismiss();
-                        }
-
-                        contactStat.setBackgroundResource(R.drawable.cross);
-
-                        lengthFromContact.setText("");
-                        lengthFromContact.setText(getResources().getString(R.string.retry_search));
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
                     }
 
-                    if (target%10 == 1) {
-                        centr_cout.setText(String.valueOf(intent.getIntExtra("centr", 0)+1));
-                        auto_count.setText(String.valueOf(intent.getIntExtra("auto", 0)));
-                        north_cout.setText(String.valueOf(intent.getIntExtra("north", 0)));
-                        ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
-                        bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
-                    }else if(target%10==2){
-                        centr_cout.setText(String.valueOf(intent.getIntExtra("centr", 0)));
-                        auto_count.setText(String.valueOf(intent.getIntExtra("auto", 0)+1));
-                        north_cout.setText(String.valueOf(intent.getIntExtra("north", 0)));
-                        ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
-                        bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
-                    }else if(target%10==3){
-                        centr_cout.setText(String.valueOf(intent.getIntExtra("centr", 0)));
-                        auto_count.setText(String.valueOf(intent.getIntExtra("auto", 0)));
-                        north_cout.setText(String.valueOf(intent.getIntExtra("north", 0)+1));
-                        ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
-                        bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
-                    }else if(target%10==4){
-                        centr_cout.setText(String.valueOf(intent.getIntExtra("centr", 0)));
-                        auto_count.setText(String.valueOf(intent.getIntExtra("auto", 0)));
-                        north_cout.setText(String.valueOf(intent.getIntExtra("north", 0)));
-                        ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)+1));
-                        bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)));
-                    }else if(target%10==5){
-                        centr_cout.setText(String.valueOf(intent.getIntExtra("centr", 0)));
-                        auto_count.setText(String.valueOf(intent.getIntExtra("auto", 0)));
-                        north_cout.setText(String.valueOf(intent.getIntExtra("north", 0)));
-                        ubil_cout.setText(String.valueOf(intent.getIntExtra("ubil", 0)));
-                        bass_count.setText(String.valueOf(intent.getIntExtra("bass", 0)+1));
-                    }
+                    contactStat.setBackgroundResource(R.drawable.cross);
+
+                    lengthFromContact.setText("");
+                    lengthFromContact.setText(getResources().getString(R.string.retry_search));
+
+                    statCenrt = (String.valueOf(intent.getIntExtra("centr", 0)));
+                    statAuto = (String.valueOf(intent.getIntExtra("auto", 0)));
+                    statNorth = (String.valueOf(intent.getIntExtra("north", 0)));
+                    statUbil = (String.valueOf(intent.getIntExtra("ubil", 0)));
+                    statBass = (String.valueOf(intent.getIntExtra("bass", 0)));
+
+                    viewStat();
 
                 } else if (intent.getAction().equals("Info_ping")) {
 
-                    final int distantn = intent.getIntExtra("dist", -1);
+                    distantn = intent.getIntExtra("dist", -1);
 
                     if(progressDialog!=null) {
                         progressDialog.dismiss();
@@ -219,52 +232,33 @@ public class Info extends Activity implements View.OnClickListener{
                         lengthFromContact.setText(getResources().getString(R.string.distationForDriver));
                     }
 
+                    viewStat();
+
                     contactStat.setBackgroundResource(R.drawable.arrow_up);
 
                     distation.setText(distantn + "м");
+                }
+                else if (intent.getAction().equals("Contact_start")) {
 
-                } else if (intent.getAction().equals("Contact_start")) {
+                    viewStat();
 
-                    final int distantn = intent.getIntExtra("dist", -1);
-                    if(intent.getBooleanExtra("isContact",false)) {
-                        contactStat.setBackgroundResource(R.drawable.ok);
+                    contactStat.setBackgroundResource(R.drawable.ok);
 
-                        if(progressDialog!=null) {
-                            progressDialog.dismiss();
-                        }
-
-                        if(driver==1) {
-                            lengthFromContact.setText("");
-                            lengthFromContact.setText(getResources().getString(R.string.distationForPedestrian));
-                        }else {
-                            lengthFromContact.setText("");
-                            lengthFromContact.setText(getResources().getString(R.string.distationForDriver));
-                        }
-
-                        distation.setText(distantn + "м");
-                    }else {
-                        distation.setText(getResources().getString(R.string.contact));
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
                     }
+
+                    lengthFromContact.setText("");
+                    lengthFromContact.setText(getResources().getString(R.string.contact));
+
                 }else if(intent.getAction().equals("Contact_end")){
-
-//                    if(service!= null){
-//
-//                        try {
-//                            unregisterReceiver(service);
-//                        }catch (Exception e){
-//                            e.printStackTrace();
-//                        }
-//                    }
-
-//                    try{
-//                        stopService(new Intent(Info.this, TransportAnother.class));
-//                    }catch (Exception ex){
-//                        ex.printStackTrace();
-//                    }
+                    close();
                     startActivity(new Intent(Info.this, Rating.class).putExtra("id", intent.getIntExtra("id",-1)));
                 }else if(intent.getAction().equals("Contact")){
+                    viewStat();
+
                     startActivity(new Intent(Info.this, StartContact.class).putExtra("isExit", true)
-                            .putExtra("id", id).putExtra("target", target).putExtra("driver", driver));
+                            .putExtra("id", id).putExtra("defaultTarget", defaultTarget).putExtra("driver", driver));
                 }
             }
         };
@@ -273,12 +267,15 @@ public class Info extends Activity implements View.OnClickListener{
         startService(new Intent(this, TransportAnother.class)
                 .putExtra("id", id)
                 .putExtra("driver", driver)
-                .putExtra("target", target));
+                .putExtra("defaultTarget", defaultTarget));
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void viewStat(){
+        centr_cout.setText(statCenrt);
+        auto_count.setText(statAuto);
+        north_cout.setText(statNorth);
+        ubil_cout.setText(statUbil);
+        bass_count.setText(statBass);
     }
 
     public static int gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
@@ -297,20 +294,19 @@ public class Info extends Activity implements View.OnClickListener{
         return (int) (6366000 * tt);
     }
 
-    private void close(){
-        if(service!= null){
-
-            try {
-                unregisterReceiver(service);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-            try{
-                stopService(new Intent(this, TransportAnother.class));
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
+    private void close() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+        try {
+            unregisterReceiver(service);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            stopService(new Intent(Info.this, TransportAnother.class));
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         if (id != -1) {
@@ -325,16 +321,6 @@ public class Info extends Activity implements View.OnClickListener{
         finish();
 
         startActivity(new Intent(this, MainActivity.class));
-    }
-
-    @Override
-    public void onBackPressed() {
-        close();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -357,17 +343,18 @@ public class Info extends Activity implements View.OnClickListener{
                             if(isSendSos) {
                                 if (gps2m(coo[0], coo[1], cooSos[0], cooSos[1]) >= 200) {
 
-                                    workWithDataBase.sos(id, 1, coo[0], coo[1]);
-
-                                    cooSos[0] = coo[0];
-                                    cooSos[1] = coo[1];
+                                    startService(new Intent(Info.this, TransportAnother.class)
+                                            .putExtra("isSos", true)
+                                            .putExtra("id", id)
+                                            .putExtra("driver", driver)
+                                            .putExtra("defaultTarget", defaultTarget));
                                 }
                             }else {
-                                workWithDataBase.sos(id, 0, coo[0], coo[1]);
-                                isSendSos = true;
-
-                                cooSos[0] = coo[0];
-                                cooSos[1] = coo[1];
+                                startService(new Intent(Info.this, TransportAnother.class)
+                                        .putExtra("isSos",true)
+                                        .putExtra("id", id)
+                                        .putExtra("driver", driver)
+                                        .putExtra("defaultTarget", defaultTarget));
                             }
 
                         }

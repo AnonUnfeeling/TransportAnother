@@ -1,210 +1,186 @@
 package ua.anon.unfeeling.transportanother;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit.Call;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 class WorkWithDataBase{
 
-    private static Connection connection;
+    private final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
 
-    private static synchronized Connection setInstance(){
-        if(connection==null) {
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance();
+    public static final String BASE_URL = "http://oberig.rv.ua";
 
-                connection = DriverManager.getConnection("jdbc:mysql://ftp.oberig.rv.ua:3306/oberigrv_carstop?noAccessToProcedureBodies=true",
-                        "oberigrv_carstop", "potq32ha");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }else {
-            return connection;
-        }
+    Retrofit restAdapter = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(BASE_URL)
+            .build();
 
-        return connection;
-    }
+    final Links apiService =
+            restAdapter.create(Links.class);
 
     public String[] getStatus(int id){
         String[] status = new String[5];
 
-        CallableStatement statement;
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","stat_user");
+        nameValuePair.put("in", ""+id+",@p1,@p2,@p3,@p4,@p5");
+        nameValuePair.put("out", "@p1,@p2,@p3,@p4,@p5");
 
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
         try {
-            connection = setInstance();
-            statement = connection.prepareCall("{call stat_user (?,?,?,?,?,?)}");
-            statement.setInt(1, id);
-            statement.registerOutParameter(2, Types.SMALLINT);
-            statement.registerOutParameter(3, Types.SMALLINT);
-            statement.registerOutParameter(4, Types.SMALLINT);
-            statement.registerOutParameter(5, Types.SMALLINT);
-            statement.registerOutParameter(6, Types.VARCHAR);
-            statement.executeQuery();
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
 
-            status[0]= String.valueOf(statement.getInt(2));
-            status[1]= String.valueOf(statement.getInt(3));
-            status[2]= String.valueOf(statement.getInt(4));
-            status[3]= String.valueOf(statement.getInt(5));
-            status[4]= statement.getString(6);
-        } catch (SQLException e) {
+            int i =0;
+            for (Map.Entry e : respons.entrySet()) {
+                try {
+                    status[i] = (String.valueOf(e.getValue()));
+                }catch (NullPointerException ex){
+                    status[i]="0";
+                }
+                i++;
+            }
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         return status;
     }
 
+
     public int[] setNumberPhone(Long numberPhone) {
         int[] data = new int[2];
 
-        CallableStatement statement;
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","login_");
+        nameValuePair.put("in", ""+numberPhone+",@p1,@p2");
+        nameValuePair.put("out", "@p1,@p2");
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
         try {
-            connection = setInstance();
-            statement = connection.prepareCall("{call login_ (?,?,?)}");
-            statement.setLong(1, numberPhone);
-            statement.registerOutParameter(2, Types.INTEGER);
-            statement.registerOutParameter(3,Types.INTEGER);
-            statement.executeQuery();
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
 
-            data[0]=statement.getInt(2);
-            data[1]=statement.getInt(3);
+            int i = 0;
+            Double[] d = new Double[2];
+            for (Map.Entry e : respons.entrySet()) {
+                d[i] = (Double) e.getValue();
+                i++;
+            }
 
-        } catch (SQLException e) {
+            for (int j = 0; j < d.length; j++) {
+                data[j]=d[j].intValue();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return data;
-    }
 
-    public double[] search(int id, int driver, int target, double x, double y){
-        double[] data = new double[10];
-
-        CallableStatement statement;
-        try {
-            connection = setInstance();
-            statement = connection.prepareCall("{call search_(?,?,?,?,?,?,?,?,?,?,?)}");
-            statement.setInt(1,id);
-            statement.registerOutParameter(1, Types.INTEGER);
-            statement.setInt(2, driver);
-            statement.setInt(3,target);
-            statement.registerOutParameter(3, Types.INTEGER);
-            statement.setDouble(4, x);
-            statement.setDouble(5, y);
-            statement.registerOutParameter(4, Types.DOUBLE);
-            statement.registerOutParameter(5, Types.DOUBLE);
-            statement.setString(6, "");
-            statement.registerOutParameter(7, Types.SMALLINT);
-            statement.registerOutParameter(8, Types.SMALLINT);
-            statement.registerOutParameter(9,Types.SMALLINT);
-            statement.registerOutParameter(10,Types.SMALLINT);
-            statement.registerOutParameter(11, Types.SMALLINT);
-            statement.executeQuery();
-
-            data[0] = statement.getInt(1);
-            data[1] = statement.getDouble(4);
-            data[2] = statement.getDouble(5);
-            data[3] = statement.getInt(7);
-            data[4] = statement.getInt(8);
-            data[5] = statement.getInt(9);
-            data[6] = statement.getInt(10);
-            data[7] = statement.getInt(11);
-            data[8] = statement.getInt(3);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         return data;
     }
 
     public double[] search(int id, int driver, int target, double x, double y, String exeption){
         double[] data = new double[10];
 
-        CallableStatement statement;
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","search_");
+        nameValuePair.put("in", ""+id+","+driver+","+target+","+x+","+y+","+exeption+",@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
+        nameValuePair.put("out", "@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
         try {
-            connection = setInstance();
-            statement = connection.prepareCall("{call search_(?,?,?,?,?,?,?,?,?,?,?)}");
-            statement.setInt(1,id);
-            statement.registerOutParameter(1, Types.INTEGER);
-            statement.setInt(2, driver);
-            statement.setInt(3,target);
-            statement.registerOutParameter(3, Types.INTEGER);
-            statement.setDouble(4, x);
-            statement.setDouble(5, y);
-            statement.registerOutParameter(4, Types.DOUBLE);
-            statement.registerOutParameter(5, Types.DOUBLE);
-            statement.setString(6, exeption);
-            statement.registerOutParameter(7, Types.SMALLINT);
-            statement.registerOutParameter(8, Types.SMALLINT);
-            statement.registerOutParameter(9,Types.SMALLINT);
-            statement.registerOutParameter(10,Types.SMALLINT);
-            statement.registerOutParameter(11, Types.SMALLINT);
-            statement.executeQuery();
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
 
-            data[0] = statement.getInt(1);
-            data[1] = statement.getDouble(4);
-            data[2] = statement.getDouble(5);
-            data[3] = statement.getInt(7);
-            data[4] = statement.getInt(8);
-            data[5] = statement.getInt(9);
-            data[6] = statement.getInt(10);
-            data[7] = statement.getInt(11);
-            data[8] = statement.getInt(3);
+            int i = 0;
+            for (Map.Entry e : respons.entrySet()) {
+                try {
+                    data[i] = (Double) e.getValue();
+                    i++;
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
 
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
         return data;
     }
 
     public void sos(int idUser, @SuppressWarnings("SameParameterValue") int idContact, double x, double y){
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","sos_");
+        nameValuePair.put("in", ""+idUser+","+idContact+","+x+","+y);
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
+
         try {
-            connection = setInstance();
-            Statement statement = connection.createStatement();
-            statement.execute("call sos_ (" + idUser + ","+idContact+","+x+","+y+")");
-        } catch (SQLException e) {
+           response.execute();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public double[] onlineStart(int id, int driver, int target, double x, double y){
         double[] data = new double[9];
+
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","online_start");
+        nameValuePair.put("in", ""+id+","+driver+","+target+","+x+","+y+",@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
+        nameValuePair.put("out", "@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
         try {
-            connection = setInstance();
-            CallableStatement statement = connection.prepareCall("call online_start(?,?,?,?,?,?,?,?,?,?)");
-            statement.setInt(1, id);
-            statement.registerOutParameter(1, Types.INTEGER);
-            statement.setInt(2, driver);
-            statement.setInt(3, target);
-            statement.registerOutParameter(3, Types.INTEGER);
-            statement.setDouble(4, x);
-            statement.registerOutParameter(4, Types.DOUBLE);
-            statement.setDouble(5, y);
-            statement.registerOutParameter(5, Types.DOUBLE);
-            statement.registerOutParameter(6, Types.SMALLINT);
-            statement.registerOutParameter(7, Types.SMALLINT);
-            statement.registerOutParameter(8,Types.SMALLINT);
-            statement.registerOutParameter(9,Types.SMALLINT);
-            statement.registerOutParameter(10, Types.SMALLINT);
-            statement.executeQuery();
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
 
-            data[0] = statement.getInt(1);
-            data[8] = statement.getInt(3);
-            data[1] = statement.getDouble(4);
-            data[2] = statement.getDouble(5);
-            data[3] = statement.getInt(6);
-            data[4] = statement.getInt(7);
-            data[5] = statement.getInt(8);
-            data[6] = statement.getInt(9);
-            data[7] = statement.getInt(10);
+            int i = 0;
+            for (Map.Entry e : respons.entrySet()) {
+                if(e.getValue()!=null) {
+                    data[i] = (Double) e.getValue();
+                    i++;
+                }
+            }
 
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -214,22 +190,28 @@ class WorkWithDataBase{
     public double[] contactSet(int id, double x, double y){
         double[] xy = new double[2];
 
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","contact_set");
+        nameValuePair.put("in", ""+id+","+x+","+y+",@p1,@p2");
+        nameValuePair.put("out", "@p1,@p2");
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
         try {
-            connection = setInstance();
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
 
-            CallableStatement statement = connection.prepareCall("call contact_set (?,?,?)");
+            int i = 0;
+            for (Map.Entry e : respons.entrySet()) {
+                xy[i] = (Double) e.getValue();
+                i++;
+            }
 
-            statement.setInt(1,id);
-            statement.setDouble(2, x);
-            statement.setDouble(3, y);
-
-            statement.registerOutParameter(2, Types.DOUBLE);
-            statement.registerOutParameter(3,Types.DOUBLE);
-            statement.executeQuery();
-
-            xy[0] = statement.getDouble(2);
-            xy[1] = statement.getDouble(3);
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -237,29 +219,48 @@ class WorkWithDataBase{
     }
 
     public void contactEnd(int id, int rating){
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","contact_end");
+        nameValuePair.put("in", ""+id+","+rating);
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
+
         try {
-            connection = setInstance();
-            Statement statement = connection.createStatement();
-            statement.execute("call contact_end (" + id + ","+rating+")");
-        } catch (SQLException e) {
+            response.execute();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public String contactStatus (int id){
         String status="";
+
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","contact_status");
+        nameValuePair.put("in", ""+id+",@p1");
+        nameValuePair.put("out","@p1");
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
+
         try {
-            connection = setInstance();
+            Response<Object> res = response.execute();
+            Map<Object, String> respons = gson.fromJson(res.body().toString(), Map.class);
+            for (Map.Entry e : respons.entrySet()) {
+                status = (String) e.getValue();
+            }
 
-            CallableStatement statement = connection.prepareCall("call contact_status (?,?)");
-
-            statement.setInt(1, id);
-            statement.registerOutParameter(2, Types.VARCHAR);
-            statement.executeQuery();
-
-            status = statement.getString(2);
-            System.out.println(status);
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -268,33 +269,58 @@ class WorkWithDataBase{
 
     public int contact (int idUser, int idDriver, double x, double y, int driver){
         int idContact = 0;
+
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","contact_");
+        nameValuePair.put("in", ""+idUser+","+idDriver+","+x+","+y+","+driver+",@p1");
+        nameValuePair.put("out", "@p1");
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Double d = 0.0;
+
+        Call<Object> response = apiService.test(send);
         try {
-            connection = setInstance();
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
 
-            CallableStatement statement = connection.prepareCall("call contact_ (?,?,?,?,?)");
+            for (Map.Entry e : respons.entrySet()) {
+                try {
+                    d = (double) e.getValue();
+                }catch (NullPointerException ex){
+                    d=0.0;
+                    ex.printStackTrace();
+                }
+            }
 
-            statement.setInt(1,idUser);
-            statement.setInt(2,idDriver);
-            statement.setDouble(3, x);
-            statement.setDouble(4, y);
-            statement.setDouble(5, driver);
-            statement.registerOutParameter(1, Types.INTEGER);
-            statement.executeQuery();
-
-            idContact = statement.getInt(1);
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        idContact = d.intValue();
 
         return idContact;
     }
 
     public void onlineEnd(int id){
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","online_end");
+        nameValuePair.put("in", ""+id);
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
+
         try {
-            connection = setInstance();
-            Statement statement = connection.createStatement();
-            statement.execute("call online_end (" + id + ")");
-        } catch (SQLException e) {
+            response.execute();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -302,24 +328,33 @@ class WorkWithDataBase{
     public double[] ping(int idUser, int idPing,int driver, double x, double y){
         double[] xy = new double[3];
 
-        CallableStatement statement;
-        try {
-            connection = setInstance();
-            statement = connection.prepareCall("{call ping_ (?,?,?,?,?,?)}");
-            statement.setInt(1, idUser);
-            statement.setInt(2,idPing);
-            statement.setInt(3, driver);
-            statement.setDouble(4, x);
-            statement.setDouble(5, y);
-            statement.registerOutParameter(4, Types.DOUBLE);
-            statement.registerOutParameter(5, Types.DOUBLE);
-            statement.registerOutParameter(6,Types.BIGINT);
-            statement.executeUpdate();
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","ping_");
+        nameValuePair.put("in", ""+idUser+","+idPing+","+driver+","+x+","+y+",@p1,@p2,@p3");
+        nameValuePair.put("out", "@p1,@p2,@p3");
 
-            xy[0] = statement.getDouble(4);
-            xy[1] = statement.getDouble(5);
-            xy[2] = statement.getInt(6);
-        } catch (SQLException e) {
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
+        try {
+            Response<Object> res = response.execute();
+            Map<Object, Double> respons = gson.fromJson(res.body().toString(), Map.class);
+
+            int i = 0;
+            for (Map.Entry e : respons.entrySet()) {
+                try {
+                    xy[i] = (Double) e.getValue();
+                    i++;
+                }catch (NullPointerException ex){
+                    xy[i]=0;
+                    ex.printStackTrace();
+                }
+            }
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -327,11 +362,21 @@ class WorkWithDataBase{
     }
 
     public void pingSet(int id, int driver,Double x, Double y){
+        Map<String,String> nameValuePair = new HashMap<String,String>();
+        nameValuePair.put("proc","ping_set");
+        nameValuePair.put("in", ""+id+","+driver+","+x+","+y);
+
+        String s= gson.toJson(nameValuePair);
+
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("query", s);
+
+        Call<Object> response = apiService.test(send);
+
         try {
-            connection = setInstance();
-            Statement statement = connection.createStatement();
-            statement.execute("call ping_set ("+id+","+driver+"," + x + "," + y + ")");
-        } catch (SQLException e) {
+            response.execute();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

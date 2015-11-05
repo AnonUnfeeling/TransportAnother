@@ -22,7 +22,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.hjk.transportanother.R;
+
+import java.util.concurrent.ExecutionException;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
 
@@ -43,17 +48,41 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private int[] data;
     private boolean flagForLoginProcedure = false;
     private ProgressDialog progressDialog;
-    private SelectedTarget selectedTarget=null;
-    Thread startThread = new Thread(new Runnable() {
+    private boolean isShowInfo = false;
+    private SelectedTarget selectedTarget = new SelectedTarget();
+
+    class Test extends AsyncTask<Long, Void, int[]> {
+
         @Override
-        public void run() {
-            data = workWithDataBase.setNumberPhone(getNumberPhone());
+        protected int[] doInBackground(Long... params) {
+            return  workWithDataBase.setNumberPhone(params[0]);
         }
-    });
+
+        @Override
+        protected void onPostExecute(int[] ints) {
+            if(progressDialog!=null) {
+                progressDialog.dismiss();
+            }
+            super.onPostExecute(ints);
+        }
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
+        startApplication();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(selectedTarget!=null){
+            selectedTarget.cancel(true);
+        }
+    }
+
+    public void startApplication(){
 
         mastabation();
 
@@ -70,15 +99,20 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         if (isConnectingToInternet()) {
             if(!flagForLoginProcedure) {
 
-                startThread.start();
+                Test test = new Test();
+                test.execute(getNumberPhone());
+
+                progressDialog = ProgressDialog.show(this,"","Завантаження...");
 
                 try {
-                    startThread.join();
+                    data = test.get();
                     id = data[0];
+
                     driv = data[1];
                     isOnline = true;
-
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
 
@@ -111,21 +145,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if(selectedTarget!=null){
-            selectedTarget.cancel(true);
-        }
-
-        if(startThread.isAlive()){
-            startThread.interrupt();
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         auto = (CheckBox) findViewById(R.id.auto);
@@ -242,31 +264,35 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         Looper.prepare();
         if (checkAccess()) {
             selectedTarget.cancel(true);
-//            try {
-//                progressDialog = ProgressDialog.show(this, "", "Завантажуються ваші координати");
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
+            selectedTarget.cancel(true);
 
             if(isOnline) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        MainActivity.this.finish();
+
+                        isShowInfo=true;
+                       // MainActivity.this.finish();
                         startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
                                 .putExtra("driver", driv).putExtra("target", target));
+                      //  System.exit(0);
                     }
                 }).start();
             }else {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        startThread.start();
+                        Test test = new Test();
+                        test.execute(getNumberPhone());
                         try {
-                            startThread.join();
-                            MainActivity.this.finish();
+                            data = test.get();
+                            isShowInfo=true;
+                           // MainActivity.this.finish();
                             startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", data[0])
                                     .putExtra("driver", driv).putExtra("target", target));
+                         //   System.exit(0);
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -471,8 +497,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     private void startSearch(){
-        selectedTarget = new SelectedTarget();
-        if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING) {
+        if(selectedTarget.getStatus()== AsyncTask.Status.RUNNING||selectedTarget.getStatus()== AsyncTask.Status.PENDING) {
             selectedTarget.cancel(true);
             selectedTarget = new SelectedTarget();
             selectedTarget.execute();

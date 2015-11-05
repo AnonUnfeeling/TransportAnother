@@ -2,7 +2,6 @@ package ua.anon.unfeeling.transportanother;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -35,7 +34,6 @@ public class StartContact extends Activity {
         driver = getIntent().getIntExtra("driver",-1);
 
         TextView statusDriver = (TextView) findViewById(R.id.driverStatus);
-        System.out.println(getIntent().getStringExtra("statusContact"));
         statusDriver.setText(getIntent().getStringExtra("statusContact"));
 
         ImageView signal = (ImageView) findViewById(R.id.signal);
@@ -56,8 +54,10 @@ public class StartContact extends Activity {
         closeContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
-                        .putExtra("driver", driver).putExtra("target", target));
+
+                finish();
+//                startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
+//                        .putExtra("driver", driver).putExtra("target", target));
             }
         });
 
@@ -67,10 +67,9 @@ public class StartContact extends Activity {
 
         boolean isExit = getIntent().getBooleanExtra("isExit", false);
         if(isExit){
-            System.exit(0);
-
-            startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
-                    .putExtra("driver", driver).putExtra("target", target));
+            finish();
+//            startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
+//                    .putExtra("driver", driver).putExtra("target", target));
         }
 
         if(getSound()&&getVibr()){
