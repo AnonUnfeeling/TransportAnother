@@ -19,7 +19,8 @@
 
     <string name="contact">Відбувся контакт</string>
 
-    <string name="retry_search">Триває пошук…</string>
+    <string name="retry_search_driver">Триває пошук попутника. \nНаразі пасажирів в \nнапрямку не має</string>
+    <string name="retry_search_passage">Триває пошук водія. \nНаразі водіїв в \nнапрямку не має</string>
 
     <string name="centr_info">Центр</string>
     <string name="auto_info">Автовокзал</string>
@@ -28,6 +29,9 @@
     <string name="bass_info">Басів Кут</string>
 
     <string name="driver_status">Статус водія</string>
+
+    <string name="map">Мапа</string>
+    <string name="map_title">Мапа водіїв та попутників</string>
 
     <string name="contact_end">Контакт завершився</string>
     <string name="you_emotion">Ваші враження</string>

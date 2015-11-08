@@ -18,7 +18,7 @@ class WorkWithDataBase{
             .setPrettyPrinting()
             .create();
 
-    public static final String BASE_URL = "http://oberig.rv.ua";
+    public static final String BASE_URL = "http://carstop.in.ua";
 
     Retrofit restAdapter = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
@@ -50,7 +50,7 @@ class WorkWithDataBase{
             for (Map.Entry e : respons.entrySet()) {
                 try {
                     status[i] = (String.valueOf(e.getValue()));
-                }catch (NullPointerException ex){
+                }catch (NullPointerException| NumberFormatException ex){
                     status[i]="0";
                 }
                 i++;
@@ -127,7 +127,7 @@ class WorkWithDataBase{
                 }
             }
 
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
 

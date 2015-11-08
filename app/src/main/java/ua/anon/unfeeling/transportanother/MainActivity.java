@@ -206,7 +206,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     public void onBackPressed() {
-        System.exit(0);
+        finish();
+       // System.exit(0);
     }
 
     @Override
@@ -272,10 +273,10 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                     public void run() {
 
                         isShowInfo=true;
-                       // MainActivity.this.finish();
+
                         startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", id)
                                 .putExtra("driver", driv).putExtra("target", target));
-                      //  System.exit(0);
+
                     }
                 }).start();
             }else {
@@ -287,10 +288,10 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                         try {
                             data = test.get();
                             isShowInfo=true;
-                           // MainActivity.this.finish();
+
                             startActivity(new Intent(MainActivity.this, Info.class).putExtra("id", data[0])
                                     .putExtra("driver", driv).putExtra("target", target));
-                         //   System.exit(0);
+
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         } catch (InterruptedException e) {

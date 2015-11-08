@@ -51,7 +51,10 @@
             android:name="ua.anon.unfeeling.transportanother.Settings"
             android:noHistory="true" />
 
-         <service android:name="ua.anon.unfeeling.transportanother.TransportAnother" android:enabled="true"/>
+        <activity android:name="ua.anon.unfeeling.transportanother.Map"
+            android:noHistory="true"/>
+
+         <service android:name="ua.anon.unfeeling.transportanother.TransportAnother" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

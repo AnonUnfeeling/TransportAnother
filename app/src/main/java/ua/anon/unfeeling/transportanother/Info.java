@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -205,8 +207,15 @@ public class Info extends Activity implements View.OnClickListener {
 
                     contactStat.setBackgroundResource(R.drawable.cross);
 
-                    lengthFromContact.setText("");
-                    lengthFromContact.setText(getResources().getString(R.string.retry_search));
+                    distation.setText("");
+
+                    if(driver==1) {
+                        lengthFromContact.setText("");
+                        lengthFromContact.setText(getResources().getString(R.string.retry_search_driver));
+                    }else {
+                        lengthFromContact.setText("");
+                        lengthFromContact.setText(getResources().getString(R.string.retry_search_passage));
+                    }
 
                     statCenrt = (String.valueOf(intent.getIntExtra("centr", 0)));
                     statAuto = (String.valueOf(intent.getIntExtra("auto", 0)));
@@ -304,7 +313,7 @@ public class Info extends Activity implements View.OnClickListener {
             e.printStackTrace();
         }
         try {
-            stopService(new Intent(Info.this, TransportAnother.class));
+            stopService(new Intent(this, TransportAnother.class));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -318,9 +327,13 @@ public class Info extends Activity implements View.OnClickListener {
             }).start();
 
         }
-        finish();
 
         startActivity(new Intent(this, MainActivity.class));
+
+        System.gc();
+        System.exit(0);
+
+
     }
 
     @Override
@@ -365,6 +378,24 @@ public class Info extends Activity implements View.OnClickListener {
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE,1,Menu.NONE,getResources().getString(R.string.map)).setIcon(R.drawable.map);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case 1:
+                startActivity(new Intent(this,Map.class));
+                break;
+        }
+
+        return true;
     }
 
     private void mastabation(){

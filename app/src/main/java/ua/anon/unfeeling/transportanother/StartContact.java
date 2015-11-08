@@ -17,7 +17,7 @@ import com.example.hjk.transportanother.R;
 
 public class StartContact extends Activity {
 
-    private int id,target,driver;
+    private int target;
 
     @Override
     public void onBackPressed() {
@@ -29,9 +29,7 @@ public class StartContact extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_contact);
 
-        id = getIntent().getIntExtra("id",-1);
         target = getIntent().getIntExtra("target",-1);
-        driver = getIntent().getIntExtra("driver",-1);
 
         TextView statusDriver = (TextView) findViewById(R.id.driverStatus);
         statusDriver.setText(getIntent().getStringExtra("statusContact"));
@@ -54,10 +52,7 @@ public class StartContact extends Activity {
         closeContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
-//                startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
-//                        .putExtra("driver", driver).putExtra("target", target));
             }
         });
 
@@ -68,8 +63,6 @@ public class StartContact extends Activity {
         boolean isExit = getIntent().getBooleanExtra("isExit", false);
         if(isExit){
             finish();
-//            startActivity(new Intent(StartContact.this, Info.class).putExtra("id", id)
-//                    .putExtra("driver", driver).putExtra("target", target));
         }
 
         if(getSound()&&getVibr()){

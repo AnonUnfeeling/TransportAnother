@@ -10,6 +10,6 @@ import retrofit.http.POST;
 public interface Links {
 
     @FormUrlEncoded
-    @POST("/carstop/")
+    @POST("/app/")
     Call<Object> test(@FieldMap Map<String, String> username);
 }
