@@ -15,6 +15,8 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -80,6 +82,24 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         if(selectedTarget!=null){
             selectedTarget.cancel(true);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE,1,Menu.NONE,getResources().getString(R.string.map)).setIcon(R.drawable.map);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case 1:
+                startActivity(new Intent(this,Map.class));
+                break;
+        }
+
+        return true;
     }
 
     public void startApplication(){
@@ -255,7 +275,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                     selectedTarget.cancel(true);
                 }
 
-                startActivity(new Intent(this, ua.anon.unfeeling.transportanother.Settings.class).putExtra("id", id));
+                if(checkAccess()) {
+                    startActivity(new Intent(this, ua.anon.unfeeling.transportanother.Settings.class).putExtra("id", id));
+                }else {
+                    accessError();
+                }
 
                 break;
         }
