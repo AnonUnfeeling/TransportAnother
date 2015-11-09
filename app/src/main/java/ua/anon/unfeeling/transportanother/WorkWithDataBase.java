@@ -28,6 +28,22 @@ class WorkWithDataBase{
     final Links apiService =
             restAdapter.create(Links.class);
 
+    public String getVersion(){
+        String version="";
+        Map<String,String> send = new HashMap<String,String>();
+        send.put("version", "1");
+        Call<Object> response = apiService.test(send);
+        try {
+            Response<Object> res = response.execute();
+
+            version = res.body().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return version;
+    }
+
     public String[] getStatus(int id){
         String[] status = new String[5];
 

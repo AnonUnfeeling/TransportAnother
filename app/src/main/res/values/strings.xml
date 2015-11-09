@@ -3,6 +3,8 @@
 
     <string name="accessErorr">Перевірте з`єднання з інтернет/gps мережею та перезапустіть додаток</string>
 
+    <string name="new_version">Доступна нова версія додатку!</string>
+
     <string name="loadSettings">Завантажуються ваші персональні дані</string>
 
     <string name="count_drivers">К-сть водіїв в напрямку</string>

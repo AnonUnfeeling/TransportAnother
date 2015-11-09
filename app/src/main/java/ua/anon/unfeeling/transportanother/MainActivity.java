@@ -1,8 +1,10 @@
 package ua.anon.unfeeling.transportanother;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,10 +17,13 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -43,6 +48,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private CheckBox centr;
     private CheckBox angleBass;
     private String target="";
+    private String version = "1.5";
     private int id=-1;
     private int driv;
     private boolean isOnline = false;
@@ -170,6 +176,19 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
+        CheckVersion checkVersion = new CheckVersion();
+        checkVersion.execute();
+
+        try {
+            if(!version.equals(checkVersion.get())){
+                showToastNewVersion();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         auto = (CheckBox) findViewById(R.id.auto);
         auto.setOnTouchListener(this);
 
@@ -216,6 +235,28 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         }
 
         return false;
+    }
+
+    private void showToastNewVersion(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(getResources().getString(R.string.new_version))
+                        .setIcon(R.drawable.big11)
+                        .setCancelable(false)
+                        .setPositiveButton("Обновити",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                        intent.setData(Uri.parse("market://details?id=ua.anon.unfeeling.transportanother"));
+                                        startActivity(intent);
+                                    }
+                                })
+                        .setNegativeButton("Закрити", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private boolean checkAccess(){
@@ -528,6 +569,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             selectedTarget.execute();
         }else {
             selectedTarget.execute();
+        }
+    }
+
+    class CheckVersion extends AsyncTask<Void,Void,String>{
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return workWithDataBase.getVersion();
         }
     }
 
