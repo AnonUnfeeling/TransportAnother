@@ -59,6 +59,7 @@ public class Info extends Activity implements View.OnClickListener {
         outState.putString("ubil", ubil_cout.getText().toString());
         outState.putString("bass", bass_count.getText().toString());
 
+        outState.putString("distantion", distation.getText().toString());
         outState.putInt("driver", driver);
         outState.putInt("target", defaultTarget);
         outState.putInt("id", id);
@@ -76,6 +77,8 @@ public class Info extends Activity implements View.OnClickListener {
             north_cout.setText(bundle.getString("north"));
             ubil_cout.setText(bundle.getString("ubil"));
             bass_count.setText(bundle.getString("bass"));
+
+            distation.setText(bundle.getString("distantion"));
 
             driver = bundle.getInt("driver");
             defaultTarget = bundle.getInt("target");
@@ -261,7 +264,6 @@ public class Info extends Activity implements View.OnClickListener {
                     lengthFromContact.setText(getResources().getString(R.string.contact));
 
                 }else if(intent.getAction().equals("Contact_end")){
-                    close();
                     startActivity(new Intent(Info.this, Rating.class).putExtra("id", intent.getIntExtra("id",-1)));
                 }else if(intent.getAction().equals("Contact")){
                     viewStat();
@@ -307,11 +309,13 @@ public class Info extends Activity implements View.OnClickListener {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
+
         try {
             unregisterReceiver(service);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         try {
             stopService(new Intent(this, TransportAnother.class));
         } catch (Exception ex) {
@@ -332,8 +336,6 @@ public class Info extends Activity implements View.OnClickListener {
 
         System.gc();
         System.exit(0);
-
-
     }
 
     @Override

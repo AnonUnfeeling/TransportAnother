@@ -90,16 +90,18 @@ public class Rating extends Activity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        System.exit(0);
-        startActivity(new Intent(this,MainActivity.class));
+        finish();
+//        System.exit(0);
+//        startActivity(new Intent(this,MainActivity.class));
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
-                System.exit(0);
-                startActivity(new Intent(this, MainActivity.class));
+                finish();
+//                System.exit(0);
+//                startActivity(new Intent(this, MainActivity.class));
 
                 break;
             case R.id.sos:
@@ -125,7 +127,7 @@ public class Rating extends Activity implements View.OnClickListener {
                 positiv.setClickable(false);
                 negativ.setClickable(false);
                 finish();
-                startActivity(new Intent(this, MainActivity.class));
+              //  startActivity(new Intent(this, MainActivity.class));
 
                 break;
             case R.id.negativ:
@@ -135,7 +137,7 @@ public class Rating extends Activity implements View.OnClickListener {
                 positiv.setClickable(false);
                 negativ.setClickable(false);
                 finish();
-                startActivity(new Intent(this, MainActivity.class));
+               // startActivity(new Intent(this, MainActivity.class));
 
                 break;
         }

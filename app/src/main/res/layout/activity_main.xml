@@ -81,11 +81,12 @@
 
             <CheckBox
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:id="@+id/centr"
-                android:background="@drawable/centr_passiv"
                 android:button="@android:color/transparent"
-                android:checked="false" />
+                android:checked="false"
+                android:layout_gravity="center"
+                android:background="@drawable/centr_passiv" />
 
             <CheckBox
                 android:layout_width="match_parent"

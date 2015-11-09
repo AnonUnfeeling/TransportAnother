@@ -28,6 +28,7 @@ public class TransportAnother extends Service implements LocationListener {
     private int idPing = 0, idContact = 0;
     private int countPingSet = 5;
     private String exception = "0";
+    private int pingFlag = 0;
     private Location location;
     private int distation = 0, isContactFlag = 2,isCloseContact = 3;
     private boolean isShowStartContact = true, isSos = false;
@@ -68,7 +69,7 @@ public class TransportAnother extends Service implements LocationListener {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,47 +130,48 @@ public class TransportAnother extends Service implements LocationListener {
 
     }
 
-    private void start(final Location location){
+    private void start(final Location location) {
 
         System.out.println("start");
-            taskThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+        taskThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-                    if (id != 0 || id != -1) {
-                        double[] data;
+                if (id != 0 || id != -1) {
+                    double[] data;
 
-                        if (isSos) {
-                            workWithDataBase.sos(id, idContact, location.getLatitude(), location.getLongitude());
-                            isSos = false;
+                    if (isSos) {
+                        workWithDataBase.sos(id, idContact, location.getLatitude(), location.getLongitude());
+                        isSos = false;
+                    }
+
+                    if (flag) {
+                        System.out.println("online start");
+
+                        data = workWithDataBase.onlineStart(id, driver, defaultTarget, location.getLatitude(), location.getLongitude());
+
+                        if (data[0] != 0) {
+                            System.out.println("yes point os");
+
+                            idPing = (int) data[0];
+                            distation = Info.gps2m(data[2], data[3], location.getLatitude(), location.getLongitude());
+
+                        } else {
+                            System.out.println("no point os");
                         }
 
-                        if (flag) {
-                            System.out.println("online start");
+                        Intent in = new Intent("Info_start_online")
+                                .putExtra("centr", (int) data[4])
+                                .putExtra("auto", (int) data[5])
+                                .putExtra("north", (int) data[6])
+                                .putExtra("ubil", (int) data[7])
+                                .putExtra("bass", (int) data[8]);
+                        sendBroadcast(in);
 
-                            data = workWithDataBase.onlineStart(id, driver, defaultTarget, location.getLatitude(), location.getLongitude());
-
-                            if (data[0] != 0) {
-                                System.out.println("yes point os");
-
-                                idPing = (int) data[0];
-                                distation = Info.gps2m(data[2], data[3], location.getLatitude(), location.getLongitude());
-
-                            } else {
-                                System.out.println("no point os");
-                            }
-
-                            Intent in = new Intent("Info_start_online")
-                                    .putExtra("centr", (int) data[4])
-                                    .putExtra("auto", (int) data[5])
-                                    .putExtra("north", (int) data[6])
-                                    .putExtra("ubil", (int) data[7])
-                                    .putExtra("bass", (int) data[8]);
-                            sendBroadcast(in);
-
-                            flag = false;
-                        } else {
-                            if (idPing != 0) {
+                        flag = false;
+                    } else {
+                        if (idPing != 0) {
+                            if (pingFlag == 0) {
                                 System.out.println(id + " " + idPing + " " + driver + " " + location.getLatitude() + " " + location.getLongitude());
 
                                 data = workWithDataBase.ping(id, idPing, driver, location.getLatitude(), location.getLongitude());
@@ -216,6 +218,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                                                                 data = workWithDataBase.contactSet(id, location.getLatitude(), location.getLongitude());
                                                                 System.out.println("proc contact set");
+                                                                System.out.println(data[0]+" "+ data[1]);
                                                                 pointDistantion = Info.gps2m(data[0], data[1], location.getLatitude(), location.getLongitude());
 
                                                                 System.out.println(pointDistantion);
@@ -241,7 +244,7 @@ public class TransportAnother extends Service implements LocationListener {
                                         }
                                     } else {
                                         System.out.println("yes >");
-                                        exception += idPing;
+                                        exception += "," + idPing;
                                         System.out.println("search");
                                         System.out.println(id + " " + driver + " " + defaultTarget + " " + location.getLatitude() + " " + location.getLongitude() + " " + exception);
                                         data = workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude(), exception);
@@ -279,73 +282,78 @@ public class TransportAnother extends Service implements LocationListener {
                                         }
                                     }
                                 } else {
-                                    System.out.println("contact set");
-
-                                    data = workWithDataBase.contactSet(id, location.getLatitude(), location.getLongitude());
-                                    pointDistantion = Info.gps2m(data[0], data[1], location.getLatitude(), location.getLongitude());
-
-                                    if (pointDistantion > 50) {
-                                        if (isCloseContact == 0 && isShowContactEnd) {
-                                            isShowContactEnd = false;
-                                            System.out.println("contact end");
-                                            Intent in = new Intent("Contact_end");
-                                            in.putExtra("id", idContact);
-                                            sendBroadcast(in);
-                                        } else {
-                                            isCloseContact--;
-                                        }
-                                    }
-                                    Intent in = new Intent("Contact_start")
-                                            .putExtra("isContact", true)
-                                            .putExtra("dist", pointDistantion)
-                                            .putExtra("contact", true);
-                                    sendBroadcast(in);
+                                    pingFlag++;
+                                    System.out.println("ping flag " +pingFlag);
                                 }
                             } else {
-                                if (countPingSet > 1) {
-                                    System.out.println("ping set");
+                                System.out.println("contact set");
 
-                                    workWithDataBase.pingSet(id, driver, location.getLatitude(), location.getLongitude());
-                                    countPingSet--;
-                                } else {
-                                    System.out.println("search");
-                                    System.out.println(id + " " + driver + " " + defaultTarget + " " + location.getLatitude() + " " + location.getLongitude() + " " + exception);
-                                    data = workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude(), "0");
-                                    if (data[0] != 0) {
-                                        System.out.println("yes point search");
+                                data = workWithDataBase.contactSet(id, location.getLatitude(), location.getLongitude());
+                                pointDistantion = Info.gps2m(data[0], data[1], location.getLatitude(), location.getLongitude());
 
-                                        idPing = (int) data[0];
-                                        distation = Info.gps2m(data[2], data[3], location.getLatitude(), location.getLongitude());
-                                        Intent in = new Intent("Info_start_online")
-                                                .putExtra("idPing", idPing)
-                                                .putExtra("dist", distation)
-                                                .putExtra("centr", (int) data[4])
-                                                .putExtra("auto", (int) data[5])
-                                                .putExtra("north", (int) data[6])
-                                                .putExtra("ubil", (int) data[7])
-                                                .putExtra("bass", (int) data[8]);
-
+                                System.out.println(data[0]+" "+ data[1]);
+                                if (pointDistantion > 50) {
+                                    if (isCloseContact == 0 && isShowContactEnd) {
+                                        isShowContactEnd = false;
+                                        System.out.println("contact end");
+                                        Intent in = new Intent("Contact_end");
+                                        in.putExtra("id", id);
                                         sendBroadcast(in);
                                     } else {
-                                        System.out.println("no point search");
-
-                                        exception = "0";
-
-                                        Intent in = new Intent("Info_start_online")
-                                                .putExtra("centr", (int) data[4])
-                                                .putExtra("auto", (int) data[5])
-                                                .putExtra("north", (int) data[6])
-                                                .putExtra("ubil", (int) data[7])
-                                                .putExtra("bass", (int) data[8]);
-                                        sendBroadcast(in);
+                                        isCloseContact--;
                                     }
-                                    countPingSet = 5;
                                 }
+                                Intent in = new Intent("Contact_start")
+                                        .putExtra("isContact", true)
+                                        .putExtra("dist", pointDistantion)
+                                        .putExtra("contact", true);
+                                sendBroadcast(in);
+                            }
+                        } else {
+                            if (countPingSet > 1) {
+                                System.out.println("ping set");
+
+                                workWithDataBase.pingSet(id, driver, location.getLatitude(), location.getLongitude());
+                                countPingSet--;
+                            } else {
+                                System.out.println("search");
+                                System.out.println(id + " " + driver + " " + defaultTarget + " " + location.getLatitude() + " " + location.getLongitude() + " " + exception);
+                                data = workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude(), "0");
+                                if (data[0] != 0) {
+                                    System.out.println("yes point search");
+
+                                    idPing = (int) data[0];
+                                    distation = Info.gps2m(data[2], data[3], location.getLatitude(), location.getLongitude());
+                                    Intent in = new Intent("Info_start_online")
+                                            .putExtra("idPing", idPing)
+                                            .putExtra("dist", distation)
+                                            .putExtra("centr", (int) data[4])
+                                            .putExtra("auto", (int) data[5])
+                                            .putExtra("north", (int) data[6])
+                                            .putExtra("ubil", (int) data[7])
+                                            .putExtra("bass", (int) data[8]);
+
+                                    sendBroadcast(in);
+                                } else {
+                                    System.out.println("no point search");
+
+                                    exception = "0";
+
+                                    Intent in = new Intent("Info_start_online")
+                                            .putExtra("centr", (int) data[4])
+                                            .putExtra("auto", (int) data[5])
+                                            .putExtra("north", (int) data[6])
+                                            .putExtra("ubil", (int) data[7])
+                                            .putExtra("bass", (int) data[8]);
+                                    sendBroadcast(in);
+                                }
+                                countPingSet = 5;
                             }
                         }
                     }
                 }
-            });
-            taskThread.start();
+            }
+        });
+        taskThread.start();
     }
 }

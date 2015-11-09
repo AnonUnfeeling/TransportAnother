@@ -120,7 +120,7 @@ class WorkWithDataBase{
 
         Map<String,String> nameValuePair = new HashMap<String,String>();
         nameValuePair.put("proc","search_");
-        nameValuePair.put("in", ""+id+","+driver+","+target+","+x+","+y+","+exeption+",@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
+        nameValuePair.put("in", ""+id+","+driver+","+target+","+x+","+y+",\'"+exeption+"\',@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
         nameValuePair.put("out", "@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9");
 
         String s= gson.toJson(nameValuePair);

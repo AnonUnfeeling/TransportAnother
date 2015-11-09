@@ -65,6 +65,8 @@ public class StartContact extends Activity {
             finish();
         }
 
+        System.out.println(getSound() + " " + getVibr());
+
         if(getSound()&&getVibr()){
             for (int i = 0; i < 2; ) {
                 if(!mp.isPlaying()){
@@ -88,11 +90,11 @@ public class StartContact extends Activity {
 
     private boolean getVibr(){
         SharedPreferences sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE);
-        return sharedPreferences.getBoolean("vibration",false);
+        return sharedPreferences.getBoolean("vibration",true);
     }
 
     private boolean getSound(){
         SharedPreferences sharedPreferences = getSharedPreferences("Settings",MODE_PRIVATE);
-        return sharedPreferences.getBoolean("sound",false);
+        return sharedPreferences.getBoolean("sound",true);
     }
 }

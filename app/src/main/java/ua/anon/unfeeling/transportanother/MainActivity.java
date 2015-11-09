@@ -246,7 +246,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                                        intent.setData(Uri.parse("market://details?id=ua.anon.unfeeling.transportanother"));
+                                        intent.setData(Uri.parse("market://details?id=ua.anonunfeeling.transportanother"));
                                         startActivity(intent);
                                     }
                                 })
@@ -267,8 +267,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     public void onBackPressed() {
-        finish();
-       // System.exit(0);
+       // finish();
+        System.exit(0);
     }
 
     @Override
