@@ -68,7 +68,7 @@ public class TransportAnother extends Service implements LocationListener {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
         } catch (Exception e) {
             e.printStackTrace();
         }
