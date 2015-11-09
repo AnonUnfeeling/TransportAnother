@@ -382,7 +382,7 @@ public class Info extends Activity implements View.OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE,1,Menu.NONE,getResources().getString(R.string.map)).setIcon(R.drawable.map);
+        menu.add(Menu.NONE,1,Menu.NONE,getResources().getString(R.string.map));
 
         return super.onCreateOptionsMenu(menu);
     }
