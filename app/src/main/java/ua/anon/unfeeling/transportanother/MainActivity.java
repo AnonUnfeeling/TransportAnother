@@ -568,6 +568,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             selectedTarget = new SelectedTarget();
             selectedTarget.execute();
         }else {
+            selectedTarget = new SelectedTarget();
             selectedTarget.execute();
         }
     }
