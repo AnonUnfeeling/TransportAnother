@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.hjk.transportanother.R;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("UnnecessaryBreak")
 public class TransportAnother extends Service implements LocationListener {
@@ -69,7 +70,7 @@ public class TransportAnother extends Service implements LocationListener {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,6 +111,9 @@ public class TransportAnother extends Service implements LocationListener {
 
     @Override
     public void onDestroy() {
+        if(this.location!=null) {
+            this.location = null;
+        }
         if(taskThread!=null) {
             taskThread.stop();
         }
@@ -258,6 +262,10 @@ public class TransportAnother extends Service implements LocationListener {
                                         System.out.println(id + " " + driver + " " + defaultTarget + " " + location.getLatitude() + " " + location.getLongitude() + " " + exception);
                                         data = workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude(), exception);
 
+                                        for (int i = 0; i < data.length; i++) {
+                                            System.out.println(data[i]);
+                                        }
+
                                         if (data[0] != 0) {
                                             System.out.println("yes point search");
 
@@ -265,7 +273,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                                             idPing = (int) data[0];
                                             distation = Info.gps2m(data[2], data[3], location.getLatitude(), location.getLongitude());
-                                            Intent in = new Intent("Info_start_online")
+                                            Intent in = new Intent("Search")
                                                     .putExtra("idPing", idPing)
                                                     .putExtra("dist", distation)
                                                     .putExtra("centr", (int) data[4])
@@ -280,7 +288,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                                             exception = "0";
 
-                                            Intent in = new Intent("Info_start_online")
+                                            Intent in = new Intent("Search")
                                                     .putExtra("centr", (int) data[4])
                                                     .putExtra("auto", (int) data[5])
                                                     .putExtra("north", (int) data[6])
@@ -329,12 +337,17 @@ public class TransportAnother extends Service implements LocationListener {
                                 System.out.println("search");
                                 System.out.println(id + " " + driver + " " + defaultTarget + " " + location.getLatitude() + " " + location.getLongitude() + " " + exception);
                                 data = workWithDataBase.search(id, driver, defaultTarget, location.getLatitude(), location.getLongitude(), "0");
+
+                                for (int i = 0; i < data.length; i++) {
+                                    System.out.println(data[i]);
+                                }
+
                                 if (data[0] != 0) {
                                     System.out.println("yes point search");
 
                                     idPing = (int) data[0];
                                     distation = Info.gps2m(data[2], data[3], location.getLatitude(), location.getLongitude());
-                                    Intent in = new Intent("Info_start_online")
+                                    Intent in = new Intent("Search")
                                             .putExtra("idPing", idPing)
                                             .putExtra("dist", distation)
                                             .putExtra("centr", (int) data[4])
@@ -349,7 +362,7 @@ public class TransportAnother extends Service implements LocationListener {
 
                                     exception = "0";
 
-                                    Intent in = new Intent("Info_start_online")
+                                    Intent in = new Intent("Search")
                                             .putExtra("centr", (int) data[4])
                                             .putExtra("auto", (int) data[5])
                                             .putExtra("north", (int) data[6])

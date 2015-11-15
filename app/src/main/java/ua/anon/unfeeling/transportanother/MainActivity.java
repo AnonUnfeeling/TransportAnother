@@ -54,7 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private CheckBox centr;
     private CheckBox angleBass;
     private String target="";
-    private double version = 1.9;
+    private double version = 2.0;
     private int id=-1;
     private int driv;
     private boolean isOnline = false;

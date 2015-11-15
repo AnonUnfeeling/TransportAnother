@@ -165,29 +165,30 @@ public class Info extends Activity implements View.OnClickListener {
         sos = (ImageButton) findViewById(R.id.sos);
         sos.setOnClickListener(this);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!flagService) {
-                    try {
-                        stopService(new Intent(Info.this, TransportAnother.class));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+        workWithService();
 
-                    try {
-                        TimeUnit.SECONDS.sleep(2);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    System.out.println("restart service");
-
-                    workWithService();
-                }
-            }
-        }).start();
-
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (!flagService) {
+//                    try {
+//                        TimeUnit.SECONDS.sleep(30);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    try {
+//                        stopService(new Intent(Info.this, TransportAnother.class));
+//                    } catch (Exception ex) {
+//                        ex.printStackTrace();
+//                    }
+//
+//                    System.out.println("restart service");
+//
+//                    workWithService();
+//                }
+//            }
+//        }).start();
     }
 
     private void setBackground(char[] target){
@@ -220,11 +221,11 @@ public class Info extends Activity implements View.OnClickListener {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("Info_start_online");
-        filter.addAction("checking the distance");
         filter.addAction("Info_ping");
         filter.addAction("Contact_start");
         filter.addAction("Contact_end");
         filter.addAction("Contact");
+        filter.addAction("Search");
 
         service = new BroadcastReceiver() {
             @Override
@@ -322,6 +323,16 @@ public class Info extends Activity implements View.OnClickListener {
 
                     startActivity(new Intent(Info.this, StartContact.class).putExtra("isExit", true)
                             .putExtra("id", id).putExtra("defaultTarget", defaultTarget).putExtra("driver", driver));
+                }else if(intent.getAction().equals("Search")){
+                    statCenrt = (String.valueOf(intent.getIntExtra("centr", 0)));
+                    statAuto = (String.valueOf(intent.getIntExtra("auto", 0)));
+                    statNorth = (String.valueOf(intent.getIntExtra("north", 0)));
+                    statUbil = (String.valueOf(intent.getIntExtra("ubil", 0)));
+                    statBass = (String.valueOf(intent.getIntExtra("bass", 0)));
+
+                    flagService = true;
+
+                    viewStat();
                 }
             }
         };

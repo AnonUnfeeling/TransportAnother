@@ -55,7 +55,7 @@ public class Map extends Activity{
                     startActivity(new Intent(Map.this,MainActivity.class));
                 }else {
                     finish();
-                    startActivity(new Intent(Map.this, Info.class));
+                  //  startActivity(new Intent(Map.this, Info.class));
                 }
             }
         });
@@ -68,7 +68,7 @@ public class Map extends Activity{
             startActivity(new Intent(Map.this,MainActivity.class));
         }else {
             finish();
-            startActivity(new Intent(Map.this, Info.class));
+           // startActivity(new Intent(Map.this, Info.class));
         }
     }
 }
