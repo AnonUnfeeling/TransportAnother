@@ -79,46 +79,183 @@
             android:id="@+id/radioGroup"
             android:layout_below="@+id/title_layout">
 
-            <CheckBox
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/centr"
-                android:button="@android:color/transparent"
-                android:checked="false"
-                android:layout_gravity="center"
-                android:background="@drawable/centr_passiv" />
+                android:id="@+id/centr_layout">
 
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/auto"
-                android:checked="false"
-                android:background="@drawable/auto_passiv"
-                android:button="@android:color/transparent" />
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/centr"
+                    android:button="@android:color/transparent"
+                    android:checked="false"
+                    android:layout_gravity="center"
+                    android:background="@drawable/centr_passiv" />
 
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/north"
-                android:checked="false"
-                android:background="@drawable/north_passiv"
-                android:button="@android:color/transparent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Покровський собор"
+                    android:id="@+id/title_centr"
+                    android:textColor="#969aa5"
+                    android:layout_marginTop="13dp"
+                    android:layout_alignTop="@+id/centr"
+                    android:layout_alignLeft="@+id/textView10" />
 
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/anniversary"
-                android:checked="false"
-                android:background="@drawable/anniversary_passiv"
-                android:button="@android:color/transparent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Центр"
+                    android:id="@+id/textView10"
+                    android:textColor="#fffdfc"
+                    android:textSize="17sp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginLeft="145dp"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentStart="false"
+                    android:layout_alignParentBottom="false"
+                    android:layout_alignParentRight="false"
+                    android:layout_alignWithParentIfMissing="false"
+                    android:layout_alignParentTop="false" />
+            </RelativeLayout>
 
-            <CheckBox
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/angleBass"
-                android:checked="false"
-                android:background="@drawable/angle_bass_passive"
-                android:button="@android:color/transparent" />
+                android:layout_height="match_parent"
+                android:id="@+id/auto_layout" >
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/auto"
+                    android:checked="false"
+                    android:background="@drawable/auto_passiv"
+                    android:button="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Мототрек"
+                    android:id="@+id/textView11"
+                    android:textColor="#969aa5"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentRight="false"
+                    android:layout_alignLeft="@+id/textView12"
+                    android:layout_marginTop="13dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Автовокзал"
+                    android:id="@+id/textView12"
+                    android:textColor="#fffdfc"
+                    android:textSize="17sp"
+                    android:layout_alignWithParentIfMissing="false"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginLeft="145dp" />" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/north_layout" >
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/north"
+                    android:checked="false"
+                    android:background="@drawable/north_passiv"
+                    android:button="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Чайка"
+                    android:id="@+id/textView13"
+                    android:textColor="#969aa5"
+                    android:layout_marginTop="13dp"
+                    android:layout_alignLeft="@+id/textView14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Північний"
+                    android:id="@+id/textView14"
+                    android:textColor="#fffdfc"
+                    android:textSize="17sp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginLeft="145dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/anniversary_layout" >
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/anniversary"
+                    android:checked="false"
+                    android:background="@drawable/anniversary_passiv"
+                    android:button="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Боярка"
+                    android:id="@+id/textView15"
+                    android:textColor="#969aa5"
+                    android:layout_marginTop="13dp"
+                    android:layout_alignTop="@+id/anniversary"
+                    android:layout_alignLeft="@+id/textView16" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ювілейний"
+                    android:id="@+id/textView16"
+                    android:textColor="#fffdfc"
+                    android:textSize="17sp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginLeft="145dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/relativeLayout" >
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/angleBass"
+                    android:checked="false"
+                    android:background="@drawable/angle_bass_passive"
+                    android:button="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Мірющенка"
+                    android:id="@+id/textView17"
+                    android:textColor="#969aa5"
+                    android:layout_marginTop="13dp"
+                    android:layout_alignTop="@+id/angleBass"
+                    android:layout_alignLeft="@+id/textView18" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Басів Кут"
+                    android:id="@+id/textView18"
+                    android:textColor="#fffdfc"
+                    android:textSize="17sp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginLeft="145dp" />
+            </RelativeLayout>
 
         </RadioGroup>
 

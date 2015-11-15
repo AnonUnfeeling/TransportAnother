@@ -19,12 +19,15 @@ import java.util.concurrent.TimeUnit;
 public class Map extends Activity{
 
     private WebView mapWebView;
+    private boolean flag = false;
     private ImageButton closeContact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
+
+        flag = getIntent().getBooleanExtra("flag",false);
 
         mapWebView = (WebView) findViewById(R.id.mapWebView);
         mapWebView.getSettings().setJavaScriptEnabled(true);
@@ -47,9 +50,25 @@ public class Map extends Activity{
         closeContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-                startActivity(new Intent(Map.this,MainActivity.class));
+                if(!flag) {
+                    finish();
+                    startActivity(new Intent(Map.this,MainActivity.class));
+                }else {
+                    finish();
+                    startActivity(new Intent(Map.this, Info.class));
+                }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!flag) {
+            finish();
+            startActivity(new Intent(Map.this,MainActivity.class));
+        }else {
+            finish();
+            startActivity(new Intent(Map.this, Info.class));
+        }
     }
 }

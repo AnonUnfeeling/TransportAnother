@@ -37,7 +37,7 @@ class WorkWithDataBase{
             Response<Object> res = response.execute();
 
             version = res.body().toString();
-
+            System.out.println(res.body().toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

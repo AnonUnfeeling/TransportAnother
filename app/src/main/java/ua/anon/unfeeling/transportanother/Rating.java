@@ -101,7 +101,7 @@ public class Rating extends Activity implements View.OnClickListener {
             case R.id.back:
                 finish();
 //                System.exit(0);
-//                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
 
                 break;
             case R.id.sos:
@@ -127,7 +127,7 @@ public class Rating extends Activity implements View.OnClickListener {
                 positiv.setClickable(false);
                 negativ.setClickable(false);
                 finish();
-              //  startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
 
                 break;
             case R.id.negativ:
@@ -137,7 +137,7 @@ public class Rating extends Activity implements View.OnClickListener {
                 positiv.setClickable(false);
                 negativ.setClickable(false);
                 finish();
-               // startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
 
                 break;
         }
@@ -148,6 +148,7 @@ public class Rating extends Activity implements View.OnClickListener {
         @Override
         protected Void doInBackground(Integer... params) {
             new WorkWithDataBase().contactEnd(params[0],params[1]);
+            new WorkWithDataBase().onlineEnd(params[0]);
             return null;
         }
     }

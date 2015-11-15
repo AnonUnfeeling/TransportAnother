@@ -13,11 +13,15 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.Html;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +31,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -48,7 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private CheckBox centr;
     private CheckBox angleBass;
     private String target="";
-    private String version = "1.5";
+    private double version = 1.9;
     private int id=-1;
     private int driv;
     private boolean isOnline = false;
@@ -92,7 +98,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE,1,Menu.NONE,getResources().getString(R.string.map));
+        menu.add(Menu.NONE, 1, Menu.NONE, getResources().getString(R.string.map));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -101,7 +107,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case 1:
-                startActivity(new Intent(this,Map.class));
+                startActivity(new Intent(this,Map.class).putExtra("flag",false));
                 break;
         }
 
@@ -176,17 +182,20 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
-        CheckVersion checkVersion = new CheckVersion();
-        checkVersion.execute();
+        if(checkAccess()) {
+            CheckVersion checkVersion = new CheckVersion();
+            checkVersion.execute();
 
-        try {
-            if(!version.equals(checkVersion.get())){
-                showToastNewVersion();
+            try {
+                double vers = Double.parseDouble(checkVersion.get());
+                if (version<vers) {
+                    showToastNewVersion();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
         }
 
         auto = (CheckBox) findViewById(R.id.auto);
@@ -551,7 +560,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             pedestrian.setLayoutParams(params1);
             driver.setLayoutParams(params1);
 
-            LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+            RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     (int) (height * 0.13f + 0.5f));
             centr.setLayoutParams(params2);
@@ -598,19 +607,19 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         @Override
         protected Void doInBackground(Void... params) {
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
                 if (isCancelled()) {
                     break;
                 }
 
-                if (i == 4) {
+                if (i == 3) {
                     if (target.toCharArray().length > 0) {
                         counting(Integer.parseInt(target));
                     }
                 }
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

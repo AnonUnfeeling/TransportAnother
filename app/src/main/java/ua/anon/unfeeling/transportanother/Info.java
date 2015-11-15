@@ -20,6 +20,8 @@ import android.widget.TextView;
 
 import com.example.hjk.transportanother.R;
 
+import java.util.concurrent.TimeUnit;
+
 @SuppressWarnings("MismatchedReadAndWriteOfArray")
 public class Info extends Activity implements View.OnClickListener {
 
@@ -28,9 +30,11 @@ public class Info extends Activity implements View.OnClickListener {
     private TextView statistics;
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     private int id = 0, driver = 0;
+    private int idContact = 0;
     private int defaultTarget = 0,distantn=-1;
     private BroadcastReceiver service=null;
     private ProgressDialog progressDialog;
+    private boolean flagService = false;
     private String statCenrt = "", statAuto="",statNorth="",statUbil="",statBass="";
     private boolean isCheckSos=false;
     @SuppressWarnings("MismatchedReadAndWriteOfArray")
@@ -155,13 +159,35 @@ public class Info extends Activity implements View.OnClickListener {
 
         bass_count = (TextView) findViewById(R.id.bass_cout);
 
-        workWithService();
-
         back = (ImageButton) findViewById(R.id.back);
         back.setOnClickListener(this);
 
         sos = (ImageButton) findViewById(R.id.sos);
         sos.setOnClickListener(this);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!flagService) {
+                    try {
+                        stopService(new Intent(Info.this, TransportAnother.class));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    System.out.println("restart service");
+
+                    workWithService();
+                }
+            }
+        }).start();
+
     }
 
     private void setBackground(char[] target){
@@ -191,6 +217,7 @@ public class Info extends Activity implements View.OnClickListener {
     }
 
     private void workWithService() {
+
         IntentFilter filter = new IntentFilter();
         filter.addAction("Info_start_online");
         filter.addAction("checking the distance");
@@ -226,6 +253,8 @@ public class Info extends Activity implements View.OnClickListener {
                     statUbil = (String.valueOf(intent.getIntExtra("ubil", 0)));
                     statBass = (String.valueOf(intent.getIntExtra("bass", 0)));
 
+                    flagService = true;
+
                     viewStat();
 
                 } else if (intent.getAction().equals("Info_ping")) {
@@ -260,13 +289,36 @@ public class Info extends Activity implements View.OnClickListener {
                         progressDialog.dismiss();
                     }
 
+                    distation.setText("");
+
                     lengthFromContact.setText("");
                     lengthFromContact.setText(getResources().getString(R.string.contact));
 
                 }else if(intent.getAction().equals("Contact_end")){
                     startActivity(new Intent(Info.this, Rating.class).putExtra("id", intent.getIntExtra("id",-1)));
+
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
+
+                    try {
+                        unregisterReceiver(service);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        stopService(new Intent(Info.this, TransportAnother.class));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    System.gc();
+                    System.exit(0);
                 }else if(intent.getAction().equals("Contact")){
                     viewStat();
+
+                    idContact = intent.getIntExtra("id",0);
 
                     startActivity(new Intent(Info.this, StartContact.class).putExtra("isExit", true)
                             .putExtra("id", id).putExtra("defaultTarget", defaultTarget).putExtra("driver", driver));
@@ -342,10 +394,34 @@ public class Info extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back:
-                LinearLayout headLayout = (LinearLayout) findViewById(R.id.headLayout);
-                headLayout.setBackgroundColor(Color.parseColor("#2E313E"));
+                if(idContact == 0) {
+                    LinearLayout headLayout = (LinearLayout) findViewById(R.id.headLayout);
+                    headLayout.setBackgroundColor(Color.parseColor("#2E313E"));
 
-                close();
+                    close();
+                }else {
+                    startActivity(new Intent(Info.this, Rating.class).putExtra("id", idContact));
+
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
+
+                    try {
+                        unregisterReceiver(service);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        stopService(new Intent(this, TransportAnother.class));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                    System.gc();
+                    System.exit(0);
+                }
 
                 break;
             case R.id.sos:
@@ -384,7 +460,7 @@ public class Info extends Activity implements View.OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE,1,Menu.NONE,getResources().getString(R.string.map));
+        menu.add(Menu.NONE, 1, Menu.NONE, getResources().getString(R.string.map));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -393,7 +469,7 @@ public class Info extends Activity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case 1:
-                startActivity(new Intent(this,Map.class));
+                startActivity(new Intent(this,Map.class).putExtra("flag",true));
                 break;
         }
 

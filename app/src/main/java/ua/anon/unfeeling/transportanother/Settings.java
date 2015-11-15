@@ -31,7 +31,7 @@ public class Settings extends Activity implements View.OnClickListener{
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     private String[] status;
     private ImageButton back;
-    private int showAuthor = 0;
+    private TextView sound_stat, vibr_stat;
     private double rating = 0;
     private ProgressDialog progressDialog;
     private ImageView title;
@@ -44,10 +44,12 @@ public class Settings extends Activity implements View.OnClickListener{
 
         isCheck = loadSettings();
         if(isCheck[0]){
-            sound.setBackgroundResource(R.drawable.sound_activ);
+            sound_stat.setText("Увімкнений");
+            sound.setBackgroundResource(R.drawable.setting_activ);
         }
         if(isCheck[1]){
-            vibration.setBackgroundResource(R.drawable.vibr_activ);
+            vibr_stat.setText("Увімкнений");
+            vibration.setBackgroundResource(R.drawable.setting_activ);
         }
     }
 
@@ -62,6 +64,8 @@ public class Settings extends Activity implements View.OnClickListener{
         TextView ratingForDriver = (TextView) findViewById(R.id.ratingForDriver);
         TextView countPasag = (TextView) findViewById(R.id.coutPasag);
         TextView countDriver = (TextView) findViewById(R.id.countDriver);
+        sound_stat = (TextView) findViewById(R.id.sound_stat);
+        vibr_stat = (TextView) findViewById(R.id.vibr_stat);
 
         LoadStatistics loadStatistics = new LoadStatistics();
         loadStatistics.execute();
@@ -69,22 +73,30 @@ public class Settings extends Activity implements View.OnClickListener{
         try {
             status = loadStatistics.get();
 
-            rating = ((Double.parseDouble(status[0])+Double.parseDouble(status[2]))
-                    /(Double.parseDouble(status[1])+Double.parseDouble(status[3])));
+            try {
+                rating = ((Double.parseDouble(status[0]) + Double.parseDouble(status[2]))
+                        / (Double.parseDouble(status[1]) + Double.parseDouble(status[3])));
 
-            if (status[4] != null) {
-                youStatus.append(status[4]);
+
+                if (status[4] != null) {
+                    youStatus.append(status[4]);
+                }
+
+                statist.append(String.valueOf((int) (rating * 100)));
+
+
+                ratingForPasage.append(String.valueOf((int) (Double.parseDouble(status[0]))));
+                countPasag.append(String.valueOf((int) (Double.parseDouble(status[1]))));
+
+                ratingForDriver.append(String.valueOf((int) (Double.parseDouble(status[2]))));
+                countDriver.append(String.valueOf((int) (Double.parseDouble(status[3]))));
+            }catch (NumberFormatException ex){
+                rating = 0;
+                ratingForPasage.append("0");
+                countPasag.append("0");
+                ratingForDriver.append("0");
+                countDriver.append("0");
             }
-
-            statist.append(String.valueOf((int)(rating * 100)));
-
-
-            ratingForPasage.append(String.valueOf((int) (Double.parseDouble(status[0]))));
-            countPasag.append(String.valueOf((int) (Double.parseDouble(status[1]))));
-
-            ratingForDriver.append(String.valueOf((int) (Double.parseDouble(status[2]))));
-            countDriver.append(String.valueOf((int) (Double.parseDouble(status[3]))));
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -114,7 +126,6 @@ public class Settings extends Activity implements View.OnClickListener{
                         "\nГрисюк Андрій" +
                         "\nРябунець Богдан" +
                         "\nМахно Анна", Toast.LENGTH_LONG).show();
-                showAuthor = 0;
             }
         });
 
@@ -146,23 +157,27 @@ public class Settings extends Activity implements View.OnClickListener{
         switch (v.getId()) {
             case R.id.sound:
                 if (!isCheck[0]) {
-                    sound.setBackgroundResource(R.drawable.sound_activ);
+                    sound_stat.setText("Увімкнений");
+                    sound.setBackgroundResource(R.drawable.setting_activ);
                     isCheck[0] = true;
                     if(!mp.isPlaying()){
                         mp.start();
                     }
                 } else {
-                    sound.setBackgroundResource(R.drawable.sound_passive);
+                    sound_stat.setText("Вимкнений");
+                    sound.setBackgroundResource(R.drawable.setting_passive);
                     isCheck[0] = false;
                 }
                 break;
             case R.id.vibration:
                 if (!isCheck[1]) {
-                    vibration.setBackgroundResource(R.drawable.vibr_activ);
+                    vibr_stat.setText("Увімкнений");
+                    vibration.setBackgroundResource(R.drawable.setting_activ);
                     isCheck[1] = true;
                     vibrator.vibrate(1000);
                 } else {
-                    vibration.setBackgroundResource(R.drawable.vibr_passive);
+                    vibr_stat.setText("Вимкнений");
+                    vibration.setBackgroundResource(R.drawable.setting_passive);
                     isCheck[1] = false;
                 }
                 break;
@@ -214,7 +229,7 @@ public class Settings extends Activity implements View.OnClickListener{
             pasageLayout.setLayoutParams(params2);
             driverLayout.setLayoutParams(params2);
 
-            LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
+            RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     (int) (height * 0.13f + 0.5f));
             sound.setLayoutParams(params3);

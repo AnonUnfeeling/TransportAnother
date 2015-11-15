@@ -110,7 +110,9 @@ public class TransportAnother extends Service implements LocationListener {
 
     @Override
     public void onDestroy() {
-        taskThread.stop();
+        if(taskThread!=null) {
+            taskThread.stop();
+        }
         System.out.println("destroy service");
         super.onDestroy();
     }
@@ -214,16 +216,23 @@ public class TransportAnother extends Service implements LocationListener {
                                                                 sendBroadcast(inv);
 
                                                             } else {
-                                                                System.out.println("contact set");
-
                                                                 data = workWithDataBase.contactSet(id, location.getLatitude(), location.getLongitude());
-                                                                System.out.println("proc contact set");
-                                                                System.out.println(data[0]+" "+ data[1]);
                                                                 pointDistantion = Info.gps2m(data[0], data[1], location.getLatitude(), location.getLongitude());
 
-                                                                System.out.println(pointDistantion);
-
+//                                                                System.out.println(data[0]+" "+ data[1]);
+//                                                                if (pointDistantion > 50) {
+//                                                                    if (isCloseContact == 0 && isShowContactEnd) {
+//                                                                        isShowContactEnd = false;
+//                                                                        System.out.println("contact end");
+//                                                                        Intent in = new Intent("Contact_end");
+//                                                                        in.putExtra("id", id);
+//                                                                        sendBroadcast(in);
+//                                                                    } else {
+//                                                                        isCloseContact--;
+//                                                                    }
+//                                                                }
                                                             }
+
                                                             Intent in = new Intent("Contact_start")
                                                                     .putExtra("isContact", true)
                                                                     .putExtra("dist", pointDistantion)
@@ -303,6 +312,7 @@ public class TransportAnother extends Service implements LocationListener {
                                         isCloseContact--;
                                     }
                                 }
+
                                 Intent in = new Intent("Contact_start")
                                         .putExtra("isContact", true)
                                         .putExtra("dist", pointDistantion)

@@ -99,7 +99,7 @@
                             android:id="@+id/youStatus"
                             android:textSize="17sp"
                             android:textColor="#fffefd"
-                            android:layout_marginLeft="15dp"
+                            android:layout_marginLeft="10dp"
                             tools:ignore="RtlHardcoded,RtlSymmetry"
                             android:gravity="center"
                             android:layout_weight="1"
@@ -265,23 +265,78 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageButton
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/sound"
-                    android:background="@drawable/sound_passive"
-                    android:layout_weight="1"
-                    android:layout_marginTop="0.5dp"
-                    tools:ignore="ContentDescription" />
+                    android:id="@+id/sound_layout">
 
-                <ImageButton
+                    <ImageButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/sound"
+                        android:background="@drawable/setting_passive"
+                        android:layout_weight="1"
+                        android:layout_marginTop="0.5dp"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Вымкненый"
+                        android:id="@+id/sound_stat"
+                        android:textColor="#969aa5"
+                        android:layout_alignTop="@+id/sound"
+                        android:layout_alignLeft="@+id/textView12"
+                        android:layout_alignStart="@+id/textView12"
+                        android:layout_marginTop="13dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Звуковий сигнал"
+                        android:id="@+id/textView12"
+                        android:textColor="#fffdfc"
+                        android:textSize="17sp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginLeft="100dp"
+                        android:layout_alignTop="@+id/sound" />
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/vibration"
-                    android:background="@drawable/vibr_passive"
-                    android:layout_weight="1"
-                    android:layout_marginTop="0.5dp"
-                    tools:ignore="ContentDescription" />
+                    android:id="@+id/vibr_layout">
+
+                    <ImageButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/vibration"
+                        android:background="@drawable/setting_passive"
+                        android:layout_weight="1"
+                        android:layout_marginTop="0.5dp"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Віброрежим"
+                        android:id="@+id/textView19"
+                        android:textColor="#fffdfc"
+                        android:textSize="17sp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginLeft="100dp"
+                        android:layout_alignTop="@+id/vibration" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Вымкненый"
+                        android:id="@+id/vibr_stat"
+                        android:textColor="#969aa5"
+                        android:layout_marginTop="13dp"
+                        android:layout_alignTop="@+id/vibration"
+                        android:layout_alignLeft="@+id/textView19" />
+                </RelativeLayout>
 
             </LinearLayout>
 
