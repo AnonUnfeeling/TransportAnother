@@ -63,27 +63,25 @@ public class StartContact extends Activity {
         boolean isExit = getIntent().getBooleanExtra("isExit", false);
         if(isExit){
             finish();
-        }
-
-        System.out.println(getSound() + " " + getVibr());
-
-        if(getSound()&&getVibr()){
-            for (int i = 0; i < 2; ) {
-                if(!mp.isPlaying()){
+        }else {
+            if (getSound() && getVibr()) {
+                for (int i = 0; i < 2; ) {
+                    if (!mp.isPlaying()) {
+                        vibrator.vibrate(1000);
+                        mp.start();
+                        i++;
+                    }
+                }
+            } else if (getSound()) {
+                for (int i = 0; i < 2; i++) {
+                    if (!mp.isPlaying()) {
+                        mp.start();
+                    }
+                }
+            } else if (getVibr()) {
+                for (int i = 0; i < 2; i++) {
                     vibrator.vibrate(1000);
-                    mp.start();
-                    i++;
                 }
-            }
-        }else if(getSound()){
-            for (int i = 0; i < 2; i++) {
-                if(!mp.isPlaying()){
-                    mp.start();
-                }
-            }
-        }else if(getVibr()){
-            for (int i = 0; i < 2; i++) {
-                vibrator.vibrate(1000);
             }
         }
     }

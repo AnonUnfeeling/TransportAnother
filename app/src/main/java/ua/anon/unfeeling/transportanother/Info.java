@@ -20,22 +20,20 @@ import android.widget.TextView;
 
 import com.example.hjk.transportanother.R;
 
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("MismatchedReadAndWriteOfArray")
 public class Info extends Activity implements View.OnClickListener {
 
     private TextView distation, north_cout, centr_cout, auto_count, ubil_cout, bass_count, lengthFromContact;
     private ImageButton sos;
-    private TextView statistics;
+    private TextView statistics, status;
     private final WorkWithDataBase workWithDataBase = new WorkWithDataBase();
     private int id = 0, driver = 0;
     private int idContact = 0;
     private int defaultTarget = 0,distantn=-1;
     private BroadcastReceiver service=null;
     private ProgressDialog progressDialog;
-    private boolean flagService = false;
-    private String statCenrt = "", statAuto="",statNorth="",statUbil="",statBass="";
+    private String statCenrt = "", statAuto="",statNorth="",statUbil="",statBass="",statusStr = "";
     private boolean isCheckSos=false;
     @SuppressWarnings("MismatchedReadAndWriteOfArray")
     private final double[] coo = new double[2];
@@ -62,6 +60,9 @@ public class Info extends Activity implements View.OnClickListener {
         outState.putString("north", north_cout.getText().toString());
         outState.putString("ubil", ubil_cout.getText().toString());
         outState.putString("bass", bass_count.getText().toString());
+        if(status.getText().toString()!=null) {
+            outState.putString("status", status.getText().toString());
+        }
 
         outState.putString("distantion", distation.getText().toString());
         outState.putInt("driver", driver);
@@ -120,6 +121,8 @@ public class Info extends Activity implements View.OnClickListener {
 
         System.out.println("info: "+id);
 
+        status = (TextView) findViewById(R.id.status);
+
         lengthFromContact = (TextView) findViewById(R.id.lengthFromContact);
         lengthFromContact.setText("");
 
@@ -166,29 +169,6 @@ public class Info extends Activity implements View.OnClickListener {
         sos.setOnClickListener(this);
 
         workWithService();
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (!flagService) {
-//                    try {
-//                        TimeUnit.SECONDS.sleep(30);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    try {
-//                        stopService(new Intent(Info.this, TransportAnother.class));
-//                    } catch (Exception ex) {
-//                        ex.printStackTrace();
-//                    }
-//
-//                    System.out.println("restart service");
-//
-//                    workWithService();
-//                }
-//            }
-//        }).start();
     }
 
     private void setBackground(char[] target){
@@ -226,6 +206,7 @@ public class Info extends Activity implements View.OnClickListener {
         filter.addAction("Contact_end");
         filter.addAction("Contact");
         filter.addAction("Search");
+        filter.addAction("Ping_Set");
 
         service = new BroadcastReceiver() {
             @Override
@@ -239,6 +220,8 @@ public class Info extends Activity implements View.OnClickListener {
                     contactStat.setBackgroundResource(R.drawable.cross);
 
                     distation.setText("");
+
+                    status.setText("");
 
                     if(driver==1) {
                         lengthFromContact.setText("");
@@ -254,7 +237,7 @@ public class Info extends Activity implements View.OnClickListener {
                     statUbil = (String.valueOf(intent.getIntExtra("ubil", 0)));
                     statBass = (String.valueOf(intent.getIntExtra("bass", 0)));
 
-                    flagService = true;
+                    statusStr = (intent.getStringExtra("status"));
 
                     viewStat();
 
@@ -279,6 +262,12 @@ public class Info extends Activity implements View.OnClickListener {
                     contactStat.setBackgroundResource(R.drawable.arrow_up);
 
                     distation.setText(distantn + "м");
+
+                    if(statusStr!=null) {
+                        status = (TextView) findViewById(R.id.status);
+                        status.setText(getResources().getString(R.string.driver_status)+": ");
+                        status.append(statusStr);
+                    }
                 }
                 else if (intent.getAction().equals("Contact_start")) {
 
@@ -292,30 +281,11 @@ public class Info extends Activity implements View.OnClickListener {
 
                     distation.setText("");
 
+                    idContact = intent.getIntExtra("isContact",0);
+
                     lengthFromContact.setText("");
                     lengthFromContact.setText(getResources().getString(R.string.contact));
 
-                }else if(intent.getAction().equals("Contact_end")){
-                    startActivity(new Intent(Info.this, Rating.class).putExtra("id", intent.getIntExtra("id",-1)));
-
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
-
-                    try {
-                        unregisterReceiver(service);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        stopService(new Intent(Info.this, TransportAnother.class));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                    System.gc();
-                    System.exit(0);
                 }else if(intent.getAction().equals("Contact")){
                     viewStat();
 
@@ -324,13 +294,30 @@ public class Info extends Activity implements View.OnClickListener {
                     startActivity(new Intent(Info.this, StartContact.class).putExtra("isExit", true)
                             .putExtra("id", id).putExtra("defaultTarget", defaultTarget).putExtra("driver", driver));
                 }else if(intent.getAction().equals("Search")){
+
                     statCenrt = (String.valueOf(intent.getIntExtra("centr", 0)));
                     statAuto = (String.valueOf(intent.getIntExtra("auto", 0)));
                     statNorth = (String.valueOf(intent.getIntExtra("north", 0)));
                     statUbil = (String.valueOf(intent.getIntExtra("ubil", 0)));
                     statBass = (String.valueOf(intent.getIntExtra("bass", 0)));
 
-                    flagService = true;
+                    statusStr = (intent.getStringExtra("status"));
+
+                    viewStat();
+                }else if(intent.getAction().equals("Ping_Set")){
+                    contactStat.setBackgroundResource(R.drawable.cross);
+
+                    distation.setText("");
+
+                    status.setText("");
+
+                    if(driver==1) {
+                        lengthFromContact.setText("");
+                        lengthFromContact.setText(getResources().getString(R.string.retry_search_driver));
+                    }else {
+                        lengthFromContact.setText("");
+                        lengthFromContact.setText(getResources().getString(R.string.retry_search_passage));
+                    }
 
                     viewStat();
                 }
@@ -444,19 +431,21 @@ public class Info extends Activity implements View.OnClickListener {
                         public void run() {
                             if(isSendSos) {
                                 if (gps2m(coo[0], coo[1], cooSos[0], cooSos[1]) >= 200) {
-
-                                    startService(new Intent(Info.this, TransportAnother.class)
-                                            .putExtra("isSos", true)
-                                            .putExtra("id", id)
-                                            .putExtra("driver", driver)
-                                            .putExtra("defaultTarget", defaultTarget));
+                                   new Thread(new Runnable() {
+                                       @Override
+                                       public void run() {
+                                           workWithDataBase.sos(id, 0, 0, 0);
+                                       }
+                                   }).start();
                                 }
                             }else {
-                                startService(new Intent(Info.this, TransportAnother.class)
-                                        .putExtra("isSos",true)
-                                        .putExtra("id", id)
-                                        .putExtra("driver", driver)
-                                        .putExtra("defaultTarget", defaultTarget));
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        workWithDataBase.sos(id, 0, 0, 0);
+                                    }
+                                }).start();
+                                isSendSos=true;
                             }
 
                         }

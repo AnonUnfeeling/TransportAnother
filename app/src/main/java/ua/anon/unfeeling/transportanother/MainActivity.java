@@ -8,6 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -39,6 +42,7 @@ import com.crashlytics.android.Crashlytics;
 import com.example.hjk.transportanother.R;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -229,7 +233,19 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     private void accessError(){
-        Toast.makeText(getApplicationContext(),getResources().getString(R.string.accessErorr),Toast.LENGTH_LONG).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(getResources().getString(R.string.app_name))
+                .setIcon(R.drawable.big11)
+                .setMessage(getResources().getString(R.string.accessErorr))
+                .setCancelable(false)
+                .setNegativeButton("Закрити", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        System.exit(0);
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private boolean isConnectingToInternet(){

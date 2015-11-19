@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout2"
-        android:background="#2E313E" >
+        android:background="#424756" >
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
 
         <ImageButton
             tools:ignore="ContentDescription,RtlHardcoded"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/sos"
             android:background="@drawable/sos_passiv"

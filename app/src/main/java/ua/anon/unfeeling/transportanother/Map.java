@@ -21,6 +21,7 @@ public class Map extends Activity{
     private WebView mapWebView;
     private boolean flag = false;
     private ImageButton closeContact;
+    private Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,14 @@ public class Map extends Activity{
 
         mapWebView = (WebView) findViewById(R.id.mapWebView);
         mapWebView.getSettings().setJavaScriptEnabled(true);
-        mapWebView.loadUrl("http://carstop.in.ua/app/map.html");
         new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mapWebView.loadUrl("http://carstop.in.ua/app/map.html");
+            }
+        }).start();
+
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true){
@@ -44,16 +51,23 @@ public class Map extends Activity{
                     }
                 }
             }
-        }).start();
+        });
+        thread.start();
 
         closeContact = (ImageButton) findViewById(R.id.closeContact);
         closeContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!flag) {
+                    if(thread!=null){
+                        thread.interrupt();
+                    }
                     finish();
                     startActivity(new Intent(Map.this,MainActivity.class));
                 }else {
+                    if(thread!=null){
+                        thread.interrupt();
+                    }
                     finish();
                   //  startActivity(new Intent(Map.this, Info.class));
                 }
@@ -64,9 +78,15 @@ public class Map extends Activity{
     @Override
     public void onBackPressed() {
         if(!flag) {
+            if(thread!=null){
+                thread.interrupt();
+            }
             finish();
             startActivity(new Intent(Map.this,MainActivity.class));
         }else {
+            if(thread!=null){
+                thread.interrupt();
+            }
             finish();
            // startActivity(new Intent(Map.this, Info.class));
         }
